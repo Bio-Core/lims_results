@@ -75,56 +75,8 @@ window.onload = function() {
 
 	function printConditions() {
 		var str = "";
+		if (selected_conditions[0][1] == undefined || selected_conditions[0][1] == "") return "Need Conditions!";
 		for (i = 0; i < controls.length; i++) {
-			var a = 2*i, b = a+1;
-			selected_conditions.push([selects[a].value, inputs[a].value, selects[b].value, inputs[b].value]);
-			switch (selected_conditions[i][2]) {
-				case "Equal to":
-					selected_conditions[i][2] = "=";
-					break;
-				case "Not equal to":
-					selected_conditions[i][2] = "<>";
-					break;
-				case "Greater than":
-					selected_conditions[i][2] = ">";
-					break;
-				case "Less than":
-					selected_conditions[i][2] = "<";
-					break;
-				case "Greater or equal to":
-					selected_conditions[i][2] = ">=";
-					break;
-				case "Less or equal to":
-					selected_conditions[i][2] = "<=";
-					break;
-				case "Begins with":
-					selected_conditions[i][2] = " LIKE ";
-					selected_conditions[i][3] += "\%";
-					break;
-				case "Not begins with":
-					selected_conditions[i][0] += " NOT"
-					selected_conditions[i][2] = " LIKE ";
-					selected_conditions[i][3] += "\%";
-					break;
-				case "Ends with":
-					selected_conditions[i][2] = " LIKE ";
-					selected_conditions[i][3] = "\%" + selected_conditions[i][3];
-					break;
-				case "Not ends with":
-					selected_conditions[i][0] += " NOT"
-					selected_conditions[i][2] = " LIKE ";
-					selected_conditions[i][3] = "\%" + selected_conditions[i][3];
-					break;
-				case "Contains":
-					selected_conditions[i][2] = " LIKE ";
-					selected_conditions[i][3] = "\%" + selected_conditions[i][3] + "\%";
-					break;
-				case "Not contains":
-					selected_conditions[i][0] += " NOT"
-					selected_conditions[i][2] = " LIKE ";
-					selected_conditions[i][3] = "\%" + selected_conditions[i][3] + "\%";
-					break;
-			}
 			str += selected_conditions[i][0] + " " + selected_conditions[i][1] + selected_conditions[i][2] + "\"" + selected_conditions[i][3] + "\" ";
 		}
 
@@ -289,6 +241,57 @@ window.onload = function() {
 			var selects = document.querySelectorAll('select');
 			// no condition error check
 			if (controls.length == 1 && inputs[0].value == "") return "Need Conditions!";
+			for (i = 0; i < controls.length; i++) {
+				var a = 2*i, b = a+1;
+				selected_conditions.push([selects[a].value, inputs[a].value, selects[b].value, inputs[b].value]);
+				switch (selected_conditions[i][2]) {
+					case "Equal to":
+						selected_conditions[i][2] = "=";
+						break;
+					case "Not equal to":
+						selected_conditions[i][2] = "<>";
+						break;
+					case "Greater than":
+						selected_conditions[i][2] = ">";
+						break;
+					case "Less than":
+						selected_conditions[i][2] = "<";
+						break;
+					case "Greater or equal to":
+						selected_conditions[i][2] = ">=";
+						break;
+					case "Less or equal to":
+						selected_conditions[i][2] = "<=";
+						break;
+					case "Begins with":
+						selected_conditions[i][2] = " LIKE ";
+						selected_conditions[i][3] += "\%";
+						break;
+					case "Not begins with":
+						selected_conditions[i][0] += " NOT"
+						selected_conditions[i][2] = " LIKE ";
+						selected_conditions[i][3] += "\%";
+						break;
+					case "Ends with":
+						selected_conditions[i][2] = " LIKE ";
+						selected_conditions[i][3] = "\%" + selected_conditions[i][3];
+						break;
+					case "Not ends with":
+						selected_conditions[i][0] += " NOT"
+						selected_conditions[i][2] = " LIKE ";
+						selected_conditions[i][3] = "\%" + selected_conditions[i][3];
+						break;
+					case "Contains":
+						selected_conditions[i][2] = " LIKE ";
+						selected_conditions[i][3] = "\%" + selected_conditions[i][3] + "\%";
+						break;
+					case "Not contains":
+						selected_conditions[i][0] += " NOT"
+						selected_conditions[i][2] = " LIKE ";
+						selected_conditions[i][3] = "\%" + selected_conditions[i][3] + "\%";
+						break;
+				}
+			}
 			
 			output.innerHTML = "SELECT " + printFields() + " FROM " + printTables() + " WHERE (" + printConditions() + ")";
 			resetResults();
