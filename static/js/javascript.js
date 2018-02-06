@@ -12,7 +12,7 @@ window.onload = function() {
 	var result_header;
 	var result_content = document.getElementsByClassName("table_content");
 	var sql_col = [], table_names = [], col_names = [];
-	var selected_fields = [], selected_tables = [], selected_conditions = [[],[]];
+	var selected_fields = [], selected_tables = [], selected_conditions = [];
 	var operators = [
 		"Equal to",
 		"Not equal to",
@@ -28,7 +28,7 @@ window.onload = function() {
 		"Not contains"];
 	var i, j;
 	var thElm;
-    var startOffset;
+	var startOffset;
 
 	j = 0;
 	for (i = 0; i < tables.length; i++) {
@@ -75,8 +75,8 @@ window.onload = function() {
 
 	function printConditions() {
 		var str = "";
-		if (selected_conditions[0][1] == undefined || selected_conditions[0][1] == "") return "Need Conditions!";
-		for (i = 0; i < controls.length; i++) {
+		if (selected_conditions.length == 1 && selected_conditions[0][1] == "") return "Need Conditions!";
+		for (i = 0; i < selected_conditions.length; i++) {
 			str += selected_conditions[i][0] + " " + selected_conditions[i][1] + selected_conditions[i][2] + "\"" + selected_conditions[i][3] + "\" ";
 		}
 
@@ -236,11 +236,12 @@ window.onload = function() {
 	// generate query and results table
 	if (btn_query) {
 		btn_query.addEventListener("click",function() {
+			selected_conditions = [];
 			var controls = document.getElementsByClassName("control-condition");
 			var inputs = document.querySelectorAll('input');
 			var selects = document.querySelectorAll('select');
 			// no condition error check
-			if (controls.length == 1 && inputs[0].value == "") return "Need Conditions!";
+			if (controls.length == 1 && inputs[0].value == "") window.alert( "Need Conditions!");
 			for (i = 0; i < controls.length; i++) {
 				var a = 2*i, b = a+1;
 				selected_conditions.push([selects[a].value, inputs[a].value, selects[b].value, inputs[b].value]);
