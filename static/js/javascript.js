@@ -74,13 +74,6 @@ window.onload = function() {
 	}
 
 	function printConditions() {
-		selected_conditions = [];
-		var controls = document.getElementsByClassName("control-condition");
-		var inputs = document.querySelectorAll('input');
-		var selects = document.querySelectorAll('select');
-		// no condition error check
-		if (controls.length == 1 && inputs[0].value == "") return "Need Conditions!";
-
 		var str = "";
 		for (i = 0; i < controls.length; i++) {
 			var a = 2*i, b = a+1;
@@ -291,6 +284,12 @@ window.onload = function() {
 	// generate query and results table
 	if (btn_query) {
 		btn_query.addEventListener("click",function() {
+			var controls = document.getElementsByClassName("control-condition");
+			var inputs = document.querySelectorAll('input');
+			var selects = document.querySelectorAll('select');
+			// no condition error check
+			if (controls.length == 1 && inputs[0].value == "") return "Need Conditions!";
+			
 			output.innerHTML = "SELECT " + printFields() + " FROM " + printTables() + " WHERE (" + printConditions() + ")";
 			resetResults();
 			previewResults();
