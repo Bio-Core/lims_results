@@ -17,7 +17,7 @@ def sqlToDisplay( str ):
 	str = string.replace(str, "Dna", "DNA")
 	str = string.replace(str, "Pcr", "PCR")
 	str = string.replace(str, "Mlpa", "MLPA")
-	str = string.replace(str, "Se", "SE")
+	str = string.replace(str, "Se ", "SE ")
 	str = string.replace(str, "Rna", "RNA")
 	str = string.replace(str, "On", "ON")
 	str = string.replace(str, "Hcn", "HCN")
