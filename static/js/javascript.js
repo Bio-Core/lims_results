@@ -13,6 +13,7 @@ window.onload = function() {
 	var result_content = document.getElementsByClassName("table_content");
 	var sql_col = [], table_names = [], col_names = [];
 	var selected_fields = [], selected_tables = [], selected_conditions = [];
+	var controls, inputs, selects;
 	var operators = [
 		"Equal to",
 		"Not equal to",
@@ -30,6 +31,8 @@ window.onload = function() {
 	var thElm;
 	var startOffset;
 
+	function sortTable(n) {}
+	
 	j = 0;
 	for (i = 0; i < tables.length; i++) {
 		table_names.push(tables[i].childNodes[0].innerHTML);
@@ -97,10 +100,55 @@ window.onload = function() {
 			tr.setAttribute("class", "table_content");
 			for (i = 0; i < selected_fields.length; i++) {
 				var td = document.createElement('td');			
-				td.innerHTML = selected_fields[i];
+				td.innerHTML = Math.floor(Math.random() * 100); //selected_fields[i]
 				tr.appendChild(td);
 			}
 			result_table.appendChild(tr);
+		}
+		
+		//enable sortable table by column
+		function sortTable(n) {
+			var tds, rows, switching, x, y, shouldSwitch, dir, switchcount = 0;
+			switching = true;
+			dir = "asc"; 
+			while (switching) {
+				switching = false;
+				rows = result_table.getElementsByTagName("TR");
+
+				for (i = 1; i < (rows.length - 1); i++) {
+					shouldSwitch = false;
+					x = rows[i].getElementsByTagName("TD")[n].innerHTML;
+					y = rows[i + 1].getElementsByTagName("TD")[n].innerHTML;
+					if (dir == "asc") {
+						if (x.toLowerCase() > y.toLowerCase()) {
+							shouldSwitch = true;
+							break;
+						}
+					} else if (dir == "desc") {
+						if (x.toLowerCase() < y.toLowerCase()) {
+							shouldSwitch = true;
+							break;
+						}
+					}
+				}
+				if (shouldSwitch) {
+					rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+					switching = true;
+					switchcount ++; 
+				} else {
+					if (switchcount == 0 && dir == "asc") {
+						dir = "desc";
+						switching = true;
+					}
+				}
+			}
+		}
+		
+		result_header = document.querySelectorAll("table th");
+		for (let i = 0; i < result_header.length; i++) {
+			result_header[i].addEventListener("click", function() {
+				sortTable(i);
+			});
 		}
 
 		// setup resizing gutter
@@ -237,9 +285,9 @@ window.onload = function() {
 	if (btn_query) {
 		btn_query.addEventListener("click",function() {
 			selected_conditions = [];
-			var controls = document.getElementsByClassName("control-condition");
-			var inputs = document.querySelectorAll('input');
-			var selects = document.querySelectorAll('select');
+			controls = document.getElementsByClassName("control-condition");
+			inputs = document.querySelectorAll('input');
+			selects = document.querySelectorAll('select');
 			// no condition error check
 			if (controls.length == 1 && inputs[0].value == "") window.alert( "Need Conditions!");
 			for (i = 0; i < controls.length; i++) {
