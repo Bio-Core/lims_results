@@ -182,11 +182,10 @@ td {
 th {
 	user-select: none;
 	overflow: hidden;
-	min-width: 0;
-	font-size: 1em;
+	text-overflow: ellipsis;
 }
 
 table {
 	table-layout: fixed;
-	max-width: 100%;
+	max-width: auto;
 }
