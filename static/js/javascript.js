@@ -29,10 +29,11 @@ window.onload = function() {
 		"Not contains"];
 	var i, j;
 	var thElm;
-	var startOffset;
+    var startOffset;
+    const MIN_WIDTH = 15, MIN_WIDTH_PX = '15px';
 
-	function sortTable(n) {}
-	
+    function sortTable(n) {}
+
 	j = 0;
 	for (i = 0; i < tables.length; i++) {
 		table_names.push(tables[i].childNodes[0].innerHTML);
@@ -92,10 +93,12 @@ window.onload = function() {
 			var th = document.createElement('th');
 			result_header = document.getElementById("table_header");
 			th.innerHTML = col_names[sql_col.indexOf(selected_fields[i])]; // or selected_fields[i]
+			th.style.width = 'auto';
 			result_header.appendChild(th);
 		}
+		
 		// temp. data
-		for (j = 0; j < 20; j++) {
+		for (j = 0; j < 3; j++) {
 			var tr = document.createElement('tr');
 			tr.setAttribute("class", "table_content");
 			for (i = 0; i < selected_fields.length; i++) {
@@ -106,9 +109,10 @@ window.onload = function() {
 			result_table.appendChild(tr);
 		}
 		
+		result_table.style.width = result_table.offsetWidth + "px";
 		//enable sortable table by column
 		function sortTable(n) {
-			var tds, rows, switching, x, y, shouldSwitch, dir, switchcount = 0;
+			var rows, switching, x, y, shouldSwitch, dir, switchcount = 0;
 			switching = true;
 			dir = "asc"; 
 			while (switching) {
@@ -120,14 +124,28 @@ window.onload = function() {
 					x = rows[i].getElementsByTagName("TD")[n].innerHTML;
 					y = rows[i + 1].getElementsByTagName("TD")[n].innerHTML;
 					if (dir == "asc") {
-						if (x.toLowerCase() > y.toLowerCase()) {
-							shouldSwitch = true;
-							break;
+						if (!isNaN(x) && !isNaN(y)) {
+							if (Number(x) > Number(y)) {
+								shouldSwitch = true;
+								break;
+							}
+						} else {
+							if (x.toLowerCase() > y.toLowerCase()) {
+								shouldSwitch = true;
+								break;
+							}
 						}
 					} else if (dir == "desc") {
-						if (x.toLowerCase() < y.toLowerCase()) {
-							shouldSwitch = true;
-							break;
+						if (!isNaN(x) && !isNaN(y)) {
+							if (Number(x) < Number(y)) {
+								shouldSwitch = true;
+								break;
+							}
+						} else {
+							if (x.toLowerCase() < y.toLowerCase()) {
+								shouldSwitch = true;
+								break;
+							}
 						}
 					}
 				}
@@ -143,14 +161,14 @@ window.onload = function() {
 				}
 			}
 		}
-		
+
 		result_header = document.querySelectorAll("table th");
 		for (let i = 0; i < result_header.length; i++) {
 			result_header[i].addEventListener("click", function() {
 				sortTable(i);
 			});
 		}
-
+		
 		// setup resizing gutter
 		Array.prototype.forEach.call(document.querySelectorAll("table th"), function(th) {
     		th.style.position = 'relative';
@@ -171,6 +189,7 @@ window.onload = function() {
 
         	th.appendChild(grip);
 	    });
+
 	}
 
 	function resetResults() {
@@ -179,6 +198,7 @@ window.onload = function() {
 		result_header = document.getElementById("table_header");
 		header.setAttribute("id", "table_header");
 		result_table.appendChild(header);
+		result_table.style.width = 'auto';
 	}
 
     // enable download as csv
@@ -341,7 +361,7 @@ window.onload = function() {
 						break;
 				}
 			}
-			
+
 			output.innerHTML = "SELECT " + printFields() + " FROM " + printTables() + " WHERE (" + printConditions() + ")";
 			resetResults();
 			previewResults();
@@ -368,17 +388,20 @@ window.onload = function() {
 		});
 	}
 
-	// resizeable table column
+	// resizeable table column with min with
     document.addEventListener('mousemove', function(e) {
 		if (thElm) {
 			thElm.style.width = startOffset + e.pageX + 'px';
+			if (thElm.offsetWidth < MIN_WIDTH) thElm.style.width = MIN_WIDTH_PX;
+			if ((thElm.style.width + MIN_WIDTH) >= result_table.style.width) 
+				result_table.style.width = (2*thElm.offsetWidth - result_table.offsetWidth + MIN_WIDTH) + 'px';
 		}
     });
 
     document.addEventListener('mouseup', function() {
+        if (thElm && (result_table.style.width <= (thElm.style.width + MIN_WIDTH))) 
+        	result_table.style.width = (2*thElm.offsetWidth - result_table.offsetWidth + MIN_WIDTH) + 'px';
         thElm = undefined;
     });
-
-
 
 }
