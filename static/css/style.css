@@ -43,7 +43,7 @@
 }
 
 .tables:before {
-	background-image: url('/static/imgs/minus.ico');
+	background-image: url('/imgs/minus.ico');
 	background-repeat: no-repeat;
 	background-position: left center;
 	background-size: contain;
@@ -59,7 +59,7 @@
 }
 
 .tables.collapse:before {
-	background-image: url('/static/imgs/plus.png');
+	background-image: url('/imgs/plus.png');
 }
 
 .tables + ul {
@@ -91,7 +91,7 @@ a:hover {
 }
 
 a.selected:before {
-	background-image: url('/static/imgs/check-mark.png');
+	background-image: url('/imgs/check-mark.png');
 	background-repeat: no-repeat;
 	background-position: left center;
 	background-size: contain;
