@@ -12,7 +12,8 @@ window.onload = function() {
 	var result_header;
 	var result_content = document.getElementsByClassName("table_content");
 	var sql_col = [], table_names = [], col_names = [];
-	var selected_fields = [], selected_tables = [], selected_conditions = [[],[]];
+	var selected_fields = [], selected_tables = [], selected_conditions = [];
+	var controls, inputs, selects;
 	var operators = [
 		"Equal to",
 		"Not equal to",
@@ -29,6 +30,9 @@ window.onload = function() {
 	var i, j;
 	var thElm;
     var startOffset;
+    const MIN_WIDTH = 30, MIN_WIDTH_PX = '30px';
+
+    function sortTable(n) {}
 
 	j = 0;
 	for (i = 0; i < tables.length; i++) {
@@ -74,64 +78,9 @@ window.onload = function() {
 	}
 
 	function printConditions() {
-		selected_conditions = [];
-		var controls = document.getElementsByClassName("control-condition");
-		var inputs = document.querySelectorAll('input');
-		var selects = document.querySelectorAll('select');
-		// no condition error check
-		if (controls.length == 1 && inputs[0].value == "") return "Need Conditions!";
-
 		var str = "";
-		for (i = 0; i < controls.length; i++) {
-			var a = 2*i, b = a+1;
-			selected_conditions.push([selects[a].value, inputs[a].value, selects[b].value, inputs[b].value]);
-			switch (selected_conditions[i][2]) {
-				case "Equal to":
-					selected_conditions[i][2] = "=";
-					break;
-				case "Not equal to":
-					selected_conditions[i][2] = "<>";
-					break;
-				case "Greater than":
-					selected_conditions[i][2] = ">";
-					break;
-				case "Less than":
-					selected_conditions[i][2] = "<";
-					break;
-				case "Greater or equal to":
-					selected_conditions[i][2] = ">=";
-					break;
-				case "Less or equal to":
-					selected_conditions[i][2] = "<=";
-					break;
-				case "Begins with":
-					selected_conditions[i][2] = " LIKE ";
-					selected_conditions[i][3] += "\%";
-					break;
-				case "Not begins with":
-					selected_conditions[i][0] += " NOT"
-					selected_conditions[i][2] = " LIKE ";
-					selected_conditions[i][3] += "\%";
-					break;
-				case "Ends with":
-					selected_conditions[i][2] = " LIKE ";
-					selected_conditions[i][3] = "\%" + selected_conditions[i][3];
-					break;
-				case "Not ends with":
-					selected_conditions[i][0] += " NOT"
-					selected_conditions[i][2] = " LIKE ";
-					selected_conditions[i][3] = "\%" + selected_conditions[i][3];
-					break;
-				case "Contains":
-					selected_conditions[i][2] = " LIKE ";
-					selected_conditions[i][3] = "\%" + selected_conditions[i][3] + "\%";
-					break;
-				case "Not contains":
-					selected_conditions[i][0] += " NOT"
-					selected_conditions[i][2] = " LIKE ";
-					selected_conditions[i][3] = "\%" + selected_conditions[i][3] + "\%";
-					break;
-			}
+		if (selected_conditions.length == 1 && selected_conditions[0][1] == "") return "Need Conditions!";
+		for (i = 0; i < selected_conditions.length; i++) {
 			str += selected_conditions[i][0] + " " + selected_conditions[i][1] + selected_conditions[i][2] + "\"" + selected_conditions[i][3] + "\" ";
 		}
 
@@ -144,20 +93,92 @@ window.onload = function() {
 			var th = document.createElement('th');
 			result_header = document.getElementById("table_header");
 			th.innerHTML = col_names[sql_col.indexOf(selected_fields[i])]; // or selected_fields[i]
+			th.style.width = 'auto';
 			result_header.appendChild(th);
 		}
+		
 		// temp. data
-		for (j = 0; j < 20; j++) {
+		for (j = 0; j < 10; j++) {
 			var tr = document.createElement('tr');
 			tr.setAttribute("class", "table_content");
 			for (i = 0; i < selected_fields.length; i++) {
 				var td = document.createElement('td');			
-				td.innerHTML = selected_fields[i];
+				td.innerHTML = Math.floor(Math.random() * 100); //selected_fields[i]
 				tr.appendChild(td);
 			}
 			result_table.appendChild(tr);
 		}
+		
+		result_table.style.width = result_table.offsetWidth + "px";
+		//enable sortable table by column
+		function sortTable(n) {
+			var rows, switching, x, y, shouldSwitch, dir, switchcount = 0;
+			switching = true;
+			dir = "asc"; 
+			while (switching) {
+				switching = false;
+				rows = result_table.getElementsByTagName("TR");
 
+				for (i = 1; i < (rows.length - 1); i++) {
+					shouldSwitch = false;
+					x = rows[i].getElementsByTagName("TD")[n].innerHTML;
+					y = rows[i + 1].getElementsByTagName("TD")[n].innerHTML;
+					if (dir == "asc") {
+						var ths = document.getElementById("table_results").getElementsByTagName('th');
+						for (let j = 0; j < ths.length; j++) {
+							ths[j].classList.remove("asc", "desc");
+						}
+						ths[n].classList.add("asc");
+						if (!isNaN(x) && !isNaN(y)) {
+							if (Number(x) > Number(y)) {
+								shouldSwitch = true;
+								break;
+							}
+						} else {
+							if (x.toLowerCase() > y.toLowerCase()) {
+								shouldSwitch = true;
+								break;
+							}
+						}
+					} else if (dir == "desc") {
+						var ths = document.getElementById("table_results").getElementsByTagName('th');
+						for (let j = 0; j < ths.length; j++) {
+							ths[j].classList.remove("asc", "desc");
+						}
+						ths[n].classList.add("desc");
+						if (!isNaN(x) && !isNaN(y)) {
+							if (Number(x) < Number(y)) {
+								shouldSwitch = true;
+								break;
+							}
+						} else {
+							if (x.toLowerCase() < y.toLowerCase()) {
+								shouldSwitch = true;
+								break;
+							}
+						}
+					}
+				}
+				if (shouldSwitch) {
+					rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+					switching = true;
+					switchcount ++; 
+				} else {
+					if (switchcount == 0 && dir == "asc") {
+						dir = "desc";
+						switching = true;
+					}
+				}
+			}
+		}
+
+		result_header = document.querySelectorAll("table th");
+		for (let i = 0; i < result_header.length; i++) {
+			result_header[i].addEventListener("click", function() {
+				sortTable(i);
+			});
+		}
+		
 		// setup resizing gutter
 		Array.prototype.forEach.call(document.querySelectorAll("table th"), function(th) {
     		th.style.position = 'relative';
@@ -176,8 +197,15 @@ window.onload = function() {
 	            startOffset = th.offsetWidth - e.pageX;
         	});
 
-        	th.appendChild(grip);
+        	th.appendChild(grip);	        	
 	    });
+
+	    var ths = document.querySelectorAll("table th");
+        for (let i = 0; i < ths.length; i++) {
+        	ths[i].style.width = ths[i].offsetWidth + 'px';
+        	ths[i].style.minWidth = MIN_WIDTH_PX;
+        }
+
 	}
 
 	function resetResults() {
@@ -186,6 +214,7 @@ window.onload = function() {
 		result_header = document.getElementById("table_header");
 		header.setAttribute("id", "table_header");
 		result_table.appendChild(header);
+		result_table.style.width = 'auto';
 	}
 
     // enable download as csv
@@ -291,6 +320,77 @@ window.onload = function() {
 	// generate query and results table
 	if (btn_query) {
 		btn_query.addEventListener("click",function() {
+			selected_conditions = [];
+			controls = document.getElementsByClassName("control-condition");
+			inputs = document.querySelectorAll('input');
+			selects = document.querySelectorAll('select');
+			// no condition error check
+			if (controls.length == 1 && inputs[0].value == "") window.alert( "Need Conditions!");
+			for (i = 0; i < controls.length; i++) {
+				var a = 2*i, b = a+1;
+				selected_conditions.push([selects[a].value, inputs[a].value, selects[b].value, inputs[b].value]);
+				switch (selected_conditions[i][2]) {
+					case "Equal to":
+						selected_conditions[i][2] = "=";
+						break;
+					case "Not equal to":
+						selected_conditions[i][2] = "<>";
+						break;
+					case "Greater than":
+						selected_conditions[i][2] = ">";
+						break;
+					case "Less than":
+						selected_conditions[i][2] = "<";
+						break;
+					case "Greater or equal to":
+						selected_conditions[i][2] = ">=";
+						break;
+					case "Less or equal to":
+						selected_conditions[i][2] = "<=";
+						break;
+					case "Begins with":
+						selected_conditions[i][2] = " LIKE ";
+						selected_conditions[i][3] += "\%";
+						break;
+					case "Not begins with":
+						selected_conditions[i][0] += " NOT"
+						selected_conditions[i][2] = " LIKE ";
+						selected_conditions[i][3] += "\%";
+						break;
+					case "Ends with":
+						selected_conditions[i][2] = " LIKE ";
+						selected_conditions[i][3] = "\%" + selected_conditions[i][3];
+						break;
+					case "Not ends with":
+						selected_conditions[i][0] += " NOT"
+						selected_conditions[i][2] = " LIKE ";
+						selected_conditions[i][3] = "\%" + selected_conditions[i][3];
+						break;
+					case "Contains":
+						selected_conditions[i][2] = " LIKE ";
+						selected_conditions[i][3] = "\%" + selected_conditions[i][3] + "\%";
+						break;
+					case "Not contains":
+						selected_conditions[i][0] += " NOT"
+						selected_conditions[i][2] = " LIKE ";
+						selected_conditions[i][3] = "\%" + selected_conditions[i][3] + "\%";
+						break;
+				}
+			}
+
+			$.ajax({
+				url: "test.php",
+				type: "POST",
+				dataType: 'json',
+				data: JSON.stringify({selected_fields:selected_fields,selected_tables:selected_tables,selected_conditions:selected_conditions}),
+				contentType: 'application/json',
+				success: function(response) {
+					window.alert("POST array successful");
+				},
+				error: function(jqXhr, textStatus, errorThrown) {
+					window.alert(errorThrown);
+				}
+			});
 			output.innerHTML = "SELECT " + printFields() + " FROM " + printTables() + " WHERE (" + printConditions() + ")";
 			resetResults();
 			previewResults();
@@ -317,17 +417,22 @@ window.onload = function() {
 		});
 	}
 
-	// resizeable table column
+	// resizeable table column with min with
     document.addEventListener('mousemove', function(e) {
 		if (thElm) {
 			thElm.style.width = startOffset + e.pageX + 'px';
+			if (thElm.offsetWidth < MIN_WIDTH)
+				thElm.style.width = MIN_WIDTH_PX;
+			var ths = document.querySelectorAll("table th"), w = 0;
+	        for (let i = 0; i < ths.length; i++) {
+	        	w += ths[i].offsetWidth;
+	        }
+	        result_table.style.width = w + 'px';
 		}
     });
 
     document.addEventListener('mouseup', function() {
         thElm = undefined;
     });
-
-
 
 }

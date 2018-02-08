@@ -17,7 +17,7 @@ def sqlToDisplay( str ):
 	str = string.replace(str, "Dna", "DNA")
 	str = string.replace(str, "Pcr", "PCR")
 	str = string.replace(str, "Mlpa", "MLPA")
-	str = string.replace(str, "Se", "SE")
+	str = string.replace(str, "Se ", "SE ")
 	str = string.replace(str, "Rna", "RNA")
 	str = string.replace(str, "On", "ON")
 	str = string.replace(str, "Hcn", "HCN")
@@ -39,13 +39,11 @@ def connect():
 			cursor.execute("SHOW TABLES")
 			tables = [i[0] for i in cursor.fetchall()]
 			for x in xrange(len(tables)):
-				print(tables[x])
 				cursor.execute("SHOW columns FROM " + tables[x])
 				cols = cursor.fetchall()
 				field_names = [i[0] for i in cols]
 				for j in xrange(len(cols)):
-					print(sqlToDisplay(field_names[j]))
-					table_names.append(tables[x] + ":" + sqlToDisplay(field_names[j]))
+					table_names.append(sqlToDisplay(tables[x]) + ":" + sqlToDisplay(field_names[j]))
 
     except Error as e:
 		print(e)

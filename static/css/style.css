@@ -43,7 +43,7 @@
 }
 
 .tables:before {
-	background-image: url('/static/imgs/minus.ico');
+	background-image: url('../imgs/minus.ico');
 	background-repeat: no-repeat;
 	background-position: left center;
 	background-size: contain;
@@ -59,7 +59,7 @@
 }
 
 .tables.collapse:before {
-	background-image: url('/static/imgs/plus.png');
+	background-image: url('../imgs/plus.png');
 }
 
 .tables + ul {
@@ -91,7 +91,7 @@ a:hover {
 }
 
 a.selected:before {
-	background-image: url('/static/imgs/check-mark.png');
+	background-image: url('../imgs/check-mark.png');
 	background-repeat: no-repeat;
 	background-position: left center;
 	background-size: contain;
@@ -182,11 +182,46 @@ td {
 th {
 	user-select: none;
 	overflow: hidden;
-	min-width: 0;
-	font-size: 1em;
+	text-overflow: ellipsis;
+	padding-top: 6px;
+	min-width: 30px;
+}
+
+th.asc:after {
+	background-image: url('../imgs/sort.png');
+	background-repeat: no-repeat;
+	background-position-x: 0px;
+	background-position-y: 0px;
+	background-size: cover;
+	display: block;
+	content: "";
+	width: 12px;
+	height: 6px;
+	opacity: 0.5;
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+th.desc:after {
+	background-image: url('../imgs/sort.png');
+	background-repeat: no-repeat;
+	background-position-x: 0px;
+	background-position-y: -6px;
+	background-size: cover;
+	display: block;
+	content: "";
+	width: 12px;
+	height: 6px;
+	opacity: 0.5;
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
 }
 
 table {
 	table-layout: fixed;
-	max-width: 100%;
+	width: auto;
 }
