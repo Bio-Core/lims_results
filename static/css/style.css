@@ -183,6 +183,41 @@ th {
 	user-select: none;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	padding-top: 6px;
+}
+
+th.asc:after {
+	background-image: url('/imgs/sort.png');
+	background-repeat: no-repeat;
+	background-position-x: 0px;
+	background-position-y: 0px;
+	background-size: cover;
+	display: block;
+	content: "";
+	width: 12px;
+	height: 6px;
+	opacity: 0.5;
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+th.desc:after {
+	background-image: url('/imgs/sort.png');
+	background-repeat: no-repeat;
+	background-position-x: 0px;
+	background-position-y: -6px;
+	background-size: cover;
+	display: block;
+	content: "";
+	width: 12px;
+	height: 6px;
+	opacity: 0.5;
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
 }
 
 table {
