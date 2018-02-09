@@ -30,7 +30,7 @@ window.onload = function() {
 	var i, j;
 	var thElm;
     var startOffset;
-    const MIN_WIDTH = 15, MIN_WIDTH_PX = '15px';
+    const MIN_WIDTH = 30, MIN_WIDTH_PX = '30px';
 
     function sortTable(n) {}
 
@@ -98,7 +98,7 @@ window.onload = function() {
 		}
 		
 		// temp. data
-		for (j = 0; j < 3; j++) {
+		for (j = 0; j < 10; j++) {
 			var tr = document.createElement('tr');
 			tr.setAttribute("class", "table_content");
 			for (i = 0; i < selected_fields.length; i++) {
@@ -124,6 +124,11 @@ window.onload = function() {
 					x = rows[i].getElementsByTagName("TD")[n].innerHTML;
 					y = rows[i + 1].getElementsByTagName("TD")[n].innerHTML;
 					if (dir == "asc") {
+						var ths = document.getElementById("table_results").getElementsByTagName('th');
+						for (let j = 0; j < ths.length; j++) {
+							ths[j].classList.remove("asc", "desc");
+						}
+						ths[n].classList.add("asc");
 						if (!isNaN(x) && !isNaN(y)) {
 							if (Number(x) > Number(y)) {
 								shouldSwitch = true;
@@ -136,6 +141,11 @@ window.onload = function() {
 							}
 						}
 					} else if (dir == "desc") {
+						var ths = document.getElementById("table_results").getElementsByTagName('th');
+						for (let j = 0; j < ths.length; j++) {
+							ths[j].classList.remove("asc", "desc");
+						}
+						ths[n].classList.add("desc");
 						if (!isNaN(x) && !isNaN(y)) {
 							if (Number(x) < Number(y)) {
 								shouldSwitch = true;
@@ -187,8 +197,14 @@ window.onload = function() {
 	            startOffset = th.offsetWidth - e.pageX;
         	});
 
-        	th.appendChild(grip);
+        	th.appendChild(grip);	        	
 	    });
+
+	    var ths = document.querySelectorAll("table th");
+        for (let i = 0; i < ths.length; i++) {
+        	ths[i].style.width = ths[i].offsetWidth + 'px';
+        	ths[i].style.minWidth = MIN_WIDTH_PX;
+        }
 
 	}
 
@@ -392,9 +408,13 @@ window.onload = function() {
     document.addEventListener('mousemove', function(e) {
 		if (thElm) {
 			thElm.style.width = startOffset + e.pageX + 'px';
-			if (thElm.offsetWidth < MIN_WIDTH) thElm.style.width = MIN_WIDTH_PX;
-			if ((thElm.style.width + MIN_WIDTH) >= result_table.style.width) 
-				result_table.style.width = (2*thElm.offsetWidth - result_table.offsetWidth + MIN_WIDTH) + 'px';
+			if (thElm.offsetWidth < MIN_WIDTH)
+				thElm.style.width = MIN_WIDTH_PX;
+			var ths = document.querySelectorAll("table th"), w = 0;
+	        for (let i = 0; i < ths.length; i++) {
+	        	w += ths[i].offsetWidth;
+	        }
+	        result_table.style.width = w + 'px';
 		}
     });
 
