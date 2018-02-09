@@ -15,5 +15,13 @@ def index():
     tables = mysql_connector.table_names
     return render_template('test.html', list1=tables)
 
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/edit')
+def edit():
+    return render_template('edit.html')
+
 if __name__ == '__main__':
     app.run(debug=True, host=container_app_host, port=container_results_port)
