@@ -81,6 +81,20 @@ a:before {
 	display: none;
 }
 
+a.cols:before {
+	background-image: url('../imgs/button.png');
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-size: contain;
+	opacity: 0.5;
+	display: inline-block;
+	margin-left: -17px;
+	margin-right: 5px;
+	content: "";
+	width: 12px;
+	height: 12px;
+}
+
 a:visited {
 	text-decoration: none;
 }
@@ -101,6 +115,7 @@ a.selected:before {
 	content: "";
 	width: 12px;
 	height: 12px;
+	opacity: 1;
 }
 
 label {
