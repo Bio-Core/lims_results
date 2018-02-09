@@ -432,6 +432,8 @@ window.onload = function() {
     });
 
     document.addEventListener('mouseup', function() {
+        if (thElm && (result_table.style.width <= (thElm.style.width + MIN_WIDTH))) 
+        	result_table.style.width = (2*thElm.offsetWidth - result_table.offsetWidth + MIN_WIDTH) + 'px';
         thElm = undefined;
     });
 

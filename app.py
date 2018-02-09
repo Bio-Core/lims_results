@@ -15,9 +15,5 @@ def index():
     tables = mysql_connector.table_names
     return render_template('test.html', list1=tables)
 
-@app.route('/test.php')
-def test():
-    return render_template('test.php')
-
 if __name__ == '__main__':
     app.run(debug=True, host=container_app_host, port=container_results_port)
