@@ -216,8 +216,8 @@ window.onload = function() {
 		}
 		
 		result_table.style.width = result_table.offsetWidth + "px";
-		//enable sortable table by column
 		
+		//enable sortable table by column
 		initSort();
 		
 		// setup resizing gutter
@@ -333,6 +333,24 @@ window.onload = function() {
 	}
 
 	// generate query and results table
+	function postQuery() {
+		$.ajax({
+			url: "test.php",
+			type: "POST",
+			dataType: 'json',
+			data: JSON.stringify({selected_fields:selected_fields,selected_tables:selected_tables,selected_conditions:selected_conditions}),
+			contentType: 'application/json',
+			success: function(resp) {
+				window.alert("POST array successful");
+				queryOutput = resp;
+			},
+			error: function(jqXhr, textStatus, errorThrown) {
+				window.alert(errorThrown);
+			}
+		});
+	}
+		
+
 	if (btn_query) {
 		btn_query.addEventListener("click",function() {
 			selected_conditions = [];
@@ -392,21 +410,8 @@ window.onload = function() {
 						break;
 				}
 			}
-
-			$.ajax({
-				url: "test.php",
-				type: "POST",
-				dataType: 'json',
-				data: JSON.stringify({selected_fields:selected_fields,selected_tables:selected_tables,selected_conditions:selected_conditions}),
-				contentType: 'application/json',
-				success: function(resp) {
-					window.alert("POST array successful");
-					queryOutput = resp;
-				},
-				error: function(jqXhr, textStatus, errorThrown) {
-					window.alert(errorThrown);
-				}
-			});
+			postQuery();
+			
 			output.innerHTML = "SELECT " + printFields() + " FROM " + printTables() + " WHERE (" + printConditions() + ")";
 			resetResults();
 			previewResults();
@@ -512,6 +517,15 @@ window.onload = function() {
 	            this.selectedHeader = header;
 	            var sourceIndex = this.selectedHeader.index() + 1;
 	            var cells = [];
+	            $('#table_header th').removeClass('hovered after before');
+	            $('#table_header th').each(function(index, th) {
+	            	if (index < sourceIndex - 1) {
+	            		$('#table_header th').get(index).classList.add("before");
+	            	}
+	            	else if (index > sourceIndex - 1) {
+	            		$('#table_header th').get(index).classList.add("after");
+	            	}
+	            })
 
 	            $(this.container).find("tr td:nth-child(" + sourceIndex + ")").each(function (cellIndex, cell) {
 	                cells[cells.length] = cell;
@@ -556,6 +570,8 @@ window.onload = function() {
 	            if (this.selectedHeader !== null) {
 	                var userEvent = new UserEvent(event);
 	                this.draggableContainer.css({ left: userEvent.event.pageX + this.offsetX, top: userEvent.event.pageY + this.offsetY });
+	                $('#table_header th').removeClass('hovered');
+                	$(event.target).addClass("hovered");
 	            }
 	        };
 
@@ -595,6 +611,7 @@ window.onload = function() {
 
 	                $(this.container).off("mousemove touchmove");
 	                $(".jsdragtable-contents").remove();
+	                $('#table_header th').removeClass('hovered after before');
 	                this.draggableContainer = null;
 	                this.selectedHeader = null;
 	                this.rebind();
@@ -606,13 +623,14 @@ window.onload = function() {
 	        JsDragTable.prototype.cancelColumn = function () {
 	            $(this.container).off("mousemove touchmove");
 	            $(".jsdragtable-contents").remove();
+	            $('#table_header th').removeClass('hovered after before');
 	            this.draggableContainer = null;
 	            this.selectedHeader = null;
 	        };
 
 	        JsDragTable.prototype.createDraggableTable = function (header) {
 	            $(".jsdragtable-contents").remove();
-				var table = $("<table/>");
+	            var table = $("<table/>");
 	            var thead = $("<thead/>");
 	            var tbody = $("<tbody/>");
 	            var tr = $("<tr/>");
