@@ -5,9 +5,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="/static/css/style.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
   	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 	<script type="text/javascript" src="/static/js/javascript.js"></script>
-	
 </head>
 <body>
 
@@ -17,15 +17,15 @@
 	<button id="btn-output" style="position: relative;">Query</button>
 	<button id="btn-clear" style="position: relative;">Clear</button>
 	<button id="btn-csv" style="position: relative;">Download as .csv</button>
+	<button id="btn-save" style="position: relative;">Save Query</button>
 
 	<section class="query-container">
 		<section class="fields">
-
 			<script type="text/javascript">
 				function onlyUnique(value, index, self) { 
 				    return self.indexOf(value) === index;
 				}
-				var tables = {{ list1|tojson }}
+				var tables = {{ list1|tojson }};
 				var tFields = [], fields = [], i;
 				var doc;
 				for (i = 0; i < tables.length; i++) {
@@ -55,7 +55,6 @@
 					$(".fields").append(ul);
 				}
 			</script>
-			
 		</section>
 
 		<section class="controls">
