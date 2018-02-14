@@ -611,7 +611,8 @@ window.onload = function() {
 	        };
 
 	        JsDragTable.prototype.createDraggableTable = function (header) {
-	            var table = $("<table/>");
+	            $(".jsdragtable-contents").remove();
+				var table = $("<table/>");
 	            var thead = $("<thead/>");
 	            var tbody = $("<tbody/>");
 	            var tr = $("<tr/>");
