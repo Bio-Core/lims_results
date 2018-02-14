@@ -68,6 +68,18 @@
 	margin-bottom: 0;
 }
 
+.previewWindow {
+	border: 1px solid black;
+	width: 80%;
+	min-height: 100px;
+	margin-left: 10%;
+	margin-top: 5px; 
+}
+
+#search {
+	margin-left: 10%;
+}
+
 li {
 	width: fit-content;
 	list-style: none;
@@ -169,12 +181,19 @@ input {
 	display: none;
 }
 
-tr:nth-child(2n+3) {
+#table_results tr:nth-child(2n+3),
+#table_preview tr:nth-child(2n+3) {
 	background-color: #ddd;
 }
 
-tr:first-child {
+#table_results tr:first-child,
+#table_preview tr:first-child,
+.jsdragtable-contents thead tr {
 	background-color: #ccc;
+}
+
+div.jsdragtable-contents {
+	box-shadow: 2px 2px 2px grey;
 }
 
 table, td, th {
@@ -240,3 +259,13 @@ table {
 	table-layout: fixed;
 	width: auto;
 }
+
+div {
+	display: inline-block;
+	position: relative;
+}
+
+.previewWindow {
+	overflow: auto;
+}
+
