@@ -34,10 +34,10 @@ def samples():
     mysql_connector.preview('samples')
     preview = mysql_connector.previews
     return render_template('samples.html', list1=preview)
-
+'''
 @app.route('/query-profile')
 def profile():
     return render_template('saveQuery.php')
-
+'''
 if __name__ == '__main__':
     app.run(debug=True, host=container_app_host, port=container_results_port)
