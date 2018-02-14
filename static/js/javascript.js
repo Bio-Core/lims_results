@@ -8,12 +8,15 @@ window.onload = function() {
 	var resultsList = document.getElementById("results-datalist");
 	var operatorList = document.getElementById("operator-option");
 	var btn_query = document.getElementById("btn-output");
+	var btn_save = document.getElementById("btn-save");
 	var result_table = document.getElementById("table_results");
 	var result_header;
 	var result_content = document.getElementsByClassName("table_content");
 	var sql_col = [], table_names = [], col_names = [];
 	var selected_fields = [], selected_tables = [], selected_conditions = [];
+	var queryResults = [], response = '[{ "patients.dob": "2018-02-05","patients.first_name": "Mitchell2","patients.gender": "male","patients.initials": "PE","patients.mrn": "test","patients.patient_id": "1","patients.sample_id": "1","samples.facility": "test","samples.sample_id": "1","samples.se_num": "1","samples.volume_of_blood_marrow": 12.3},{"patients.dob": "2018-02-05","patients.first_name": "Jane","patients.gender": "f","patients.initials": "A","patients.last_name": "Doe","patients.patient_id": "2","patients.sample_id": "2","samples.facility": "test","samples.sample_id": "2","samples.se_num": "34","samples.tumor_site": "tumor","samples.volume_of_blood_marrow": 1554.9},{"patients.dob": "2018-02-05","patients.first_name": "Jane","patients.gender": "f","patients.initials": "A","patients.last_name": "Doe","patients.patient_id": "2","patients.sample_id": "2","samples.sample_id": "2","samples.se_num": "s"}]';
 	var controls, inputs, selects;
+	var queryOutput;
 	var operators = [
 		"Equal to",
 		"Not equal to",
@@ -43,19 +46,23 @@ window.onload = function() {
 	}
 
 	// Autocomplete with existing cols
-	for (i = 0; i < cols.length; i++) {
-		col_names.push(cols[i].innerHTML);
-		var option = document.createElement('option');
-		sql_col[i] = cols[i].parentElement.id + "." + col_names[i].toLowerCase().replace(/ /g, '\_').replace('\.', '\_').replace('\/', '\_');
-		option.value = sql_col[i];
-		resultsList.appendChild(option);
+	if (resultsList) {
+		for (i = 0; i < cols.length; i++) {
+			col_names.push(cols[i].innerHTML);
+			var option = document.createElement('option');
+			sql_col[i] = cols[i].parentElement.id + "." + col_names[i].toLowerCase().replace(/ /g, '\_').replace('\.', '\_').replace('\/', '\_');
+			option.value = sql_col[i];
+			resultsList.appendChild(option);
+		}
 	}
 
 	// Autocomplete query operators
-	for (i = 0; i < operators.length; i++) {
-		var option = document.createElement('option');
-		option.innerHTML = operators[i];
-		operatorList.appendChild(option);
+	if (operatorList) {
+		for (i = 0; i < operators.length; i++) {
+			var option = document.createElement('option');
+			option.innerHTML = operators[i];
+			operatorList.appendChild(option);
+		}
 	}
 
 	// Print comma seperated selected fields
@@ -88,108 +95,90 @@ window.onload = function() {
 		return str;
 	}
 
-	function previewResults() {
-		for (i = 0; i < selected_fields.length; i++) {
-			var th = document.createElement('th');
-			result_header = document.getElementById("table_header");
-			th.innerHTML = col_names[sql_col.indexOf(selected_fields[i])]; // or selected_fields[i]
-			th.style.width = 'auto';
-			result_header.appendChild(th);
-		}
-		
-		// temp. data
-		for (j = 0; j < 10; j++) {
-			var tr = document.createElement('tr');
-			tr.setAttribute("class", "table_content");
-			for (i = 0; i < selected_fields.length; i++) {
-				var td = document.createElement('td');			
-				td.innerHTML = Math.floor(Math.random() * 100); //selected_fields[i]
-				tr.appendChild(td);
-			}
-			result_table.appendChild(tr);
-		}
-		
-		result_table.style.width = result_table.offsetWidth + "px";
-		//enable sortable table by column
-		function sortTable(n) {
-			var rows, switching, x, y, shouldSwitch, dir, switchcount = 0;
-			switching = true;
-			dir = "asc"; 
-			while (switching) {
-				switching = false;
-				rows = result_table.getElementsByTagName("TR");
+	function sortTable(n) {
+		var rows, switching, x, y, shouldSwitch, dir, switchcount = 0;
+		switching = true;
+		dir = "asc"; 
+		while (switching) {
+			switching = false;
+			if (!result_table) break;
+			rows = result_table.getElementsByTagName("TR");
 
-				for (i = 1; i < (rows.length - 1); i++) {
-					shouldSwitch = false;
-					x = rows[i].getElementsByTagName("TD")[n].innerHTML;
-					y = rows[i + 1].getElementsByTagName("TD")[n].innerHTML;
-					if (dir == "asc") {
-						var ths = document.getElementById("table_results").getElementsByTagName('th');
-						for (let j = 0; j < ths.length; j++) {
-							ths[j].classList.remove("asc", "desc");
+			for (i = 1; i < (rows.length - 1); i++) {
+				shouldSwitch = false;
+				x = rows[i].getElementsByTagName("TD")[n].innerHTML;
+				y = rows[i + 1].getElementsByTagName("TD")[n].innerHTML;
+				if (dir == "asc") {
+					var ths = document.getElementById("table_results").getElementsByTagName('th');
+					for (let j = 0; j < ths.length; j++) {
+						ths[j].classList.remove("asc", "desc");
+					}
+					ths[n].classList.add("asc");
+					if (!isNaN(x) && !isNaN(y)) {
+						if (Number(x) > Number(y)) {
+							shouldSwitch = true;
+							break;
 						}
-						ths[n].classList.add("asc");
-						if (!isNaN(x) && !isNaN(y)) {
-							if (Number(x) > Number(y)) {
-								shouldSwitch = true;
-								break;
-							}
-						} else {
-							if (x.toLowerCase() > y.toLowerCase()) {
-								shouldSwitch = true;
-								break;
-							}
+					} else {
+						if (x.toLowerCase() > y.toLowerCase()) {
+							shouldSwitch = true;
+							break;
 						}
-					} else if (dir == "desc") {
-						var ths = document.getElementById("table_results").getElementsByTagName('th');
-						for (let j = 0; j < ths.length; j++) {
-							ths[j].classList.remove("asc", "desc");
+					}
+				} else if (dir == "desc") {
+					var ths = document.getElementById("table_results").getElementsByTagName('th');
+					for (let j = 0; j < ths.length; j++) {
+						ths[j].classList.remove("asc", "desc");
+					}
+					ths[n].classList.add("desc");
+					if (!isNaN(x) && !isNaN(y)) {
+						if (Number(x) < Number(y)) {
+							shouldSwitch = true;
+							break;
 						}
-						ths[n].classList.add("desc");
-						if (!isNaN(x) && !isNaN(y)) {
-							if (Number(x) < Number(y)) {
-								shouldSwitch = true;
-								break;
-							}
-						} else {
-							if (x.toLowerCase() < y.toLowerCase()) {
-								shouldSwitch = true;
-								break;
-							}
+					} else {
+						if (x.toLowerCase() < y.toLowerCase()) {
+							shouldSwitch = true;
+							break;
 						}
 					}
 				}
-				if (shouldSwitch) {
-					rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+			}
+			if (shouldSwitch) {
+				rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+				switching = true;
+				switchcount ++; 
+			} else {
+				if (switchcount == 0 && dir == "asc") {
+					dir = "desc";
 					switching = true;
-					switchcount ++; 
-				} else {
-					if (switchcount == 0 && dir == "asc") {
-						dir = "desc";
-						switching = true;
-					}
 				}
 			}
 		}
+	}
 
+	function initSort() {
 		result_header = document.querySelectorAll("table th");
 		for (let i = 0; i < result_header.length; i++) {
-			result_header[i].addEventListener("click", function() {
-				sortTable(i);
-			});
+			result_header[i].onclick = function(event) {
+				if (!event.target.classList.contains('grip')) sortTable(i);
+			};
 		}
-		
-		// setup resizing gutter
+	}
+
+	function initGutter() {
 		Array.prototype.forEach.call(document.querySelectorAll("table th"), function(th) {
     		th.style.position = 'relative';
 
 	        var grip = document.createElement('div');
 	        grip.innerHTML = "";
+	        grip.classList.add("grip");
 	        grip.style.top = 0;
 	        grip.style.right = 0;
 	        grip.style.bottom = 0;
 	        grip.style.width = '8px';
-	        grip.style.right='-3px'
+	        grip.style.right = '0px'
+	        grip.style.padding = ' 0 0 0 5px';
 	        grip.style.position = 'absolute';
 	        grip.style.cursor = 'col-resize';
 	        grip.addEventListener('mousedown', function (e) {
@@ -199,12 +188,50 @@ window.onload = function() {
 
         	th.appendChild(grip);	        	
 	    });
+	}
+
+	function previewResults() {
+		for (i = 0; i < selected_fields.length; i++) {
+			var th = document.createElement('th');
+			result_header = document.getElementById("table_header");
+			th.innerHTML = col_names[sql_col.indexOf(selected_fields[i])]; // or selected_fields[i]
+			th.style.width = 'auto';
+			result_header.appendChild(th);
+		}
+
+		// temp. data
+		queryResults = JSON.parse(response);
+		
+		for (let j = 0; j < queryResults.length; j++) {
+			var tr = document.createElement('tr');
+			tr.setAttribute("class", "table_content");
+			for (let i = 0; i < selected_fields.length; i++) {
+				var td = document.createElement('td');			
+				//td.innerHTML = Math.floor(Math.random() * 100); //selected_fields[i]
+				if (queryResults[j][selected_fields[i]]) 
+					td.innerHTML = queryResults[j][selected_fields[i]];
+				tr.appendChild(td);
+			}
+			result_table.appendChild(tr);
+		}
+		
+		result_table.style.width = result_table.offsetWidth + "px";
+		//enable sortable table by column
+		
+		initSort();
+		
+		// setup resizing gutter
+		initGutter();
 
 	    var ths = document.querySelectorAll("table th");
         for (let i = 0; i < ths.length; i++) {
         	ths[i].style.width = ths[i].offsetWidth + 'px';
         	ths[i].style.minWidth = MIN_WIDTH_PX;
         }
+
+        $(document).ready(function() {
+			$('table').jsdragtable();
+		})
 
 	}
 
@@ -215,6 +242,7 @@ window.onload = function() {
 		header.setAttribute("id", "table_header");
 		result_table.appendChild(header);
 		result_table.style.width = 'auto';
+		queryResults = [];
 	}
 
     // enable download as csv
@@ -222,25 +250,12 @@ window.onload = function() {
     	var csvFile;
 	    var downloadLink;
 
-	    // CSV file
 	    csvFile = new Blob([csv], {type: "text/csv"});
-
-	    // Download link
 	    downloadLink = document.createElement("a");
-
-	    // File name
 	    downloadLink.download = filename;
-
-	    // Create a link to the file
 	    downloadLink.href = window.URL.createObjectURL(csvFile);
-
-	    // Hide download link
 	    downloadLink.style.display = "none";
-
-	    // Add the link to DOM
 	    document.body.appendChild(downloadLink);
-
-	    // Click download link
 	    downloadLink.click();
     }
 
@@ -384,8 +399,9 @@ window.onload = function() {
 				dataType: 'json',
 				data: JSON.stringify({selected_fields:selected_fields,selected_tables:selected_tables,selected_conditions:selected_conditions}),
 				contentType: 'application/json',
-				success: function(response) {
+				success: function(resp) {
 					window.alert("POST array successful");
+					queryOutput = resp;
 				},
 				error: function(jqXhr, textStatus, errorThrown) {
 					window.alert(errorThrown);
@@ -417,13 +433,37 @@ window.onload = function() {
 		});
 	}
 
+	// need to come back
+	if (btn_save) {
+		btn_save.addEventListener("click", function() {
+			event.preventDefault();
+			if (selected_fields.length == 0 || selected_tables.length == 0 || selected_conditions[0][1] == "") {
+				window.alert("Query conditions not met");
+			} else {
+				$.ajax({
+					url: "query-profile",
+					type: "POST",
+					dataType: 'JSON',
+					data: JSON.stringify({selected_fields:selected_fields,selected_tables:selected_tables,selected_conditions:selected_conditions}),
+					contentType: 'application/json',
+					success: function(resp) {
+						window.alert("resp");
+					},
+					error: function(jqXhr, textStatus, errorThrown) {
+						window.alert(errorThrown);
+					}
+				});
+			}
+		});
+	}
+
 	// resizeable table column with min with
     document.addEventListener('mousemove', function(e) {
 		if (thElm) {
 			thElm.style.width = startOffset + e.pageX + 'px';
 			if (thElm.offsetWidth < MIN_WIDTH)
 				thElm.style.width = MIN_WIDTH_PX;
-			var ths = document.querySelectorAll("table th"), w = 0;
+			var ths = document.querySelectorAll("table#table_results th"), w = 0;
 	        for (let i = 0; i < ths.length; i++) {
 	        	w += ths[i].offsetWidth;
 	        }
@@ -432,9 +472,192 @@ window.onload = function() {
     });
 
     document.addEventListener('mouseup', function() {
-        if (thElm && (result_table.style.width <= (thElm.style.width + MIN_WIDTH))) 
-        	result_table.style.width = (2*thElm.offsetWidth - result_table.offsetWidth + MIN_WIDTH) + 'px';
         thElm = undefined;
     });
+
+    // draggable table
+    var e;
+    (function (e) {
+	    var JsDragTable = (function () {
+	        function JsDragTable(target) {
+	            this.offsetX = 10;
+	            this.offsetY = 10;
+	            this.container = target;
+	            this.rebind();
+	        }
+	        JsDragTable.prototype.rebind = function () {
+	            var _this = this;
+	            $(this.container).find("th").each(function (headerIndex, header) {
+	                $(header).off("mousedown touchstart");
+	                $(header).off("mouseup touchend");
+	                $(header).on("mousedown touchstart", function (event) {
+	                    _this.selectColumn($(header), event);
+	                });
+	                $(header).on("mouseup touchend", function (event) {
+	                    _this.dropColumn($(header), event);
+	                });
+	                $(header).on("mouseup", function (event) {
+	                    _this.cancelColumn();
+	                });
+	            });
+	            $(this.container).on("mouseup touchend", function () {
+	                _this.cancelColumn();
+	            });
+	        };
+
+	        JsDragTable.prototype.selectColumn = function (header, event) {
+	            var _this = this;
+	            event.preventDefault();
+	            var userEvent = new UserEvent(event);
+	            this.selectedHeader = header;
+	            var sourceIndex = this.selectedHeader.index() + 1;
+	            var cells = [];
+
+	            $(this.container).find("tr td:nth-child(" + sourceIndex + ")").each(function (cellIndex, cell) {
+	                cells[cells.length] = cell;
+	            });
+
+	            this.draggableContainer = $("<div/>");
+	            this.draggableContainer.addClass("jsdragtable-contents");
+	            this.draggableContainer.css({ position: "absolute", left: userEvent.event.pageX + this.offsetX, top: userEvent.event.pageY + this.offsetY });
+
+
+	            var dragtable = this.createDraggableTable(header);
+
+	            $(cells).each(function (cellIndex, cell) {
+	                var tr = $("<tr/>");
+	                var td = $("<td/>");
+	                if ($(cells[cellIndex]).html() == "") {
+	                	$(td).html("&nbsp");
+	                } else {
+	                	$(td).html($(cells[cellIndex]).html());
+	                }
+	                $(tr).append(td);
+	                $(dragtable).find("tbody").append(tr);
+	            });
+				
+	            this.draggableContainer.append(dragtable);
+	            if (!$(event.target).is('div.grip')) {
+	            	setTimeout(function() {
+						$("body").append(_this.draggableContainer);
+	            	}, 300);
+	            }
+	            
+	            $(this.container).on("mousemove touchmove", function (event) {
+	                _this.moveColumn($(header), event);
+	            });
+	            $(".jsdragtable-contents").on("mouseup touchend", function () {
+	                _this.cancelColumn();
+	            });
+	        };
+
+	        JsDragTable.prototype.moveColumn = function (header, event) {
+	            event.preventDefault();
+	            if (this.selectedHeader !== null) {
+	                var userEvent = new UserEvent(event);
+	                this.draggableContainer.css({ left: userEvent.event.pageX + this.offsetX, top: userEvent.event.pageY + this.offsetY });
+	            }
+	        };
+
+	        JsDragTable.prototype.dropColumn = function (header, event) {
+	            var _this = this;
+	            event.preventDefault();
+	            
+	            var sourceIndex = this.selectedHeader.index() + 1;
+	            var targetIndex = $(event.target).index() + 1;
+	            if (event.target.classList.contains('grip')) targetIndex = $(event.target).parent().index() + 1;
+	            var tableColumns = $(this.container).find("th").length;
+
+	            var userEvent = new UserEvent(event);
+	            if (userEvent.isTouchEvent) {
+	                header = $(document.elementFromPoint(userEvent.event.clientX, userEvent.event.clientY));
+	                targetIndex = $(header).prevAll().length + 1;
+	            }
+	            
+	            if (sourceIndex !== targetIndex) {
+	                var cells = [];
+	                $(this.container).find("tr td:nth-child(" + sourceIndex + ")").each(function (cellIndex, cell) {
+	                    cells[cells.length] = cell;
+	                    $(cell).remove();
+	                    $(_this.selectedHeader).remove();
+	                });
+
+	                if (targetIndex >= tableColumns) {
+	                    targetIndex = tableColumns - 1;
+	                    this.insertCells(cells, targetIndex, function (cell, element) {
+	                        $(cell).after(element);
+	                    });
+	                } else {
+	                    this.insertCells(cells, targetIndex, function (cell, element) {
+	                        $(cell).before(element);
+	                    });
+	                }
+
+	                $(this.container).off("mousemove touchmove");
+	                $(".jsdragtable-contents").remove();
+	                this.draggableContainer = null;
+	                this.selectedHeader = null;
+	                this.rebind();
+	            }
+	            initSort();
+
+	        };
+
+	        JsDragTable.prototype.cancelColumn = function () {
+	            $(this.container).off("mousemove touchmove");
+	            $(".jsdragtable-contents").remove();
+	            this.draggableContainer = null;
+	            this.selectedHeader = null;
+	        };
+
+	        JsDragTable.prototype.createDraggableTable = function (header) {
+	            var table = $("<table/>");
+	            var thead = $("<thead/>");
+	            var tbody = $("<tbody/>");
+	            var tr = $("<tr/>");
+	            var th = $("<th/>");
+	            $(table).addClass($(this.container).attr("class"));
+	            $(table).width($(header).width());
+	            $(th).html($(header).html());
+	            $(tr).append(th);
+	            $(thead).append(tr);
+	            $(table).append(thead);
+	            $(table).append(tbody);
+	            return table;
+	        };
+
+	        JsDragTable.prototype.insertCells = function (cells, columnIndex, callback) {
+	            var _this = this;
+	            $(this.container).find("tr td:nth-child(" + columnIndex + ")").each(function (cellIndex, cell) {
+	                callback(cell, $(cells[cellIndex]));
+	            });
+	            $(this.container).find("th:nth-child(" + columnIndex + ")").each(function (cellIndex, cell) {
+	                callback(cell, $(_this.selectedHeader));
+	            });
+	        };
+	        return JsDragTable;
+	    })();
+	    e.JsDragTable = JsDragTable;
+
+	    var UserEvent = (function () {
+	        function UserEvent(event) {
+	            this.event = event;
+	            if (event.originalEvent && event.originalEvent.touches && event.originalEvent.changedTouches) {
+	                this.event = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+	                this.isTouchEvent = true;
+	            }
+	        }
+	        return UserEvent;
+	    })();
+	})(e || (e = {}));
+	jQuery.fn.extend({
+	    jsdragtable: function () {
+	        return new e.JsDragTable(this);
+	    }
+	});
+
+	$(document).ready(function() {
+		$('table').jsdragtable();
+	})
 
 }
