@@ -5,6 +5,7 @@ from mysql.connector import Error
 import string
 
 table_names = []
+previews = []
 
 def sqlToDisplay( str ):
 	str = string.replace(str, "_", " ")
@@ -52,6 +53,28 @@ def connect():
 		cnx.close()
 		cursor.close()
 		print('Connection closed')
+
+def preview(str):
+	try:
+		cnx = mysql.connector.connect(user='root', password='password', host='localhost', database='resultdb')
+		if cnx.is_connected():
+			print('Connected to MySQL database')
+			previews[:] = []
+			cursor = cnx.cursor()
+			cursor.execute("SHOW columns FROM " + str)
+			cols = cursor.fetchall()
+			fields = [i[0] for i in cols]
+			for j in xrange(len(fields)):
+				previews.append(sqlToDisplay(fields[j]))
+
+	except Error as e:
+		print(e)
+
+	finally:
+		cnx.close()
+		cursor.close()
+		print('Connection closed')
+
 
 if __name__ == '__main__':
     connect()
