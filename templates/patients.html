@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Patients</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="/static/css/style.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+  	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script type="text/javascript" src="/static/js/javascript.js"></script>
+	<script type="text/javascript" src="/static/js/preview.js"></script>
+</head>
+
+<body>
+	<h1 style="width: 30vw;position: relative;top: 0;">{% print("Patients Info") %}</h1>
+	
+	<div id="search">
+		<span>Search for patients: </span>
+		<input type="text" name="search">
+		<button class="btn-search" id="search-patients">Search</button>
+	</div>
+	<div class="previewWindow" ng-app="previewApp" ng-controller="previewCtrl">
+		<table id="table_preview" style="{a width a}">
+			<tr id="preview_header">
+				<th ng-repeat="f in fields">{a f a}</th>
+			</tr>
+			<tr class="preview_content" ng-repeat="row in rows track by $index">
+				<td ng-repeat="col in cols">{a row[col] a}</td>
+			</tr>
+		</table>
+		<script type="text/javascript">
+			var fields = {{ list1|tojson }};
+		</script>
+	</div>
+
+</body>
+</html>
