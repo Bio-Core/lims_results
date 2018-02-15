@@ -200,7 +200,7 @@ window.onload = function() {
 		}
 
 		// temp. data
-		queryResults = JSON.parse(response);
+		queryResults = JSON.parse(response); // queryOutput
 		
 		for (let j = 0; j < queryResults.length; j++) {
 			var tr = document.createElement('tr');
@@ -232,7 +232,6 @@ window.onload = function() {
         $(document).ready(function() {
 			$('table').jsdragtable();
 		})
-
 	}
 
 	function resetResults() {
@@ -349,7 +348,6 @@ window.onload = function() {
 			}
 		});
 	}
-		
 
 	if (btn_query) {
 		btn_query.addEventListener("click",function() {
@@ -468,6 +466,9 @@ window.onload = function() {
 			thElm.style.width = startOffset + e.pageX + 'px';
 			if (thElm.offsetWidth < MIN_WIDTH)
 				thElm.style.width = MIN_WIDTH_PX;
+			if (e.target.classList.contains("before")) {
+				$('#table_results th:after').hide();
+			}
 			var ths = document.querySelectorAll("table#table_results th"), w = 0;
 	        for (let i = 0; i < ths.length; i++) {
 	        	w += ths[i].offsetWidth;
@@ -496,10 +497,10 @@ window.onload = function() {
 	                $(header).off("mousedown touchstart");
 	                $(header).off("mouseup touchend");
 	                $(header).on("mousedown touchstart", function (event) {
-	                    _this.selectColumn($(header), event);
+	                    if (!event.target.classList.contains('grip')) _this.selectColumn($(header), event);
 	                });
 	                $(header).on("mouseup touchend", function (event) {
-	                    _this.dropColumn($(header), event);
+	                    if (!event.target.classList.contains('grip')) _this.dropColumn($(header), event);
 	                });
 	                $(header).on("mouseup", function (event) {
 	                    _this.cancelColumn();
@@ -571,53 +572,55 @@ window.onload = function() {
 	                var userEvent = new UserEvent(event);
 	                this.draggableContainer.css({ left: userEvent.event.pageX + this.offsetX, top: userEvent.event.pageY + this.offsetY });
 	                $('#table_header th').removeClass('hovered');
-                	$(event.target).addClass("hovered");
+	                $(event.target).addClass("hovered");
 	            }
 	        };
 
 	        JsDragTable.prototype.dropColumn = function (header, event) {
-	            var _this = this;
-	            event.preventDefault();
-	            
-	            var sourceIndex = this.selectedHeader.index() + 1;
-	            var targetIndex = $(event.target).index() + 1;
-	            if (event.target.classList.contains('grip')) targetIndex = $(event.target).parent().index() + 1;
-	            var tableColumns = $(this.container).find("th").length;
+	        	if (this.selectedHeader != null) {
+	        		var _this = this;
+		            event.preventDefault();
+		            
+		            var sourceIndex = this.selectedHeader.index() + 1;
+		            var targetIndex = $(event.target).index() + 1;
+		            if (event.target.classList.contains('grip')) targetIndex = $(event.target).parent().index() + 1;
+		            var tableColumns = $(this.container).find("th").length;
 
-	            var userEvent = new UserEvent(event);
-	            if (userEvent.isTouchEvent) {
-	                header = $(document.elementFromPoint(userEvent.event.clientX, userEvent.event.clientY));
-	                targetIndex = $(header).prevAll().length + 1;
-	            }
-	            
-	            if (sourceIndex !== targetIndex) {
-	                var cells = [];
-	                $(this.container).find("tr td:nth-child(" + sourceIndex + ")").each(function (cellIndex, cell) {
-	                    cells[cells.length] = cell;
-	                    $(cell).remove();
-	                    $(_this.selectedHeader).remove();
-	                });
+		            var userEvent = new UserEvent(event);
+		            if (userEvent.isTouchEvent) {
+		                header = $(document.elementFromPoint(userEvent.event.clientX, userEvent.event.clientY));
+		                targetIndex = $(header).prevAll().length + 1;
+		            }
+		            
+		            if (sourceIndex !== targetIndex) {
+		                var cells = [];
+		                $(this.container).find("tr td:nth-child(" + sourceIndex + ")").each(function (cellIndex, cell) {
+		                    cells[cells.length] = cell;
+		                    $(cell).remove();
+		                    $(_this.selectedHeader).remove();
+		                });
 
-	                if (targetIndex >= tableColumns) {
-	                    targetIndex = tableColumns - 1;
-	                    this.insertCells(cells, targetIndex, function (cell, element) {
-	                        $(cell).after(element);
-	                    });
-	                } else {
-	                    this.insertCells(cells, targetIndex, function (cell, element) {
-	                        $(cell).before(element);
-	                    });
-	                }
+		                if (targetIndex >= tableColumns) {
+		                    targetIndex = tableColumns - 1;
+		                    this.insertCells(cells, targetIndex, function (cell, element) {
+		                        $(cell).after(element);
+		                    });
+		                } else {
+		                    this.insertCells(cells, targetIndex, function (cell, element) {
+		                        $(cell).before(element);
+		                    });
+		                }
 
-	                $(this.container).off("mousemove touchmove");
-	                $(".jsdragtable-contents").remove();
-	                $('#table_header th').removeClass('hovered after before');
-	                this.draggableContainer = null;
-	                this.selectedHeader = null;
-	                this.rebind();
-	            }
-	            initSort();
-
+		                $(this.container).off("mousemove touchmove");
+		                $(".jsdragtable-contents").remove();
+		                $('#table_header th').removeClass('hovered after before');
+		                this.draggableContainer = null;
+		                this.selectedHeader = null;
+		                this.rebind();
+		            }
+		            initSort();
+	        	}
+		            
 	        };
 
 	        JsDragTable.prototype.cancelColumn = function () {
