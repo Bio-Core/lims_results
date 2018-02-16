@@ -23,7 +23,7 @@ def login():
 @app.route('/edit')
 def edit():
     return render_template('edit.html')
-
+'''
 @app.route('/patients')
 def patients():
 #    mysql_connector.preview('patients')
@@ -37,7 +37,7 @@ def samples():
 #    preview = mysql_connector.previews
 #    return render_template('samples.html', list1=preview)
     return render_template('samples.html')
-'''
+
 @app.route('/query-profile')
 def profile():
     return render_template('saveQuery.php')
