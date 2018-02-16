@@ -66,6 +66,9 @@
 					}
 					tables = tFields.filter(onlyUnique);
 					var j = 0;
+					for (let i = 0; i < fields.length; i++) {
+						fields[i] = sqlToDisplay(fields[i]);
+					}
 					for (i = 0; i < tables.length; i++) {
 						var li = document.createElement('li');
 						var a = document.createElement('a');
