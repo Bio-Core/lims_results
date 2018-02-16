@@ -25,11 +25,16 @@
 				function onlyUnique(value, index, self) { 
 				    return self.indexOf(value) === index;
 				}
-				var tables = {{ list1|tojson }};
+				var tables = [];
 				var tFields = [], fields = [], i;
 				var doc;
+				
+				$.getJSON("127.0.0.1:8000/Jtree/metadata/0.1.0/query", function(data) {
+					tables = data;
+				});
+				
 				for (i = 0; i < tables.length; i++) {
-					var str = tables[i].split(":");
+					var str = tables[i].split(".");
 					tFields.push(str[0]);
 					fields.push(str[1]);
 				}
