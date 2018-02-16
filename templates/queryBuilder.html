@@ -22,6 +22,9 @@
 	<section class="query-container">
 		<section class="fields">
 			<script type="text/javascript">
+				var tables = document.getElementsByClassName("tables");
+				var cols = document.getElementsByClassName("cols");
+				var sql_col = [], table_names = [], col_names = [];
 				function onlyUnique(value, index, self) { 
 				    return self.indexOf(value) === index;
 				}
@@ -29,30 +32,29 @@
 					return str.toLowerCase().split(' ').map(x=>x[0].toUpperCase()+x.slice(1)).join(' ');
 				}
 				function sqlToDisplay(str) {
-					str = str.replace(str, "_", " ")
-					str = str.capwords(str)
-					str = str.replace(str, "P Nomenclature", "P.nomenclature")
-					str = str.replace(str, "C Nomenclature", "C.nomenclature")
-					str = str.replace(str, "Mrn", "MRN")
-					str = str.replace(str, "Dob", "DOB")
-					str = str.replace(str, "Id", "ID")
-					str = str.replace(str, "Dna", "DNA")
-					str = str.replace(str, "Pcr", "PCR")
-					str = str.replace(str, "Mlpa", "MLPA")
-					str = str.replace(str, "Se ", "SE ")
-					str = str.replace(str, "Rna", "RNA")
-					str = str.replace(str, "On", "ON")
-					str = str.replace(str, "Hcn", "HCN")
-					str = str.replace(str, "Vaf", "VAF")
-					str = str.replace(str, "Panel Assay", "Panel/Assay")
-					str = str.replace(str, "Wbc", "WBC")
-					str = str.replace(str, "Pb Bm", "PB/BM")
-					str = str.replace(str, "Cf", "cf")
-					str = str.replace(str, "Uhn", "UHN")
+					str = str.split('_').join(' ');
+					str = capwords(str);
+					str = str.replace("P Nomenclature", "P.nomenclature");
+					str = str.replace("C Nomenclature", "C.nomenclature");
+					str = str.replace("Mrn", "MRN");
+					str = str.replace("Dob", "DOB");
+					str = str.replace("Id", "ID");
+					str = str.replace("Dna", "DNA");
+					str = str.replace("Pcr", "PCR");
+					str = str.replace("Mlpa", "MLPA");
+					str = str.replace("Se ", "SE ");
+					str = str.replace("Rna", "RNA");
+					str = str.replace("On", "ON");
+					str = str.replace("Hcn", "HCN");
+					str = str.replace("Vaf", "VAF");
+					str = str.replace("Panel Assay", "Panel/Assay");
+					str = str.replace("Wbc", "WBC");
+					str = str.replace("Pb Bm", "PB/BM");
+					str = str.replace("Cf", "cf");
+					str = str.replace("Uhn", "UHN");
 
 					return str;
 				}
-				
 				var tables = [];
 				var tFields = [], fields = [], i;
 				var doc;
@@ -62,7 +64,7 @@
 					for (i = 0; i < tables.length; i++) {
 						var str = tables[i].split(".");
 						tFields.push(str[0]);
-						fields.push(str[1]);
+						fields.push(sqlToDisplay(str[1]));
 					}
 					tables = tFields.filter(onlyUnique);
 					var j = 0;
@@ -84,6 +86,39 @@
 							j++;
 						}
 						$(".fields").append(ul);
+					}
+					var tables = document.getElementsByClassName("tables");
+					var cols = document.getElementsByClassName("cols");
+					var resultsList = document.getElementById("results-datalist");
+					for (i = 0; i < tables.length; i++) {
+						table_names.push(tables[i].childNodes[0].innerHTML);
+						table_names[i] = table_names[i].substr(0, table_names[i].length - 7).replace(/ /g, '\_').toLowerCase();
+						tables[i].setAttribute("id", table_names[i]);
+						$("#" + table_names[i]).next().children().attr("id", table_names[i]);
+					}
+
+					// Autocomplete with existing cols
+					if (resultsList) {
+						for (i = 0; i < cols.length; i++) {
+							col_names.push(cols[i].innerHTML);
+							var option = document.createElement('option');
+							sql_col[i] = cols[i].parentElement.id + "." + col_names[i].toLowerCase().replace(/ /g, '\_').replace('\.', '\_').replace('\/', '\_');
+							option.value = sql_col[i];
+							resultsList.appendChild(option);
+						}
+					}
+					// Collapse columns at table level
+					for (i = 0; i < tables.length; i++) {
+						tables[i].addEventListener("click", function() {
+							this.classList.toggle("collapse");
+						});
+					}
+					// Toggle selected cols
+					for (i = 0; i < cols.length; i++) {
+						cols[i].addEventListener("click",function() {
+							this.classList.toggle("selected");
+							
+						});
 					}
 				});
 			</script>

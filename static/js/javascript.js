@@ -12,7 +12,7 @@ window.onload = function() {
 	var result_table = document.getElementById("table_results");
 	var result_header;
 	var result_content = document.getElementsByClassName("table_content");
-	var sql_col = [], table_names = [], col_names = [];
+	// var sql_col = [], table_names = [], col_names = [];
 	var selected_fields = [], selected_tables = [], selected_conditions = [];
 	var queryResults = [], response = '[{ "patients.dob": "2018-02-05","patients.first_name": "Mitchell2","patients.gender": "male","patients.initials": "PE","patients.mrn": "test","patients.patient_id": "1","patients.sample_id": "1","samples.facility": "test","samples.sample_id": "1","samples.se_num": "1","samples.volume_of_blood_marrow": 12.3},{"patients.dob": "2018-02-05","patients.first_name": "Jane","patients.gender": "f","patients.initials": "A","patients.last_name": "Doe","patients.patient_id": "2","patients.sample_id": "2","samples.facility": "test","samples.sample_id": "2","samples.se_num": "34","samples.tumor_site": "tumor","samples.volume_of_blood_marrow": 1554.9},{"patients.dob": "2018-02-05","patients.first_name": "Jane","patients.gender": "f","patients.initials": "A","patients.last_name": "Doe","patients.patient_id": "2","patients.sample_id": "2","samples.sample_id": "2","samples.se_num": "s"}]';
 	var controls, inputs, selects;
@@ -38,25 +38,6 @@ window.onload = function() {
     function sortTable(n) {}
 
 	j = 0;
-	for (i = 0; i < tables.length; i++) {
-		table_names.push(tables[i].childNodes[0].innerHTML);
-		table_names[i] = table_names[i].substr(0, table_names[i].length - 7).replace(/ /g, '\_').toLowerCase();
-		tables[i].setAttribute("id", table_names[i]);
-		$("#" + table_names[i]).next().children().attr("id", table_names[i]);
-	}
-
-	// Autocomplete with existing cols
-	if (resultsList) {
-		for (i = 0; i < cols.length; i++) {
-			col_names.push(cols[i].innerHTML);
-			var option = document.createElement('option');
-			sql_col[i] = cols[i].parentElement.id + "." + col_names[i].toLowerCase().replace(/ /g, '\_').replace('\.', '\_').replace('\/', '\_');
-			option.value = sql_col[i];
-			resultsList.appendChild(option);
-		}
-	}
-
-	// Autocomplete query operators
 	if (operatorList) {
 		for (i = 0; i < operators.length; i++) {
 			var option = document.createElement('option');
@@ -200,7 +181,7 @@ window.onload = function() {
 		}
 
 		// temp. data
-		queryResults = JSON.parse(queryOutput); // response
+		queryResults = queryOutput; // response
 		
 		for (let j = 0; j < queryResults.length; j++) {
 			var tr = document.createElement('tr');
@@ -333,8 +314,12 @@ window.onload = function() {
 
 	// generate query and results table
 	function postQuery() {
+		var proxy = 'https://cors-anywhere.herokuapp.com/';
 		$.ajax({
 			url: "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query",
+			headers: {
+				"Access-Control-Allow-Origin":"*"
+			},
 			type: "POST",
 			dataType: 'json',
 			data: JSON.stringify({selected_fields:selected_fields,selected_tables:selected_tables,selected_conditions:selected_conditions}),
@@ -342,6 +327,7 @@ window.onload = function() {
 			success: function(resp) {
 				window.alert("POST array successful");
 				queryOutput = resp;
+				
 				output.innerHTML = "SELECT " + printFields() + " FROM " + printTables() + " WHERE (" + printConditions() + ")";
 				resetResults();
 				previewResults();
@@ -412,6 +398,20 @@ window.onload = function() {
 				}
 			}
 			postQuery();
+			$.each($(".selected"), function(ind, val) {
+				var str = this.parentElement.id + "." + this.innerHTML.toLowerCase().replace(/ /g, '\_').replace('\.', '\_').replace('\/', '\_');
+				if (this.classList.contains('selected')) {
+					selected_fields.push(str);
+					if (selected_tables.indexOf(this.parentElement.id) == -1) selected_tables.push(this.parentElement.id);
+				} else {
+					if (selected_fields.indexOf(str) > -1)
+						selected_fields.splice(selected_fields.indexOf(str), 1);
+					for (j = 0; j < selected_tables.length; j++) {
+						if (!selected_fields.some(str => str.startsWith(selected_tables[j])))
+							selected_tables.splice(j,1);
+					}
+				}
+			}
 		});
 	}
 
