@@ -25,6 +25,34 @@
 				function onlyUnique(value, index, self) { 
 				    return self.indexOf(value) === index;
 				}
+				function capwords(str) {
+					return str.toLowerCase().split(' ').map(x=>x[0].toUpperCase()+x.slice(1)).join(' ');
+				}
+				function sqlToDisplay(str) {
+					str = str.replace(str, "_", " ")
+					str = str.capwords(str)
+					str = str.replace(str, "P Nomenclature", "P.nomenclature")
+					str = str.replace(str, "C Nomenclature", "C.nomenclature")
+					str = str.replace(str, "Mrn", "MRN")
+					str = str.replace(str, "Dob", "DOB")
+					str = str.replace(str, "Id", "ID")
+					str = str.replace(str, "Dna", "DNA")
+					str = str.replace(str, "Pcr", "PCR")
+					str = str.replace(str, "Mlpa", "MLPA")
+					str = str.replace(str, "Se ", "SE ")
+					str = str.replace(str, "Rna", "RNA")
+					str = str.replace(str, "On", "ON")
+					str = str.replace(str, "Hcn", "HCN")
+					str = str.replace(str, "Vaf", "VAF")
+					str = str.replace(str, "Panel Assay", "Panel/Assay")
+					str = str.replace(str, "Wbc", "WBC")
+					str = str.replace(str, "Pb Bm", "PB/BM")
+					str = str.replace(str, "Cf", "cf")
+					str = str.replace(str, "Uhn", "UHN")
+
+					return str;
+				}
+				
 				var tables = [];
 				var tFields = [], fields = [], i;
 				var doc;
