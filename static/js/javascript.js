@@ -334,7 +334,7 @@ window.onload = function() {
 	// generate query and results table
 	function postQuery() {
 		$.ajax({
-			url: "127.0.0.1:8000/Jtree/metadata/0.1.0/query",
+			url: "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query",
 			type: "POST",
 			dataType: 'json',
 			data: JSON.stringify({selected_fields:selected_fields,selected_tables:selected_tables,selected_conditions:selected_conditions}),

@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 # IP of container-running host and container's internal flask app host (localhost)
 host_ip = 'clarity.uhnresearch.ca' #'192.168.2.10' #'142.1.33.237'
-container_app_host = '0.0.0.0'
+container_app_host = ''
 
 container_results_port = 8003
 
@@ -43,5 +43,5 @@ def profile():
     return render_template('saveQuery.php')
 '''
 if __name__ == '__main__':
-    app.run(debug=True, port=container_results_port)
+    app.run(debug=True, host=container_app_host, port=container_results_port)
     # host=container_app_host
