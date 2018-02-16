@@ -342,6 +342,9 @@ window.onload = function() {
 			success: function(resp) {
 				window.alert("POST array successful");
 				queryOutput = resp;
+				output.innerHTML = "SELECT " + printFields() + " FROM " + printTables() + " WHERE (" + printConditions() + ")";
+				resetResults();
+				previewResults();
 			},
 			error: function(jqXhr, textStatus, errorThrown) {
 				window.alert(errorThrown);
@@ -409,10 +412,6 @@ window.onload = function() {
 				}
 			}
 			postQuery();
-			
-			output.innerHTML = "SELECT " + printFields() + " FROM " + printTables() + " WHERE (" + printConditions() + ")";
-			resetResults();
-			previewResults();
 		});
 	}
 
