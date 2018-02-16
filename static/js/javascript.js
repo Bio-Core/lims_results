@@ -411,7 +411,7 @@ window.onload = function() {
 							selected_tables.splice(j,1);
 					}
 				}
-			}
+			});
 		});
 	}
 
