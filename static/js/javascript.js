@@ -200,7 +200,7 @@ window.onload = function() {
 		}
 
 		// temp. data
-		queryResults = JSON.parse(response); // queryOutput
+		queryResults = JSON.parse(queryOutput); // response
 		
 		for (let j = 0; j < queryResults.length; j++) {
 			var tr = document.createElement('tr');
@@ -334,7 +334,7 @@ window.onload = function() {
 	// generate query and results table
 	function postQuery() {
 		$.ajax({
-			url: "test.php",
+			url: "127.0.0.1:8000/Jtree/metadata/0.1.0/query",
 			type: "POST",
 			dataType: 'json',
 			data: JSON.stringify({selected_fields:selected_fields,selected_tables:selected_tables,selected_conditions:selected_conditions}),
