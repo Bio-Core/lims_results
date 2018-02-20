@@ -340,7 +340,7 @@ window.onload = function() {
 
 	if (btn_query) {
 		btn_query.addEventListener("click",function() {
-			selected_conditions = [];
+			selected_conditions = [], selected_fields = [], selected_tables = [];
 			controls = document.getElementsByClassName("control-condition");
 			inputs = document.querySelectorAll('input');
 			selects = document.querySelectorAll('select');
@@ -397,7 +397,6 @@ window.onload = function() {
 						break;
 				}
 			}
-			postQuery();
 			$.each($(".selected"), function(ind, val) {
 				var str = this.parentElement.id + "." + this.innerHTML.toLowerCase().replace(/ /g, '\_').replace('\.', '\_').replace('\/', '\_');
 				if (this.classList.contains('selected')) {
@@ -412,6 +411,7 @@ window.onload = function() {
 					}
 				}
 			});
+			postQuery();
 		});
 	}
 
