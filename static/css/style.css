@@ -56,6 +56,10 @@ a:before {
 	display: none;
 }
 
+.grip {
+	user-select: none;
+}
+
 .query-container {
 	width: 100%;
 	height: 90vh;
@@ -152,37 +156,27 @@ th.desc:after {
 }
 
 th.hovered.before:before {
-	background-image: url('../imgs/sort.png');
-	background-repeat: no-repeat;
-	background-position-x: 0px;
-	background-position-y: -7px;
-	background-size: cover;
+	background-image: linear-gradient(to left, yellow, white);
 	display: block;
 	content: "";
-	width: 12px;
-	height: 6px;
-	opacity: 1;
+	width: 5px;
+	height: 100%;
+	opacity: 0.8;
 	position: absolute;
 	top: 0;
 	left: 0;
-	transform: translateX(-50%);
 }
 
 th.hovered.after:before {
-	background-image: url('../imgs/sort.png');
-	background-repeat: no-repeat;
-	background-position-x: 0px;
-	background-position-y: -7px;
-	background-size: cover;
+	background-image: linear-gradient(to right, yellow, white);
 	display: block;
 	content: "";
-	width: 12px;
-	height: 6px;
-	opacity: 1;
+	width: 5px;
+	height: 100%;
+	opacity: 0.8;
 	position: absolute;
 	top: 0;
 	right: 0;
-	transform: translateX(50%);
 }
 
 .jsdragtable-contents {
@@ -301,7 +295,7 @@ a.selected:before {
 #table_results tr:first-child,
 #table_preview tr:first-child,
 .jsdragtable-contents thead tr {
-	background-color: #ccc;
+	background: linear-gradient(#fff, #ddddff);
 }
 
 div.jsdragtable-contents {
@@ -311,4 +305,5 @@ div.jsdragtable-contents {
 .previewWindow {
 	overflow: auto;
 }
+
 
