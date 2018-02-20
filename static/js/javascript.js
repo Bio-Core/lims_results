@@ -325,7 +325,7 @@ window.onload = function() {
 			data: JSON.stringify({selected_fields:selected_fields,selected_tables:selected_tables,selected_conditions:selected_conditions}),
 			contentType: 'application/json',
 			success: function(resp) {
-				window.alert("POST array successful");
+				//window.alert("POST array successful");
 				queryOutput = resp;
 				
 				output.innerHTML = "SELECT " + printFields() + " FROM " + printTables() + " WHERE (" + printConditions() + ")";
