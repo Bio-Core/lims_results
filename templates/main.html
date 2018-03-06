@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Main</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="/static/css/style.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+  	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script type="text/javascript" src="/static/js/previewAll.js"></script>
+</head>
+
+<body>
+	<div class="main-repeat" ng-app="previewMain" ng-controller="mainCtrl">
+		<div ng-repeat="t in tables track by $index" class="{a t a}" ng-init="table=$index">
+			<div id="search">
+				<span>Search for {a tables[table] a}: </span>
+				<input type="text" name="search">
+				<button class="btn-search" ng-click="search(table)">Search</button>
+			</div>
+			<div class="previewWindow">
+				<table id="table_preview">
+					<tr id="preview_header">
+						<th ng-repeat="x in cols track by $index" class="{a tFields[$index] a}" ng-if="tFields[$index] == tables[table].toLowerCase().split(' ').join('')">{a x a}</th>
+					</tr>
+					<tr class="preview_content" ng-repeat="row in results[$index] | limitTo:previewSize">
+						<td ng-repeat="col in cols track by $index" ng-if="tFields[$index] == tables[table].toLowerCase().split(' ').join('')">{a row[col] a}</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
