@@ -7,148 +7,72 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
   	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-	<script type="text/javascript" src="/static/js/javascript.js"></script>
+	<script type="text/javascript" src="/static/js/query.js"></script>
 </head>
 <body>
-
+<div ng-app="queryApp" ng-controller="queryCtrl" ng-init="load()">
 	<h1 style="width: 30vw;position: fixed;top: 0;">{% print("Query Builder") %}</h1>
 	<p id="output" style="width:fit-content;max-width:75vw;position:relative;left:20vw;height:5vh;"></p>
-	<button id="btn-all" style="position: relative;">All Fields</button>
-	<button id="btn-output" style="position: relative;">Query</button>
-	<button id="btn-clear" style="position: relative;">Clear</button>
-	<button id="btn-csv" style="position: relative;">Download as .csv</button>
-	<!--<button id="btn-save" style="position: relative;">Save Query</button>-->
+	<button id="btn-all" style="position: relative;" ng-click="all()">All Fields</button>
+	<button id="btn-output" style="position: relative;" ng-click="query()">Query</button>
+	<button id="btn-clear" style="position: relative;" ng-click="clear()">Clear</button>
+	<button id="btn-csv" style="position: relative;" ng-click="csv()">Download as .csv</button>
+	<!-- <button id="btn-save" style="position: relative;" ng-click="save($http)">Save Query</button> -->
 
 	<section class="query-container">
 		<section class="fields">
-			<script type="text/javascript">
-				var tables = document.getElementsByClassName("tables");
-				var cols = document.getElementsByClassName("cols");
-				var sql_col = [], table_names = [], col_names = [];
-				function onlyUnique(value, index, self) { 
-				    return self.indexOf(value) === index;
-				}
-				function capwords(str) {
-					return str.toLowerCase().split(' ').map(x=>x[0].toUpperCase()+x.slice(1)).join(' ');
-				}
-				function sqlToDisplay(str) {
-					str = str.split('_').join(' ');
-					str = capwords(str);
-					str = str.replace("P Nomenclature", "P.nomenclature");
-					str = str.replace("C Nomenclature", "C.nomenclature");
-					str = str.replace("Mrn", "MRN");
-					str = str.replace("Dob", "DOB");
-					str = str.replace("Id", "ID");
-					str = str.replace("Dna", "DNA");
-					str = str.replace("Pcr", "PCR");
-					str = str.replace("Mlpa", "MLPA");
-					str = str.replace("Se ", "SE ");
-					str = str.replace("Rna", "RNA");
-					str = str.replace("On", "ON");
-					str = str.replace("Hcn", "HCN");
-					str = str.replace("Vaf", "VAF");
-					str = str.replace("Panel Assay", "Panel/Assay");
-					str = str.replace("Wbc", "WBC");
-					str = str.replace("Pb Bm", "PB/BM");
-					str = str.replace("Cf", "cf");
-					str = str.replace("Uhn", "UHN");
-
-					return str;
-				}
-				var tables = [];
-				var tFields = [], fields = [], i;
-				var doc;
-				
-				$.getJSON("http://172.27.164.207:8000/Jtree/metadata/0.1.0/columns", function(data) {
-					tables = data;
-					for (i = 0; i < tables.length; i++) {
-						var str = tables[i].split(".");
-						tFields.push(str[0]);
-						fields.push(sqlToDisplay(str[1]));
-					}
-					tables = tFields.filter(onlyUnique);
-					var j = 0;
-					for (let i = 0; i < fields.length; i++) {
-						fields[i] = sqlToDisplay(fields[i]);
-					}
-					for (i = 0; i < tables.length; i++) {
-						var li = document.createElement('li');
-						var a = document.createElement('a');
-						a.innerHTML = tables[i].charAt(0).toUpperCase() + tables[i].slice(1) + " Fields";
-						li.setAttribute("class", "tables");
-						li.appendChild(a);
-						$(".fields").append(li);
-						var ul = document.createElement('ul');
-						while (tFields[j] == tables[i]) {
-							var li = document.createElement('li');
-							var a = document.createElement('a');
-							a.setAttribute("class", "cols");
-							a.innerHTML = fields[j];
-							li.appendChild(a);
-							ul.appendChild(li);
-							j++;
-						}
-						$(".fields").append(ul);
-					}
-					var tables = document.getElementsByClassName("tables");
-					var cols = document.getElementsByClassName("cols");
-					var resultsList = document.getElementById("results-datalist");
-					for (i = 0; i < tables.length; i++) {
-						table_names.push(tables[i].childNodes[0].innerHTML);
-						table_names[i] = table_names[i].substr(0, table_names[i].length - 7).replace(/ /g, '\_').toLowerCase();
-						tables[i].setAttribute("id", table_names[i]);
-						$("#" + table_names[i]).next().children().attr("id", table_names[i]);
-					}
-
-					// Autocomplete with existing cols
-					if (resultsList) {
-						for (i = 0; i < cols.length; i++) {
-							col_names.push(cols[i].innerHTML);
-							var option = document.createElement('option');
-							sql_col[i] = cols[i].parentElement.id + "." + col_names[i].toLowerCase().replace(/ /g, '\_').replace('\.', '\_').replace('\/', '\_');
-							option.value = sql_col[i];
-							resultsList.appendChild(option);
-						}
-					}
-					// Collapse columns at table level
-					for (i = 0; i < tables.length; i++) {
-						tables[i].addEventListener("click", function() {
-							this.classList.toggle("collapse");
-						});
-					}
-					// Toggle selected cols
-					for (i = 0; i < cols.length; i++) {
-						cols[i].addEventListener("click",function() {
-							this.classList.toggle("selected");
-							
-						});
-					}
-				});
-			</script>
+			<ul ng-repeat="t in tables track by $index" ng-init="outer=$index"><a class="tables" ng-click="collapse($event)">{a t a} Fields</a>
+				<li ng-repeat="c in cols track by $index" ng-init="inner=$index" ng-if="tFields[$index] == tables[outer].toLowerCase().split(' ').join('')"><a class="cols" ng-click="selected($event, inner)">{a c a}</a></li>
+			</ul>
 		</section>
 
 		<section class="controls">
-			<article class="control-condition" id="control-0">
+			<article class="control-condition" ng-repeat="con in selected_conditions track by $index" id="control-{a $index a}" ng-init="ctrl=$index">
 				<label>Field: </label>
-				<select id="control-logic">
+				<select id="control-logic" style="width:50px" ng-model="con.conn">
 					<option>AND</option>
 					<option>OR</option>
 				</select>
-				<input id="control-field" list="results-datalist">
-				<datalist id="results-datalist"></datalist>
-				<select id="operator-option"></select>
-				<input id="control-input">
-				<button class="btn-add">Add</button>
-				<button class="btn-delete">Delete</button>
+				<input id="control-field" list="results-datalist" ng-model="con.field" ng-change="changeOption(ctrl)"/>
+				<datalist id="results-datalist">
+					<option ng-repeat="o in options">{a o a}</option>
+				</datalist>
+				<select id="operator-option" ng-model="con.operator">
+					<option ng-repeat="op in operators">{a op a}</option>
+				</select>
+				<input ng-model="con.content" ng-show="con.field.indexOf('date')==-1 && con.field.indexOf('dob')==-1"/>
+				<input ng-model="con.content" datepicker ng-show="con.field.indexOf('date')!=-1 || con.field.indexOf('dob')!=-1"/>
+				<button class="btn-add" ng-click="add()">Add</button>
+				<button class="btn-delete" ng-click="delete(ctrl)">Delete</button>
+				<div id="control-datepicker" ng-click="makeToday(ctrl)" ng-show="con.field.indexOf('date')!=-1 || con.field.indexOf('dob')!=-1"></div>
 			</article>
-			
+
 		</section>
+
 		<div class="results">
 			<table id="table_results">
-				<tr id="table_header"></tr>
+				<tr id="table_header">
+					<th ng-repeat="h in selected_fields track by $index" ng-click="sortBy($event, h.tf);" class="{a h.table a}">{a h.field a}<span class="sortAsc" ng-show="!reverseSort && orderByField==h.tf"></span><span class="sortDesc" ng-show="reverseSort && orderByField==h.tf"></span><div class="grip" ng-mousedown="down($event)"></div></th>
+				</tr>
+			
+				<tr class="table_content" ng-repeat="result in results | orderObjectBy:orderByField:reverseSort" ng-if="$index>=currentPage*pageSize && $index<(currentPage+1)*pageSize" table-style>
+					<td ng-repeat="r in selected_fields">{a result[r.tf] a}</td>
+				</tr>
+				
 			</table>
-
+			
+		</div>
+		<div class="paginateContainer">
+			<a href="" class="paginate" ng-show="currentPage!=0" ng-click="front()"><<</a>
+			<a href="" class="paginate" ng-show="currentPage!=0" ng-click="prev()"><</a>
+			<a href="" class="paginate" ng-class="{'current': $index == currentPage}" ng-repeat="i in getNumberAsArray(numberOfPages()) track by $index" ng-click="setCurrentPage($index)" ng-show="$index>currentPage-5 && $index<currentPage+5">{a $index+1 a}</a>
+			<a href="" class="paginate" ng-show="currentPage<numberOfPages()-1" ng-click="next()">></a>
+			<a href="" class="paginate" ng-show="currentPage<numberOfPages()-1" ng-click="end()">>></a>
+			<select class="paginateSize" ng-model="pageSize" ng-options="x for x in pages"></select>
+			<span>Total: {a results.length a}</span>
 		</div>
 	</section>
+	<div class="loading"></div>
+</div>
 </body>
 </html>
