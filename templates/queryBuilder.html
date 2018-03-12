@@ -10,6 +10,10 @@
 	<script type="text/javascript" src="/static/js/query.js"></script>
 </head>
 <body>
+<div class="nav">
+	
+</div>
+
 <div ng-app="queryApp" ng-controller="queryCtrl" ng-init="load()">
 	<h1 style="width: 30vw;position: fixed;top: 0;">{% print("Query Builder") %}</h1>
 	<p id="output" style="width:fit-content;max-width:75vw;position:relative;left:20vw;height:5vh;"></p>
@@ -22,7 +26,7 @@
 	<section class="query-container">
 		<section class="fields">
 			<ul ng-repeat="t in tables track by $index" ng-init="outer=$index"><a class="tables" ng-click="collapse($event)">{a t a} Fields</a>
-				<li ng-repeat="c in cols track by $index" ng-init="inner=$index" ng-if="tFields[$index] == tables[outer].toLowerCase().split(' ').join('')"><a class="cols" ng-click="selected($event, inner)">{a c a}</a></li>
+				<li ng-repeat="c in cols track by $index" ng-init="inner=$index" ng-if="sameTable(tFields[$index], tables[outer])"><a class="cols" ng-click="selected($event, inner)">{a c a}</a></li>
 			</ul>
 		</section>
 
@@ -40,11 +44,11 @@
 				<select id="operator-option" ng-model="con.operator">
 					<option ng-repeat="op in operators">{a op a}</option>
 				</select>
-				<input ng-model="con.content" ng-show="con.field.indexOf('date')==-1 && con.field.indexOf('dob')==-1"/>
-				<input ng-model="con.content" datepicker ng-show="con.field.indexOf('date')!=-1 || con.field.indexOf('dob')!=-1"/>
+				<input ng-model="con.content" ng-show="!hasDate(con.field)"/>
+				<input ng-model="datepicker" datepicker ng-show="hasDate(con.field)" ng-change="con.content=datepicker"/>
 				<button class="btn-add" ng-click="add()">Add</button>
 				<button class="btn-delete" ng-click="delete(ctrl)">Delete</button>
-				<div id="control-datepicker" ng-click="makeToday(ctrl)" ng-show="con.field.indexOf('date')!=-1 || con.field.indexOf('dob')!=-1"></div>
+				<div id="control-datepicker" ng-click="makeToday(ctrl)" ng-show="hasDate(con.field)"></div>
 			</article>
 
 		</section>
@@ -58,7 +62,7 @@
 				<tr class="table_content" ng-repeat="result in results | orderObjectBy:orderByField:reverseSort" ng-if="$index>=currentPage*pageSize && $index<(currentPage+1)*pageSize" table-style>
 					<td ng-repeat="r in selected_fields">{a result[r.tf] a}</td>
 				</tr>
-				
+				<div class="loading" data-loading></div>
 			</table>
 			
 		</div>
@@ -72,7 +76,7 @@
 			<span>Total: {a results.length a}</span>
 		</div>
 	</section>
-	<div class="loading"></div>
+	
 </div>
 </body>
 </html>
