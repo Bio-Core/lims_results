@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tests</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="/static/css/style.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+  	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script type="text/javascript" src="/static/js/test.js"></script>
+</head>
+
+<body>
+	<div class="patientWindow" ng-app="testApp" ng-controller="testCtrl">
+		<h1 style="width: 30vw;position: relative;top: 0;">{a "Test Info Sample ID - " + id a}</h1>
+
+		<table class="detailView">
+			<h3>Patient Info</h3>
+			<tr ng-repeat="p in patientRow track by $index">
+				<th>{a patients[$index*2] a}</th>
+				<td>{a patient[sql[$index*2]] a}</td>
+				<th>{a patients[$index*2+1] a}</th>
+				<td>{a patient[sql[$index*2+1]] a}</td>
+			</tr>
+		</table>
+
+		<table class="detailView">
+			<h3>Sample Info</h3>
+			<tr ng-repeat="p in sampleRow track by $index">
+				<th>{a samples[$index*2] a}</th>
+				<td>{a sample[sqlSample[$index*2]] a}</td>
+				<th>{a samples[$index*2+1] a}</th>
+				<td>{a sample[sqlSample[$index*2+1]] a}</td>
+			</tr>
+		</table>
+
+		<table class="detailView">
+			<h3>Test Info</h3>
+			<tr ng-repeat="p in testRow track by $index">
+				<th>{a tests[$index*2] a}</th>
+				<td>{a test[sqlTest[$index*2]] a}</td>
+				<th>{a tests[$index*2+1] a}</th>
+				<td>{a test[sqlTest[$index*2+1]] a}</td>
+			</tr>
+		</table>
+
+		<div ng-repeat="t in tables track by $index" ng-init="table=$index">
+			<h3>{a t a}</h3>
+			<table class="table_preview">
+				<tr class="preview_header" class="{a t a}">
+					<th ng-repeat="x in fields track by $index" class="{a tFields[$index] a}" ng-if="sameTable(tFields[$index], tables[table])">{a x a}</th>
+				</tr>
+				<tr class="preview_content" ng-repeat="row in rows track by $index">
+					<td ng-repeat="col in cols track by $index" ng-if="sameTable(pTables[$index], tables[table])">{a row[col] a}</td>
+				</tr>
+
+				<div class="loading" data-loading></div>
+			</table>
+		</div>
+	</div>
+
+</body>
+</html>
