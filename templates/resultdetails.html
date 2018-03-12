@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Result Details</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="/static/css/style.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+  	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script type="text/javascript" src="/static/js/resultdetail.js"></script>
+</head>
+
+<body>
+	<div class="patientWindow" ng-app="resultdetailApp" ng-controller="resultdetailCtrl">
+		<h1 style="width: 30vw;position: relative;top: 0;">{a "Result Detail Info Sample ID - " + id a}</h1>
+		
+		<table class="detailView">
+			<h3>Patient Info</h3>
+			<tr ng-repeat="p in patientRow track by $index">
+				<th>{a patients[$index*2] a}</th>
+				<td>{a patient[sql[$index*2]] a}</td>
+				<th>{a patients[$index*2+1] a}</th>
+				<td>{a patient[sql[$index*2+1]] a}</td>
+			</tr>
+		</table>
+
+		<table class="detailView">
+			<h3>Sample Info</h3>
+			<tr ng-repeat="p in sampleRow track by $index">
+				<th>{a samples[$index*2] a}</th>
+				<td>{a sample[sqlSample[$index*2]] a}</td>
+				<th>{a samples[$index*2+1] a}</th>
+				<td>{a sample[sqlSample[$index*2+1]] a}</td>
+			</tr>
+		</table>
+
+		<table class="detailView">
+			<h3>Test Info</h3>
+			<tr ng-repeat="p in testRow track by $index">
+				<th>{a tests[$index*2] a}</th>
+				<td>{a test[sqlTest[$index*2]] a}</td>
+				<th>{a tests[$index*2+1] a}</th>
+				<td>{a test[sqlTest[$index*2+1]] a}</td>
+			</tr>
+		</table>
+
+		<table class="detailView">
+			<h3>Result Info</h3>
+			<tr ng-repeat="p in resultRow track by $index">
+				<th>{a results[$index*2] a}</th>
+				<td>{a result[sqlResult[$index*2]] a}</td>
+				<th>{a results[$index*2+1] a}</th>
+				<td>{a result[sqlResult[$index*2+1]] a}</td>
+			</tr>
+		</table>
+
+		<table class="detailView">
+			<h3>Result Detail Info</h3>
+			<tr ng-repeat="p in resultdetailRow track by $index">
+				<th>{a resultdetails[$index*2] a}</th>
+				<td>{a resultdetail[sqlResultd[$index*2]] a}</td>
+				<th>{a resultdetails[$index*2+1] a}</th>
+				<td>{a resultdetail[sqlResultd[$index*2+1]] a}</td>
+			</tr>
+		</table>
+	</div>
+
+</body>
+</html>
