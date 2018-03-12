@@ -195,6 +195,7 @@ th.hovered.after:before {
 
 .jsdragtable-contents {
 	background-color: white;
+	width: auto;
 }
 
 .tables.collapse:before {
@@ -205,12 +206,18 @@ th.hovered.after:before {
 	display: none;
 }
 
-.previewWindow {
+.previewWindow,
+.patientWindow {
 	border: 1px solid black;
-	width: 80%;
 	min-height: 100px;
+	margin-top: 20px; 
+	overflow: auto;
+	width: 100%;
+}
+
+.patientWindow {
+	width: 80%;
 	margin-left: 10%;
-	margin-top: 5px; 
 }
 
 #search {
@@ -304,37 +311,37 @@ a.selected:before {
 	height: 1em;
 	width: 1em;
 	content: "";
-	left: -1.5em;
+	left: -8.5em;
 	top: 0.15em;
 }
 
 #table_results tr:nth-child(2n+3),
-#table_preview tr:nth-child(2n+3) {
+.table_preview tr:nth-child(2n+3) {
 	background-color: #ddd;
 }
 
 #table_results th.experiments,
-#table_preview th.experiments {
+.table_preview th.experiments {
 	background: linear-gradient(#fff, #ddddff);
 }
 
 #table_results th.patients,
-#table_preview th.patients {
+.table_preview th.patients {
 	background: linear-gradient(#fff, #ffddff);
 }
 
 #table_results th.samples,
-#table_preview th.samples {
+.table_preview th.samples {
 	background: linear-gradient(#fff, #ddffff);
 }
 
 #table_results th.results,
-#table_preview th.results {
+.table_preview th.results {
 	background: linear-gradient(#fff, #ddffdd);
 }
 
 #table_results th.resultdetails,
-#table_preview th.resultdetails {
+.table_preview th.resultdetails {
 	background: linear-gradient(#fff, #ffffdd);
 }
 
@@ -346,13 +353,8 @@ div.jsdragtable-contents {
 	box-shadow: 2px 2px 2px grey;
 }
 
-.previewWindow {
-	overflow: auto;
-}
-
 .loading {
-    display:    none;
-    position:   fixed;
+    position:   absolute;
     z-index:    1000;
     top:        0;
     left:       0;
@@ -480,4 +482,59 @@ td.ui-datepicker-today {
 
 .ui-datepicker-current-day {
 	background-color: #ffcc00 !important;
+}
+
+.table_preview {
+	width: auto;
+	height: auto;
+	margin-top: 20px;
+	max-height: 150px;
+	overflow: auto;
+	display: block;
+	border: 1px solid black;
+}
+
+.table_preview.previewAll {
+	width: auto;
+	height: 500px;
+	max-height: none;
+	margin-top: 0;
+	border: none;
+}
+
+.table_preview a {
+	text-decoration: none;
+	color: black;
+}
+
+.table_preview a:hover {
+	text-decoration: underline;
+}
+
+.preview_header {
+	width: auto;
+}
+
+.main-repeat {
+	margin-left: 10%;
+	width: 80%;
+}
+
+.detailView {
+	margin-top: 10px;
+	width: 90%;
+	border-right: none;
+}
+
+.detailView th {
+	float: right;
+	padding-right: 20px;
+
+}
+
+.detailView td {
+	width: 30%;
+	height: auto;
+	border-right: none;
+	word-wrap: break-word;
 }
