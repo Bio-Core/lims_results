@@ -20,6 +20,26 @@ def login():
 def edit():
     return render_template('edit.html')
 
+@app.route('/patients')
+def tablePatients():
+    return render_template('table.html', title='Patients')
+
+@app.route('/samples')
+def tableSamples():
+    return render_template('table.html', title='Samples')
+
+@app.route('/experiments')
+def tableTest():
+    return render_template('table.html', title='Experiments')
+
+@app.route('/results')
+def tableResults():
+    return render_template('table.html', title='Results')
+
+@app.route('/resultdetails')
+def tableRD():
+    return render_template('table.html', title='Result Details')
+
 @app.route('/patients/<id>')
 def patients(id):
     return render_template('patients.html')
@@ -39,6 +59,10 @@ def results(id):
 @app.route('/resultdetails/<id>')
 def resultdetails(id):
     return render_template('resultdetails.html')
+
+@app.route('/search/<id>')
+def search(id):
+    return render_template('search.html')
 
 @app.route('/main')
 def main():
