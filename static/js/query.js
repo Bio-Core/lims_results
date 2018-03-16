@@ -1,5 +1,7 @@
 var app = angular.module("queryApp", []);
-var sql_col = [], table_names = [], col_names = [];
+var app2 = angular.module("navApp", []);
+var app3 = angular.module("footerApp", []);
+var sql_col = [], table_names = [], col_names = [], orderedTables = ["Patients","Samples","Experiments","Results","Result Details"];
 var selected_fields = [], selected_tables = [], selected_conditions = [];
 var tables = [];
 var tFields = [], fields = [], tableScope = [], type = [];
@@ -27,8 +29,39 @@ var operators1 = [
 	"Not ends with",
 	"Contains",
 	"Not contains"];
+var commonQuery = {
+	"Common Query 1" : ["experiments.experiment_id","experiments.study_id","experiments.test_date","experiments.priority","patients.first_name","patients.last_name","patients.patient_id","patients.sample_id","resultdetails.pcr","resultdetails.result","resultdetails.results_details_id","resultdetails.results_id","results.mlpa_pcr","results.results_id","results.sample_id","results.uid","samples.sample_id","samples.sample_type","samples.surgical_num","samples.tumor_site","samples.study_id","samples.sample_name","samples.copath_num","samples.other_identifier"],
+	"Common Query 2" : ["experiments.test_date","experiments.pcr","experiments.sample_id","experiments.project_name","experiments.opened_date","experiments.project_id","patients.first_name","patients.last_name","patients.initials","patients.patient_type","patients.surgical_date","resultdetails.coverage","resultdetails.exon","resultdetails.gene","resultdetails.p_nomenclature","resultdetails.uid","results.mean_depth_of_coveage","results.mlpa_pcr","results.results_id","results.sample_id","results.uid","results.verification_pcr","samples.material_received_num","samples.material_received_other","samples.volume_of_blood_marrow","samples.container_type","samples.container_name","samples.container_id","samples.other_identifier","samples.has_sample_files","samples.rna_quality","samples.rna_extraction_date"],
+	"Common Query 3" : ["experiments.experiment_id","experiments.study_id","experiments.test_date","experiments.chip_cartridge_barcode","experiments.project_name","experiments.opened_date","experiments.has_project_files","patients.first_name","patients.last_name","patients.patient_type","patients.patient_id","patients.date_received","patients.referring_physican","patients.date_reported","resultdetails.VAF","resultdetails.coverage","resultdetails.gene","resultdetails.pcr","resultdetails.result","resultdetails.results_id","resultdetails.sample_id","resultdetails.uid","results.failed_regions","results.mutation","results.overall_hotspots_threshold","results.results_id","results.sample_id","samples.sample_id","samples.facility","samples.test_requested","samples.se_num","samples.date_collected","samples.tumor_site","samples.historical_diagnosis","samples.tumor_percnt_of_total","samples.reviewed_by","samples.non_uhn_id","samples.dna_volume","samples.dna_location","samples.rna_volume","samples.plasma_location","samples.sample_size","samples.study_id","samples.sample_name","samples.container_well","samples.copath_num","samples.delta_ct_value","samples.rna_quality","samples.rna_extraction_date"],
+	"Common Query 4 Test" : ["experiments.experiment_id","experiments.study_id","experiments.panel_assay_screened","experiments.test_date","experiments.chip_cartridge_barcode","experiments.complete_date","experiments.pcr","experiments.sample_id","experiments.project_name","experiments.priority","experiments.opened_date","experiments.project_id","experiments.has_project_files","experiments.procedure_order_datetime"],
+	"Common Query 5 Patient" : ["patients.first_name","patients.last_name","patients.initials","patients.patient_type","patients.se_num","patients.patient_id","patients.sample_id","patients.date_received","patients.referring_physican","patients.date_reported","patients.surgical_date"],
+	"Common Query 6 Sample" : ["samples.sample_id","samples.facility","samples.test_requested","samples.se_num","samples.date_collected","samples.date_received","samples.sample_type","samples.material_received","samples.material_received_num","samples.material_received_other","samples.volume_of_blood_marrow","samples.surgical_num","samples.tumor_site","samples.historical_diagnosis","samples.tumor_percnt_of_total","samples.tumor_percnt_of_circled","samples.reviewed_by","samples.h_e_slide_location","samples.non_uhn_id","samples.name_of_requestor","samples.dna_concentration","samples.dna_volume","samples.dna_location","samples.rna_concentration","samples.rna_volume","samples.rna_location","samples.wbc_location","samples.plasma_location","samples.cf_plasma_location","samples.pb_bm_location","samples.rna_lysate_location","samples.sample_size","samples.study_id","samples.sample_name","samples.date_submitted","samples.container_type","samples.container_name","samples.container_id","samples.container_well","samples.copath_num","samples.other_identifier","samples.has_sample_files","samples.dna_sample_barcode","samples.dna_extraction_date","samples.dna_quality","samples.ffpe_qc_date","samples.delta_ct_value","samples.comments","samples.rnase_p_date","samples.dna_quality_by_rnase_p","samples.rna_quality","samples.rna_extraction_date"],
+	"Common Query 7 Results" : ["results.failed_regions","results.mean_depth_of_coveage","results.mlpa_pcr","results.mutation","results.overall_hotspots_threshold","results.overall_quality_threshold","results.results_id","results.sample_id","results.uid","results.verification_pcr"],
+	"Common Query 8 Result Detail" : ["resultdetails.VAF","resultdetails.c_nomenclature","resultdetails.coverage","resultdetails.exon","resultdetails.gene","resultdetails.p_nomenclature","resultdetails.pcr","resultdetails.quality_score","resultdetails.result","resultdetails.results_details_id","resultdetails.results_id","resultdetails.risk_score","resultdetails.sample_id","resultdetails.uid"]
+};
+var commonQueryName = [
+	"Common Query 1",
+	"Common Query 2",
+	"Common Query 3",
+	"Common Query 4 Test",
+	"Common Query 5 Patient",
+	"Common Query 6 Sample",
+	"Common Query 7 Results",
+	"Common Query 8 Result Detail"];
+var queryUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query";
+var colUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/columns";
 
 app.config(['$interpolateProvider', function($interpolateProvider) {
+	$interpolateProvider.startSymbol('{a');
+	$interpolateProvider.endSymbol('a}');
+}]);
+
+app2.config(['$interpolateProvider', function($interpolateProvider) {
+	$interpolateProvider.startSymbol('{a');
+	$interpolateProvider.endSymbol('a}');
+}]);
+
+app3.config(['$interpolateProvider', function($interpolateProvider) {
 	$interpolateProvider.startSymbol('{a');
 	$interpolateProvider.endSymbol('a}');
 }]);
@@ -63,7 +96,6 @@ app.directive('tableStyle', function() {
 				return sum;
 			});
 		}
-
 	}
 });
 
@@ -75,6 +107,7 @@ app.directive("datepicker", function () {
 			var updateModel = function (dateText) {
 				scope.$apply(function () {
 					ngModelCtrl.$setViewValue(dateText);
+					ngModelCtrl.$processModelValue();
 				});
 			};
 			var options = {
@@ -87,6 +120,24 @@ app.directive("datepicker", function () {
 		}
 	}
 });
+
+app.directive('loading', ['$http', function($http) {
+	return {
+		restrict: 'A',
+		link: function(scope, elm, attrs) {
+			scope.isLoading = function() {
+				return $http.pendingRequests.length > 0;
+			};
+			scope.$watch(scope.isLoading, function(v) {
+				if (v) {
+					elm.show();
+				} else {
+					elm.hide();
+				}
+			});
+		}
+	}
+}]);
 
 function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
@@ -105,6 +156,7 @@ function sqlToDisplay(input) {
 	str = str.replace("Mrn", "MRN");
 	str = str.replace("Dob", "DOB");
 	str = str.replace("Id", "ID");
+	str = str.replace("IDe", "Ide");
 	str = str.replace("Dna ", "DNA ");
 	str = str.replace("Pcr", "PCR");
 	str = str.replace("Mlpa", "MLPA");
@@ -148,7 +200,18 @@ app.controller("queryCtrl", function($scope, $http) {
 	var default_condition = {conn:"AND", field:"", operator:operators[0], content:""};
 	var init_condition1 = {conn:"AND", field:"samples.date_collected", operator:operators[4], content:""};
 	var init_condition2 = {conn:"AND", field:"samples.date_collected", operator:operators[5], content:""};
-	$scope.selected_conditions = [angular.copy(init_condition1), angular.copy(init_condition2)];
+	//$scope.selected_conditions = [angular.copy(init_condition1), angular.copy(init_condition2)];
+	$scope.selected_conditions = [angular.copy(default_condition)];
+	$scope.commonQuery = commonQuery;
+	$scope.commonQueryName = commonQueryName;
+
+	$scope.hasDate = function(str) {
+		return (str.indexOf('date')!=-1 || str.indexOf('dob')!=-1);
+	}
+
+	$scope.sameTable = function(ft, t) {
+		return (ft == t.toLowerCase().split(' ').join(''))
+	}
 
 	// ng-init=load()  ===   window.onload 
 	$scope.load = function() {
@@ -352,7 +415,7 @@ app.controller("queryCtrl", function($scope, $http) {
 
 	}
 
-	$http.get("http://172.27.164.207:8000/Jtree/metadata/0.1.0/columns")
+	$http.get(colUrl)
 	.then(function(data) {
 		var input = data.data;
 		for (let i = 0; i < input.length; i++) {
@@ -392,6 +455,34 @@ app.controller("queryCtrl", function($scope, $http) {
 			}
 
 		}
+
+		$scope.preset = function() {
+			var prefill = commonQuery[angular.copy($scope.presetQuery)];
+
+			selected_fields = prefill;
+			var c = document.getElementsByClassName("cols");
+			for (i = 0; i < c.length; i++) {
+				if (c[i].classList.contains('selected')) {
+					c[i].classList.toggle("selected");
+				}
+			}
+			queryResults = [];
+			selected_tables = [];
+			$scope.selected_fields = [];
+			$scope.results = [];
+
+			for (let i = 0; i < selected_fields.length; i++) {
+				var str = selected_fields[i].split('.');
+				selected_tables.push(str[0]);
+				var index = response[0].indexOf(selected_fields[i]);
+				$scope.selected_fields.push({tf:response[0][index], table:response[1][index], field:response[2][index]});
+				var col = document.getElementsByClassName("cols")[index];
+				if (!col.classList.contains("selected")) col.classList.add("selected");
+			}
+			selected_tables = selected_tables.filter(onlyUnique);
+
+		}
+
 		$scope.options = angular.copy(tables);
 		$scope.operators = angular.copy(operators);
 		$scope.operators1 = angular.copy(operators1);
@@ -407,14 +498,14 @@ app.controller("queryCtrl", function($scope, $http) {
 		}
 		$scope.csv = function() {
 			// prepare for csv download
-			var csv = [];
-			var rows = document.querySelectorAll("table tr");
+			var csv = [selected_fields.join(",")];
+			var rows = $scope.results;
 
 			for (var i = 0; i < rows.length; i++) {
-			    var row = [], col = rows[i].querySelectorAll("td, th");
+			    var row = [], col = rows[i];
 			    
-			    for (var j = 0; j < col.length; j++) 
-			        row.push(col[j].innerText);
+			    for (var j = 0; j < selected_fields.length; j++) 
+			        row.push(col[selected_fields[j]]);
 			    
 			    csv.push(row.join(","));        
 			}
@@ -468,14 +559,20 @@ app.controller("queryCtrl", function($scope, $http) {
 			if ($scope.selected_conditions.length == 1 && $scope.selected_conditions[0].field.value == "") window.alert( "Need Conditions!");
 			for (let i = 0; i < $scope.selected_conditions.length; i++) {
 				selected_conditions.push([$scope.selected_conditions[i].conn, $scope.selected_conditions[i].field, $scope.selected_conditions[i].operator, $scope.selected_conditions[i].content]);
+				for (let j = 0; j < selected_tables.length; j++) {
+					if (!selected_conditions[i][1].startsWith(selected_tables[j])) {
+						selected_tables.push(selected_conditions[i][1].split(".")[0]);
+					}
+				}
 			}
+
 			$scope.orderByField = selected_fields[0];
 			$scope.results = [];
-			
+			selected_tables = selected_tables.filter(onlyUnique);
 
 			$http({
 				method : "POST",
-				url : "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query", 
+				url : queryUrl, 
 				data : JSON.stringify({selected_fields:selected_fields,selected_tables:selected_tables,selected_conditions:selected_conditions}),
 				headers : {'Content-Type': 'application/json'}
 			}).then(function(data) {
@@ -490,16 +587,7 @@ app.controller("queryCtrl", function($scope, $http) {
 					thElm = e.currentTarget.parentElement;
 					startOffset = thElm.offsetWidth - e.pageX;
 				}
-				/*
-				Array.prototype.forEach.call(document.querySelectorAll("table th"), function(th, i) {
-					var target = th.getElementsByClassName('grip')[i];
-					target.addEventListener('mousedown', function (e) {
-						thElm = th;
-						startOffset = th.offsetWidth - e.pageX;
-					});
-
-				});
-				*/
+				
 				// resizeable table column with min with
 				document.addEventListener('mousemove', function(e) {
 					if (thElm) {
@@ -514,7 +602,7 @@ app.controller("queryCtrl", function($scope, $http) {
 					
 				});
 
-				$('table').jsdragtable();
+				$('table#table_results').jsdragtable();
 				$('#table_results').css('width', 'auto');
 				if ($('#table_results').innerWidth() > $('.results').innerWidth()) {
 					
@@ -563,3 +651,24 @@ app.controller("queryCtrl", function($scope, $http) {
 	}
 	
 });
+
+app2.controller("navCtrl", function($scope, $window) {
+	
+	$scope.search = function() {
+		if ($scope.searchValue != "") {
+			var landingUrl = "http://" + $window.location.host + "/search/" + $scope.searchValue;
+			$window.open(landingUrl, '_self');
+		}
+	}
+
+});
+
+app3.controller("footerCtrl", function($scope, $window) {
+
+
+});
+
+$(document).ready(function() {
+	angular.bootstrap(document.getElementById("app2"), ['queryApp']);
+	angular.bootstrap(document.getElementById("app3"), ['footerApp']);
+})
