@@ -1,4 +1,6 @@
 var app = angular.module("sampleApp", []);
+var app2 = angular.module("navApp", []);
+var app3 = angular.module("footerApp", []);
 var selected_fields = [], selected_tables = [], selected_conditions = [];
 var tables = [];
 var tFields = [], fields = [], tableScope = [], type = [];
@@ -18,8 +20,33 @@ var operators = [
 	"Not ends with",
 	"Contains",
 	"Not contains"];
+var ids = {"patients" : "patients.mrn",
+	"samples" : "samples.sample_id",
+	"experiments" : "experiments.sample_id",  // experiments.experiment_id
+	"results" : "results.sample_id",  // results.results_id
+	"resultdetails" : "resultdetails.sample_id"};  // resultdetails.results_details_id
+var queryUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query";
+var colUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/columns";
+var patientID = "patients.sample_id"; // patients.mrn
+var sample2patient = "samples.sample_id"; // samples.mrn
+var sampleID = "samples.sample_id";
+var sample2test = "experiments.sample_id"; // experiments.sample_id
+var testID = "experiments.sample_id"; // experiments.experiment_id
+var test2result = "results.sample_id"; // results.experiment_id
+var resultID = "results.sample_id"; // results.results_id
+var result2resultd = "resultdetails.sample_id"; // resultdetails.results_id
 
 app.config(['$interpolateProvider', function($interpolateProvider) {
+	$interpolateProvider.startSymbol('{a');
+	$interpolateProvider.endSymbol('a}');
+}]);
+
+app2.config(['$interpolateProvider', function($interpolateProvider) {
+	$interpolateProvider.startSymbol('{a');
+	$interpolateProvider.endSymbol('a}');
+}]);
+
+app3.config(['$interpolateProvider', function($interpolateProvider) {
 	$interpolateProvider.startSymbol('{a');
 	$interpolateProvider.endSymbol('a}');
 }]);
@@ -58,6 +85,7 @@ function sqlToDisplay(input) {
 	str = str.replace("Mrn", "MRN");
 	str = str.replace("Dob", "DOB");
 	str = str.replace("Id", "ID");
+	str = str.replace("IDe", "Ide");
 	str = str.replace("Dna ", "DNA ");
 	str = str.replace("Pcr", "PCR");
 	str = str.replace("Mlpa", "MLPA");
@@ -81,6 +109,9 @@ function getNumberAsArray(num) {
 
 app.controller("sampleCtrl", function($scope, $http, $location) {
 	var url = $location.absUrl();
+	$scope.ids = ids;
+	$scope.edited = {"patients" : [], "samples" : []};
+	$scope.editRecord = false;
 
 	$scope.sameTable = function(ft, t) {
 		return (ft == t.toLowerCase().split(' ').join(''))
@@ -91,7 +122,11 @@ app.controller("sampleCtrl", function($scope, $http, $location) {
 	$scope.patients = [];
 	$scope.sql = [];
 
-	$http.get("http://172.27.164.207:8000/Jtree/metadata/0.1.0/columns")
+	$scope.cancel = function() {
+		$scope.editRecord = false;
+	}
+
+	$http.get(colUrl)
 	.then(function(data) {
 		var input = data.data;
 		for (let i = 0; i < input.length; i++) {
@@ -130,7 +165,7 @@ app.controller("sampleCtrl", function($scope, $http, $location) {
 		$scope.sqlSample = angular.copy(sqlToScope);
 		
 		$scope.id = angular.copy(id);
-		var query_condition = ["AND", "samples.sample_id", operators[0], angular.copy(id)]; // samples.sample_id
+		var query_condition = ["AND", sampleID, operators[0], angular.copy(id)]; // samples.sample_id = id
 		selected_conditions = [angular.copy(query_condition)];
 		$scope.rows = [];
 		$scope.pTables = [];
@@ -139,7 +174,7 @@ app.controller("sampleCtrl", function($scope, $http, $location) {
 		// POST sample info
 		$http({
 			method : "POST",
-			url : "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query", 
+			url : queryUrl, 
 			data : JSON.stringify({selected_fields:selected_fields,selected_tables:angular.copy(["samples"]),selected_conditions:selected_conditions}),
 			headers : {'Content-Type': 'application/json'}
 		}).then(function(data) {
@@ -147,21 +182,21 @@ app.controller("sampleCtrl", function($scope, $http, $location) {
 			$scope.sample = angular.copy(queryResults);
 			$scope.sampleRow = getNumberAsArray(Math.ceil($scope.samples.length/2));
 			
-			id = $scope.sample["samples.sample_id"]; // patients.sample_id
+			id = $scope.sample[sample2patient]; // samples.mrn
 
 			resetTables();
 			getTableFields("patients");
 			$scope.patients = angular.copy(fieldsToScope);
 			$scope.sql = angular.copy(sqlToScope);
 
-			query_condition = ["AND", "patients.sample_id", operators[0], angular.copy(id)];
+			query_condition = ["AND", patientID, operators[0], angular.copy(id)];  // patients.mrn = samples.mrn
 			selected_conditions = [angular.copy(query_condition)];
 			queryResults = [];
 
 			// POST patient info
 			$http({
 				method : "POST",
-				url : "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query", 
+				url : queryUrl, 
 				data : JSON.stringify({selected_fields:selected_fields,selected_tables:angular.copy(["patients"]),selected_conditions:selected_conditions}),
 				headers : {'Content-Type': 'application/json'}
 			}).then(function(data1) {
@@ -169,7 +204,7 @@ app.controller("sampleCtrl", function($scope, $http, $location) {
 				$scope.patient = angular.copy(queryResults);
 				$scope.patientRow = getNumberAsArray(Math.ceil($scope.patients.length/2));
 
-				id = $scope.sample["samples.sample_id"]; // samples.sample_id
+				id = $scope.sample[sampleID]; // samples.sample_id
 
 				resetTables();
 				getTableFields("experiments");
@@ -178,14 +213,14 @@ app.controller("sampleCtrl", function($scope, $http, $location) {
 				$scope.cols = $scope.cols.concat(sqlToScope);
 
 				// Samples added / find tests
-				query_condition = ["AND", "experiments.sample_id", operators[0], angular.copy(id)];
+				query_condition = ["AND", sample2test, operators[0], angular.copy(id)]; // experiments.sample_id = samples.sample_id
 				selected_conditions = [angular.copy(query_condition)];
 				queryResults = [];
 
 				// POST test info for sample
 				$http({
 					method : "POST",
-					url : "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query", 
+					url : queryUrl, 
 					data : JSON.stringify({selected_fields:selected_fields,selected_tables:angular.copy(["experiments"]),selected_conditions:selected_conditions}),
 					headers : {'Content-Type': 'application/json'}
 				}).then(function(data2) {
@@ -193,7 +228,7 @@ app.controller("sampleCtrl", function($scope, $http, $location) {
 					$scope.rows = $scope.rows.concat(queryResults);
 
 					for (let b = 0; b < queryResults.length; b++) {
-						tests = tests.concat(queryResults[b]["experiments.sample_id"]);
+						tests = tests.concat(queryResults[b][testID]); // experiments.experiment_id
 					}
 
 					resetTables();
@@ -204,14 +239,14 @@ app.controller("sampleCtrl", function($scope, $http, $location) {
 
 					// Tests added / find results
 					for (let b = 0; b < tests.length; b++) {
-						query_condition = ["AND", "results.sample_id", operators[0], angular.copy(tests[b])];
+						query_condition = ["AND", test2result, operators[0], angular.copy(tests[b])]; // results.experiment_id = experiments.experiment_id
 						selected_conditions = [angular.copy(query_condition)];
 						queryResults = [];
 
 						// POST result info for tests[b]
 						$http({
 							method : "POST",
-							url : "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query", 
+							url : queryUrl, 
 							data : JSON.stringify({selected_fields:selected_fields,selected_tables:angular.copy(["results"]),selected_conditions:selected_conditions}),
 							headers : {'Content-Type': 'application/json'}
 						}).then(function(data3) {
@@ -219,7 +254,7 @@ app.controller("sampleCtrl", function($scope, $http, $location) {
 							$scope.rows = $scope.rows.concat(queryResults);
 
 							for (let c = 0; c < queryResults.length; c++) {
-								results = results.concat(queryResults[c]["results.sample_id"]);
+								results = results.concat(queryResults[c][resultID]); // results.results_id
 							}
 
 							resetTables();
@@ -230,19 +265,36 @@ app.controller("sampleCtrl", function($scope, $http, $location) {
 
 							// Results added / find details
 							for (let c = 0; c < results.length; c++) {
-								query_condition = ["AND", "resultdetails.sample_id", operators[0], angular.copy(results[c])];
+								query_condition = ["AND", result2resultd, operators[0], angular.copy(results[c])]; // resultdetails.result_id = results.results_id
 								selected_conditions = [angular.copy(query_condition)];
 								queryResults = [];
 
 								// POST details for results[c]
 								$http({
 									method : "POST",
-									url : "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query", 
+									url : queryUrl, 
 									data : JSON.stringify({selected_fields:selected_fields,selected_tables:angular.copy(["resultdetails"]),selected_conditions:selected_conditions}),
 									headers : {'Content-Type': 'application/json'}
 								}).then(function(data4) {
 									queryResults = data4.data;
 									$scope.rows = $scope.rows.concat(queryResults);
+
+									$scope.edit = function() {
+										// Verify user privilege
+
+										$scope.edited.patients = angular.copy($scope.patient);
+										$scope.edited.samples = angular.copy($scope.sample);
+										$scope.editRecord = true;
+
+									}
+
+									$scope.confirm = function() {
+										if (confirm("Confirm record change?")) {
+											// update database
+
+											$scope.editRecord = false;
+										}
+									}
 									
 								}, function(data4) {
 									window.alert(data.statusText);
@@ -265,4 +317,26 @@ app.controller("sampleCtrl", function($scope, $http, $location) {
 			window.alert(data.statusText);
 		});
 	});
+});
+
+app2.controller("navCtrl", function($scope, $window) {
+	
+	$scope.search = function() {
+		if ($scope.searchValue != "") {
+			var landingUrl = "http://" + $window.location.host + "/search/" + $scope.searchValue;
+			$window.open(landingUrl, '_self');
+
+		}
+	}
+
+});
+
+app3.controller("footerCtrl", function($scope, $window) {
+
+
+});
+
+$(document).ready(function() {
+	angular.bootstrap(document.getElementById("app2"), ['sampleApp']);
+	angular.bootstrap(document.getElementById("app3"), ['footerApp']);
 });
