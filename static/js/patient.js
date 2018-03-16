@@ -185,7 +185,7 @@ app.controller("patientCtrl", function($scope, $http, $location) {
 			$scope.patient = angular.copy(queryResults);
 			$scope.patientRow = getNumberAsArray(Math.ceil(selected_fields.length/2));
 			
-			id = $scope.patient[angular.copy(patientID)]; // patients.mrn
+			id = $scope.patient[angular.copy("patients.sample_id")]; // patients.mrn
 			
 			resetTables();
 			getTableFields("samples");
@@ -193,7 +193,7 @@ app.controller("patientCtrl", function($scope, $http, $location) {
 			$scope.pTables = $scope.pTables.concat(tableToScope);
 			$scope.cols = $scope.cols.concat(sqlToScope);
 
-			query_condition = ["AND", patient2sample, operators[0], angular.copy(id)]; // sample.mrn = patients.mrn
+			query_condition = ["AND",patient2sample, operators[0], angular.copy(id)]; // sample.mrn = patients.mrn
 			selected_conditions = [angular.copy(query_condition)];
 			queryResults = [];
 
