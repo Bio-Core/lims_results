@@ -10,17 +10,30 @@
 	<script type="text/javascript" src="/static/js/query.js"></script>
 </head>
 <body>
-<div class="nav">
+<div class="nav" id="app1" ng-app="navApp" ng-controller="navCtrl">
+	<h1>LIMS Results Database</h1>
+	<input id="submit" value="Search" type="submit" ng-click="search()"/>
+	<input id="search" placeholder="Search..." ng-model="searchValue" />
 	
+	<ul class="homeLink">
+		<li><a href="http://172.27.164.207:8003/main">Overview</a></li>
+		<li><a class="current" href="http://172.27.164.207:8003/query">Query Reports</a></li>
+		<li><a href="http://172.27.164.207:8003/patients">Patients</a></li>
+		<li><a href="http://172.27.164.207:8003/samples">Samples</a></li>
+		<li><a href="http://172.27.164.207:8003/experiments">Tests</a></li>
+		<li><a href="http://172.27.164.207:8003/results">Results</a></li>
+		<li><a href="http://172.27.164.207:8003/resultdetails">Result Details</a></li>
+	</ul>
 </div>
 
-<div ng-app="queryApp" ng-controller="queryCtrl" ng-init="load()">
-	<h1 style="width: 30vw;position: fixed;top: 0;">{% print("Query Builder") %}</h1>
-	<p id="output" style="width:fit-content;max-width:75vw;position:relative;left:20vw;height:5vh;"></p>
+<div id="app2" class="appContainer" ng-app="queryApp" ng-controller="queryCtrl" ng-init="load()">
 	<button id="btn-all" style="position: relative;" ng-click="all()">All Fields</button>
 	<button id="btn-output" style="position: relative;" ng-click="query()">Query</button>
 	<button id="btn-clear" style="position: relative;" ng-click="clear()">Clear</button>
 	<button id="btn-csv" style="position: relative;" ng-click="csv()">Download as .csv</button>
+	<span>Common Queries: </span>
+	<select ng-model="presetQuery"><option ng-repeat="q in commonQueryName">{a q a}</option></select>
+	<button id="btn-preset" style="position: relative;" ng-click="preset()">Prefill</button>
 	<!-- <button id="btn-save" style="position: relative;" ng-click="save($http)">Save Query</button> -->
 
 	<section class="query-container">
@@ -77,6 +90,10 @@
 		</div>
 	</section>
 	
+</div>
+
+<div class="footer" id="app3" ng-app="footerApp" ng-controller="footerCtrl">
+
 </div>
 </body>
 </html>
