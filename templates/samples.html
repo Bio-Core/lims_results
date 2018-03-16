@@ -11,16 +11,41 @@
 </head>
 
 <body>
-	<div class="patientWindow" ng-app="sampleApp" ng-controller="sampleCtrl">
-		<h1 style="width: 30vw;position: relative;top: 0;">{a "Sample Info Sample ID - " + id a}</h1>
+	<div class="nav" id="app1" ng-app="navApp" ng-controller="navCtrl">
+		<h1>LIMS Results Database</h1>
+		<input id="submit" value="Search" type="submit" ng-click="search()"/>
+		<input id="search" placeholder="Search..." ng-model="searchValue" />
+		
+		<ul class="homeLink">
+			<li><a href="http://172.27.164.207:8003/main">Overview</a></li>
+			<li><a href="http://172.27.164.207:8003/query">Query Reports</a></li>
+			<li><a href="http://172.27.164.207:8003/patients">Patients</a></li>
+			<li><a class="current" href="http://172.27.164.207:8003/samples">Samples</a></li>
+			<li><a href="http://172.27.164.207:8003/experiments">Tests</a></li>
+			<li><a href="http://172.27.164.207:8003/results">Results</a></li>
+			<li><a href="http://172.27.164.207:8003/resultdetails">Result Details</a></li>
+		</ul>
+	</div>
+
+	<div class="patientWindow" id="app2" ng-app="sampleApp" ng-controller="sampleCtrl">
+		<h1 style="width: 30vw;position: relative;top: 0;">Sample Info</h1>
+		<button class="btn-edit" ng-click="edit()" ng-show="!editRecord">Edit</button>
+		<button class="btn-edit" ng-click="cancel()" ng-show="editRecord">Cancel</button>
+		<button class="btn-edit" ng-click="confirm()" ng-show="editRecord">Confirm</button>
 
 		<table class="detailView">
 			<h3>Patient Info</h3>
 			<tr ng-repeat="p in patientRow track by $index">
 				<th>{a patients[$index*2] a}</th>
-				<td>{a patient[sql[$index*2]] a}</td>
+				<td>
+					<span ng-show="!editRecord">{a patient[sql[$index*2]] a}</span>
+					<input ng-show="editRecord" ng-model="edited.patients[sql[$index*2]]" />
+				</td>
 				<th>{a patients[$index*2+1] a}</th>
-				<td>{a patient[sql[$index*2+1]] a}</td>
+				<td>
+					<span ng-show="!editRecord">{a patient[sql[$index*2+1]] a}</span>
+					<input ng-show="editRecord" ng-model="edited.patients[sql[$index*2+1]]" />
+				</td>
 			</tr>
 		</table>
 
@@ -28,9 +53,15 @@
 			<h3>Sample Info</h3>
 			<tr ng-repeat="p in sampleRow track by $index">
 				<th>{a samples[$index*2] a}</th>
-				<td>{a sample[sqlSample[$index*2]] a}</td>
+				<td>
+					<span ng-show="!editRecord">{a sample[sqlSample[$index*2]] a}</span>
+					<input ng-show="editRecord" ng-model="edited.samples[sqlSample[$index*2]]" />
+				</td>
 				<th>{a samples[$index*2+1] a}</th>
-				<td>{a sample[sqlSample[$index*2+1]] a}</td>
+				<td>
+					<span ng-show="!editRecord">{a sample[sqlSample[$index*2+1]] a}</span>
+					<input ng-show="editRecord" ng-model="edited.samples[sqlSample[$index*2+1]]" />
+				</td>
 			</tr>
 		</table>
 
@@ -41,12 +72,18 @@
 					<th ng-repeat="x in fields track by $index" class="{a tFields[$index] a}" ng-if="sameTable(tFields[$index], tables[table])">{a x a}</th>
 				</tr>
 				<tr class="preview_content" ng-repeat="row in rows track by $index">
-					<td ng-repeat="col in cols track by $index" ng-if="sameTable(pTables[$index], tables[table])">{a row[col] a}</td>
+					<td ng-repeat="col in cols track by $index" ng-if="sameTable(pTables[$index], tables[table])">
+						<a ng-href="http://172.27.164.207:8003/{a pTables[$index] + '/' + row[ids[pTables[$index]]] a}">{a row[col] a}</a>
+					</td>
 				</tr>
 
 				<div class="loading" data-loading></div>
 			</table>
 		</div>
+	</div>
+
+	<div class="footer" id="app3" ng-app="footerApp" ng-controller="footerCtrl">
+
 	</div>
 
 </body>
