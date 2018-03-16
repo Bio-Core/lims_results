@@ -13,6 +13,8 @@ td {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	font-size: 0.9em;
+	line-height: 1.5em;
+	white-space: nowrap;
 }
 
 th {
@@ -68,19 +70,18 @@ a:before {
 }
 
 .query-container {
-	width: 100%;
-	height: 89vh;
-	border: 1px solid black;
+	width: 80%;
+	margin-left: 10%;
+	height: 85vh;
 	margin-top: 1%;
 }
 
 .fields {
 	display: inline-block;
 	float: left;
-	width: 20%;
+	width: 25%;
 	height: 99%;
 	border: 1px solid black;
-	margin-left: 10%;
 	overflow: auto;
 }
 
@@ -91,20 +92,18 @@ a:before {
 .controls {
 	display: inline-block;
 	float: right;
-	width: 59%;
+	width: 74%;
 	height: 20%;
 	border: 1px solid black;
-	margin-right: 10%;
 	overflow: scroll;
 }
 
 div.results {
 	display: inline-block;
 	float: right;
-	width: 59%;
-	height: 75%;
+	width: 74%;
+	height: 78%;
 	border: 1px solid black;
-	margin-right: 10%;
 	margin-top: 9px;
 	overflow: scroll;
 }
@@ -208,11 +207,25 @@ th.hovered.after:before {
 
 .previewWindow,
 .patientWindow {
-	border: 1px solid black;
 	min-height: 100px;
-	margin-top: 20px; 
 	overflow: auto;
 	width: 100%;
+}
+
+.tableWindow {
+	height: 85vh;
+	width: 80%;
+	margin-left: 10%;
+}
+
+.table_one {
+	width: auto;
+	height: auto;
+	margin-top: 20px;
+	max-height: 85vh;
+	overflow: auto;
+	display: block;
+	border: 1px solid black;
 }
 
 .patientWindow {
@@ -221,7 +234,44 @@ th.hovered.after:before {
 }
 
 #search {
-	margin-left: 10%;
+	float: right;
+	margin-top: 25px;
+}
+
+.nav {
+	background: linear-gradient(#aaaaff, #fff);
+	padding: 10px;
+	margin-left: -10px;
+	margin-top: -10px;
+}
+
+.nav h1 {
+	float: left;
+	padding-right: 50px;
+	border-right: 1px solid grey;
+}
+
+.homeLink {
+	width: auto;
+	height: auto;
+	padding-top: 10px;
+	display: inline-block;
+	position: relative;
+}
+
+.homeLink li {
+	float: left;
+	margin-right: 20px;
+	padding: 5px 10px;
+}
+
+.homeLink a {
+	text-decoration: none;
+	color: black;
+}
+
+.homeLink a.current  {
+	color: red;
 }
 
 a.cols:before {
@@ -316,31 +366,44 @@ a.selected:before {
 }
 
 #table_results tr:nth-child(2n+3),
+.table_one tr:nth-child(2n+3),
 .table_preview tr:nth-child(2n+3) {
 	background-color: #ddd;
 }
 
+#table_results th,
+.table_one th,
+.table_preview th {
+	white-space: nowrap;
+	line-height: 1.8em;
+}
+
 #table_results th.experiments,
+.table_one th.experiments,
 .table_preview th.experiments {
 	background: linear-gradient(#fff, #ddddff);
 }
 
 #table_results th.patients,
+.table_one th.patients,
 .table_preview th.patients {
 	background: linear-gradient(#fff, #ffddff);
 }
 
 #table_results th.samples,
+.table_one th.samples,
 .table_preview th.samples {
 	background: linear-gradient(#fff, #ddffff);
 }
 
 #table_results th.results,
+.table_one th.results,
 .table_preview th.results {
 	background: linear-gradient(#fff, #ddffdd);
 }
 
 #table_results th.resultdetails,
+.table_one th.resultdetails,
 .table_preview th.resultdetails {
 	background: linear-gradient(#fff, #ffffdd);
 }
@@ -377,8 +440,8 @@ body.loading .loading {
 div.paginateContainer {
 	width: auto;
 	float: right;
-	right: 10%;
 	top: 5px;
+	z-index: 99;
 }
 
 .paginateSize {
@@ -406,6 +469,7 @@ a.paginate:hover {
 }
 
 #ui-datepicker-div {
+	display: none;
 	background-color: white;
 	width: auto;
 	padding: 5px;
@@ -499,14 +563,15 @@ td.ui-datepicker-today {
 	height: 500px;
 	max-height: none;
 	margin-top: 0;
-	border: none;
 }
 
+.table_one a,
 .table_preview a {
 	text-decoration: none;
 	color: black;
 }
 
+.table_one a:hover,
 .table_preview a:hover {
 	text-decoration: underline;
 }
@@ -522,19 +587,69 @@ td.ui-datepicker-today {
 
 .detailView {
 	margin-top: 10px;
-	width: 90%;
+	width: 95%;
 	border-right: none;
 }
 
 .detailView th {
 	float: right;
 	padding-right: 20px;
-
+	padding-top: 0;
+	line-height: 2em;
+	border-right: none;
+	font-size: 0.9em;
 }
 
 .detailView td {
-	width: 30%;
+	width: 33%;
 	height: auto;
 	border-right: none;
+	border-left: 1px solid #999;
 	word-wrap: break-word;
+	left: 15px;
+}
+
+.detailView tr:nth-child(2n+1) {
+	background-color: #eee;
+}
+
+.detailView td span {
+	display: inline-block;
+
+}
+
+.detailView td input {
+	width: 90%;
+}
+
+.appContainer {
+	margin-top: 10px;
+}
+
+#submit {
+	float: right;
+	margin-top: 25px;
+}
+
+.footer {
+	height: 80px;
+	background: linear-gradient(#fff, #aaaaff);
+	padding: 10px;
+	margin-left: -10px;
+	margin-bottom: -10px;
+}
+
+.viewAll,
+.viewAll:visited {
+	float: right;
+	text-decoration: none;
+	color: black;
+}
+
+.viewAll:hover {
+	text-decoration: underline;
+}
+
+.btn-edit {
+	float: right;
 }
