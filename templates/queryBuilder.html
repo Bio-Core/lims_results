@@ -55,7 +55,8 @@
 					<option ng-repeat="o in options">{a o a}</option>
 				</datalist>
 				<select id="operator-option" ng-model="con.operator">
-					<option ng-repeat="op in operators">{a op a}</option>
+					<option ng-repeat="op in operators" ng-show="type[options.indexOf(con.field)]!='*string'">{a op a}</option>
+					<option ng-repeat="ops in operators1" ng-show="type[options.indexOf(con.field)]=='*string'">{a ops a}</option>
 				</select>
 				<input ng-model="con.content" ng-show="!hasDate(con.field)"/>
 				<input ng-model="datepicker" datepicker ng-show="hasDate(con.field)" ng-change="con.content=datepicker"/>
