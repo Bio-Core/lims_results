@@ -208,8 +208,12 @@ th.hovered.after:before {
 .previewWindow,
 .patientWindow {
 	min-height: 100px;
-	overflow: auto;
 	width: 100%;
+	display: block;
+}
+
+.previewWindow.hide {
+	display: none;
 }
 
 .tableWindow {
@@ -239,10 +243,13 @@ th.hovered.after:before {
 }
 
 .nav {
-	background: linear-gradient(#aaaaff, #fff);
+	background-color: #444466;
 	padding: 10px;
 	margin-left: -10px;
 	margin-top: -10px;
+	color: white;
+	box-shadow: 4px 4px 4px #444;
+	z-index: 99;
 }
 
 .nav h1 {
@@ -267,7 +274,7 @@ th.hovered.after:before {
 
 .homeLink a {
 	text-decoration: none;
-	color: black;
+	color: white;
 }
 
 .homeLink a.current  {
@@ -567,7 +574,7 @@ td.ui-datepicker-today {
 
 .table_one a,
 .table_preview a {
-	text-decoration: none;
+	text-decoration: underline;
 	color: black;
 }
 
@@ -587,7 +594,7 @@ td.ui-datepicker-today {
 
 .detailView {
 	margin-top: 10px;
-	width: 95%;
+	width: 100%;
 	border-right: none;
 }
 
@@ -622,6 +629,15 @@ td.ui-datepicker-today {
 	width: 90%;
 }
 
+.detailView	a {
+	color: black;
+	text-decoration: underline;
+}
+
+.detailView.hide {
+	display: none;
+}
+
 .appContainer {
 	margin-top: 10px;
 }
@@ -632,11 +648,12 @@ td.ui-datepicker-today {
 }
 
 .footer {
-	height: 80px;
-	background: linear-gradient(#fff, #aaaaff);
+	height: 50px;
+	background-color: #444466;
 	padding: 10px;
 	margin-left: -10px;
 	margin-bottom: -10px;
+	margin-top: 1em;
 }
 
 .viewAll,
@@ -652,4 +669,49 @@ td.ui-datepicker-today {
 
 .btn-edit {
 	float: right;
+	margin-left: 5px;
+}
+
+.uploadContainer {
+	width: 80%;
+	margin-left: 10%;
+}
+
+.toggleInfo {
+	background-color: #444466;
+	color: white;
+	padding-left: 2em;
+	border-radius: 5px;
+	box-sizing: border-box;
+	cursor: pointer;
+	margin-top: 1em;
+}
+
+.table-toggle {
+	background-color: #444466;
+	color: white;
+	padding: 0 2em;
+	border-radius: 5px;
+	box-sizing: border-box;
+	cursor: pointer;
+}
+
+.toggleInfo:after {
+	content: "-";
+	float: right;
+	font-size: 50px;
+	line-height: 50px;
+	top: 0;
+	right: 1em;
+	position: absolute;
+}
+
+.toggleInfo.hide:after {
+	content: "+";
+	float: right;
+	font-size: 40px;
+	line-height: 60px;
+	top: 0;
+	right: 1em;
+	position: absolute;
 }
