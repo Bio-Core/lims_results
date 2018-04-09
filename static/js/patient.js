@@ -20,22 +20,24 @@ var operators = [
 	"Not ends with",
 	"Contains",
 	"Not contains"];
-var ids = {"patients" : "patients.mrn",
+var ids = {"patients" : "patients.patient_id",
 	"samples" : "samples.sample_id",
-	"experiments" : "experiments.sample_id",  // experiments.experiment_id
-	"results" : "results.sample_id",  // results.results_id
-	"resultdetails" : "resultdetails.sample_id"};  // resultdetails.results_details_id
+	"experiments" : "experiments.experiment_id",
+	"results" : "results.results_id",
+	"resultdetails" : "resultdetails.results_details_id"};
 var queryUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query";
 var colUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/columns";
-var patientID = "patients.mrn";
-var patient2sample = "samples.sample_id"; // samples.mrn
+var patientUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/patient";
+var searchableUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/searchable";
+var uneditableUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/uneditable";
+var patientID = "patients.patient_id";
+var patient2sample = "samples.patient_id";
 var sampleID = "samples.sample_id";
-var sample2test = "experiments.sample_id"; // experiments.sample_id
-var testID = "experiments.sample_id"; // experiments.experiment_id
-var test2result = "results.sample_id"; // results.experiment_id
-var resultID = "results.sample_id"; // results.results_id
-var result2resultd = "resultdetails.sample_id"; // resultdetails.results_id
-
+var sample2test = "experiments.sample_id";
+var testID = "experiments.experiment_id";
+var test2result = "results.experiment_id";
+var resultID = "results.results_id";
+var result2resultd = "resultdetails.results_id";
 
 app.config(['$interpolateProvider', function($interpolateProvider) {
 	$interpolateProvider.startSymbol('{a');
@@ -108,14 +110,19 @@ function getNumberAsArray(num) {
 	return new Array(num);
 }
 
-app.controller("patientCtrl", function($scope, $http, $location) {
+app.controller("patientCtrl", function($scope, $http, $location, $window) {
 	var url = $location.absUrl();
 	$scope.ids = ids;
 	$scope.edited = {"patients" : []};
 	$scope.editRecord = false;
+	$scope.hideMore = true;
 
 	$scope.sameTable = function(ft, t) {
 		return (ft == t.toLowerCase().split(' ').join(''))
+	}
+	$scope.notId = function(sql) {
+		if (sql)
+			return ((!sql.includes("patient_id")) && (!sql.includes("sample_id")) && (!sql.includes("experiment_id")) && (!sql.includes("results_id")) && (!sql.includes("results_details_id")))
 	}
 	
 	var str = url.split('/');
@@ -127,7 +134,20 @@ app.controller("patientCtrl", function($scope, $http, $location) {
 		$scope.editRecord = false;
 	}
 	
+	$http.get(searchableUrl)
+	.then(function(data) {
+		$scope.searchable = data.data;
+	}, function(data) {
+		window.alert(data.statusText);
+	});
 
+	$http.get(uneditableUrl)
+	.then(function(data) {
+		$scope.uneditable = data.data;
+	}, function(data) {
+		window.alert(data.statusText);
+	});
+	
 	$http.get(colUrl)
 	.then(function(data) {
 		var input = data.data;
@@ -162,17 +182,58 @@ app.controller("patientCtrl", function($scope, $http, $location) {
 			tableToScope = [];
 		}
 
-		
-		getTableFields("patients");
-		$scope.patients = angular.copy(fieldsToScope);
-		$scope.sql = angular.copy(sqlToScope);
+		function hideId() {
+			for (let i = 0; i < fieldsToScope.length; i++) {
+				if (sqlToScope[i].includes("patient_id") ||
+					sqlToScope[i].includes("sample_id") ||
+					sqlToScope[i].includes("experiment_id") ||
+					sqlToScope[i].includes("results_id") ||
+					sqlToScope[i].includes("results_details_id")) {
+					fieldsToScope.splice(i, 1);
+					sqlToScope.splice(i, 1);
+					tableToScope.splice(i, 1);
+					i--;
+				}
+			}
+		}
 		
 		$scope.id = angular.copy(id);
-		var query_condition = ["AND", patientID, operators[0], angular.copy(id)]; // patients.mrn
-		selected_conditions = [angular.copy(query_condition)];
+		
 		$scope.rows = [];
 		$scope.pTables = [];
 		$scope.cols = [];
+
+		getTableFields("samples");
+		// sample fields/tables added to scope
+		$scope.pTables = $scope.pTables.concat(tableToScope);
+		$scope.cols = $scope.cols.concat(sqlToScope);
+
+		resetTables();
+		getTableFields("experiments");
+		// test fields/tables added to scope
+		$scope.pTables = $scope.pTables.concat(tableToScope);
+		$scope.cols = $scope.cols.concat(sqlToScope);
+
+		resetTables();
+		getTableFields("results");
+		// results fields/tables added to scope
+		$scope.pTables = $scope.pTables.concat(tableToScope);
+		$scope.cols = $scope.cols.concat(sqlToScope);
+
+		resetTables();
+		getTableFields("resultdetails");
+		// results fields/tables added to scope
+		$scope.pTables = $scope.pTables.concat(tableToScope);
+		$scope.cols = $scope.cols.concat(sqlToScope);
+
+		resetTables();
+		getTableFields("patients");
+		hideId()
+		$scope.patients = angular.copy(fieldsToScope);
+		$scope.sql = angular.copy(sqlToScope);
+
+		var query_condition = ["AND", patientID, operators[0], angular.copy(id)];
+		selected_conditions = [angular.copy(query_condition)];
 
 		// POST patient info
 		$http({
@@ -183,15 +244,12 @@ app.controller("patientCtrl", function($scope, $http, $location) {
 		}).then(function(data) {
 			var queryResults = data.data[0];
 			$scope.patient = angular.copy(queryResults);
-			$scope.patientRow = getNumberAsArray(Math.ceil(selected_fields.length/2));
+			$scope.patientRow = getNumberAsArray(Math.ceil($scope.patients.length/2));
 			
-			id = $scope.patient[angular.copy("patients.sample_id")]; // patients.mrn
+			id = $scope.patient[angular.copy(patientID)];
 			
 			resetTables();
 			getTableFields("samples");
-			// sample fields/tables added to scope
-			$scope.pTables = $scope.pTables.concat(tableToScope);
-			$scope.cols = $scope.cols.concat(sqlToScope);
 
 			query_condition = ["AND",patient2sample, operators[0], angular.copy(id)]; // sample.mrn = patients.mrn
 			selected_conditions = [angular.copy(query_condition)];
@@ -213,110 +271,133 @@ app.controller("patientCtrl", function($scope, $http, $location) {
 
 				resetTables();
 				getTableFields("experiments");
-				// test fields/tables added to scope
-				$scope.pTables = $scope.pTables.concat(tableToScope);
-				$scope.cols = $scope.cols.concat(sqlToScope);
+				selected_conditions = [];
 
 				// Samples added / find tests
 				for (let a = 0; a < samples.length; a++) {
-					query_condition = ["AND", sample2test, operators[0], angular.copy(samples[a])]; // experiments.sample_id = samples.sample_id
-					selected_conditions = [angular.copy(query_condition)];
-					queryResults = [];
+					query_condition = ["OR", sample2test, operators[0], angular.copy(samples[a])]; // experiments.sample_id = samples.sample_id
+					selected_conditions.push(angular.copy(query_condition));
+				}
+				selected_conditions[0][0] = "AND";
+				queryResults = [];
+				// POST test info for sample[a]
+				$http({
+					method : "POST",
+					url : queryUrl, 
+					data : JSON.stringify({selected_fields:selected_fields,selected_tables:angular.copy(["experiments"]),selected_conditions:selected_conditions}),
+					headers : {'Content-Type': 'application/json'}
+				}).then(function(data2) {
+					queryResults = data2.data;
+					$scope.rows = $scope.rows.concat(queryResults);
 
-					// POST test info for sample[a]
+					for (let b = 0; b < queryResults.length; b++) {
+						tests = tests.concat(queryResults[b][testID]); // experiments.experiment_id
+					}
+
+					resetTables();
+					getTableFields("results");
+					selected_conditions = [];
+
+					// Tests added / find results
+					for (let b = 0; b < tests.length; b++) {
+						query_condition = ["OR", test2result, operators[0], angular.copy(tests[b])]; // results.experiment_id
+						selected_conditions.push(angular.copy(query_condition));
+					}
+					selected_conditions[0][0] = "AND";
+					queryResults = [];
+					// POST result info for tests[b]
 					$http({
 						method : "POST",
 						url : queryUrl, 
-						data : JSON.stringify({selected_fields:selected_fields,selected_tables:angular.copy(["experiments"]),selected_conditions:selected_conditions}),
+						data : JSON.stringify({selected_fields:selected_fields,selected_tables:angular.copy(["results"]),selected_conditions:selected_conditions}),
 						headers : {'Content-Type': 'application/json'}
-					}).then(function(data2) {
-						queryResults = data2.data;
+					}).then(function(data3) {
+						queryResults = data3.data;
 						$scope.rows = $scope.rows.concat(queryResults);
 
-						for (let b = 0; b < queryResults.length; b++) {
-							tests = tests.concat(queryResults[b][testID]); // experiments.experiment_id
+						for (let c = 0; c < queryResults.length; c++) {
+							results = results.concat(queryResults[c][resultID]); // results.results_id
 						}
 
 						resetTables();
-						getTableFields("results");
-						// test fields/tables added to scope
-						$scope.pTables = $scope.pTables.concat(tableToScope);
-						$scope.cols = $scope.cols.concat(sqlToScope);
+						getTableFields("resultdetails");
+						selected_conditions = [];
 
-						// Tests added / find results
-						for (let b = 0; b < tests.length; b++) {
-							query_condition = ["AND", test2result, operators[0], angular.copy(tests[b])]; // results.experiment_id
-							selected_conditions = [angular.copy(query_condition)];
-							queryResults = [];
+						// Results added / find details
+						for (let c = 0; c < results.length; c++) {
+							query_condition = ["OR", result2resultd, operators[0], angular.copy(results[c])]; // resultdetails.results_id = results.results_id
+							selected_conditions.push(angular.copy(query_condition));
+						}
+						selected_conditions[0][0] = "AND";
+						queryResults = [];
+						// POST details for results[c]
+						$http({
+							method : "POST",
+							url : queryUrl, 
+							data : JSON.stringify({selected_fields:selected_fields,selected_tables:angular.copy(["resultdetails"]),selected_conditions:selected_conditions}),
+							headers : {'Content-Type': 'application/json'}
+						}).then(function(data4) {
+							queryResults = data4.data;
+							$scope.rows = $scope.rows.concat(queryResults);
 
-							// POST result info for tests[b]
-							$http({
-								method : "POST",
-								url : queryUrl, 
-								data : JSON.stringify({selected_fields:selected_fields,selected_tables:angular.copy(["results"]),selected_conditions:selected_conditions}),
-								headers : {'Content-Type': 'application/json'}
-							}).then(function(data3) {
-								queryResults = data3.data;
-								$scope.rows = $scope.rows.concat(queryResults);
+							$scope.edit = function() {
+								// Verify user privilege
 
-								for (let c = 0; c < queryResults.length; c++) {
-									results = results.concat(queryResults[c][resultID]); // results.results_id
-								}
+								$scope.edited.patients = angular.copy($scope.patient);
+								$scope.editRecord = true;
 
-								resetTables();
-								getTableFields("resultdetails");
-								// results fields/tables added to scope
-								$scope.pTables = $scope.pTables.concat(tableToScope);
-								$scope.cols = $scope.cols.concat(sqlToScope);
+							}
 
-								// Results added / find details
-								for (let c = 0; c < results.length; c++) {
-									query_condition = ["AND", result2resultd, operators[0], angular.copy(results[c])]; // resultdetails.results_id = results.results_id
-									selected_conditions = [angular.copy(query_condition)];
-									queryResults = [];
-
-									// POST details for results[c]
+							$scope.confirm = function() {
+								if (confirm("Confirm record change?")) {
+									// update database
+									
 									$http({
 										method : "POST",
-										url : queryUrl, 
-										data : JSON.stringify({selected_fields:selected_fields,selected_tables:angular.copy(["resultdetails"]),selected_conditions:selected_conditions}),
+										url : patientUrl,
+										data : JSON.stringify($scope.edited.patients),
 										headers : {'Content-Type': 'application/json'}
-									}).then(function(data4) {
-										queryResults = data4.data;
-										$scope.rows = $scope.rows.concat(queryResults);
-
-										$scope.edit = function() {
-											// Verify user privilege
-
-											$scope.edited.patients = angular.copy($scope.patient);
-											$scope.editRecord = true;
-
-										}
-
-										$scope.confirm = function() {
-											if (confirm("Confirm record change?")) {
-												// update database
-
-												$scope.editRecord = false;
-											}
-										}
-										
-									}, function(data4) {
-										window.alert(data.statusText);
-									})
+									}).then(function(putResponse) {
+										$window.open(url, '_self');
+									}, function(putResponse) {
+										window.alert(putResponse.statusText);
+									});
 								}
-							}, function(data3) {
-								window.alert(data.statusText);
-							});
-						}
+							}
 
-					}, function(data2) {
-						window.alert(data.statusText);
+							$scope.deleteRecord = function() {
+								if (confirm("Confirm deleting record?")) {
+									// update database
+									var deleted = [{patients : $scope.patient[patientID]}];
+
+									for (let i = 0; i < $scope.rows.length; i++) {
+										var pushed = {[$scope.pTables[i]] : $scope.rows[i][ids[pTables[i]]]};
+										deleted.push(pushed);
+									}
+									var returnUrl = "http://" + $window.location.host + "/patients";
+									$http.put(deleteUrl, JSON.stringify(deleted))
+									.then(function(putResponse) {
+										$window.open(returnUrl, '_self');
+									}, function(putResponse) {
+										window.alert(putResponse.statusText);
+									});
+								}
+							}
+
+						}, function(data4) {
+							window.alert(data4.statusText);
+						});
+
+					}, function(data3) {
+						window.alert(data3.statusText);
 					});
-				}
+
+				}, function(data2) {
+					window.alert(data2.statusText);
+				});
 
 			}, function(data1) {
-				window.alert(data.statusText);
+				window.alert(data1.statusText);
 			});	
 
 		}, function(data) {
