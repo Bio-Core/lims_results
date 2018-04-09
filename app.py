@@ -72,5 +72,9 @@ def main():
 def profile():
     return render_template('saveQuery.php')
 
+@app.route('/upload')
+def upload():
+    return render_template('upload.html')
+
 if __name__ == '__main__':
     app.run(debug=True, host=container_app_host, port=container_results_port)
