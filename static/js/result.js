@@ -20,21 +20,27 @@ var operators = [
 	"Not ends with",
 	"Contains",
 	"Not contains"];
-var ids = {"patients" : "patients.mrn",
+var ids = {"patients" : "patients.patient_id",
 	"samples" : "samples.sample_id",
-	"experiments" : "experiments.sample_id",  // experiments.experiment_id
-	"results" : "results.sample_id",  // results.results_id
-	"resultdetails" : "resultdetails.sample_id"};  // resultdetails.results_details_id
+	"experiments" : "experiments.experiment_id",
+	"results" : "results.results_id",
+	"resultdetails" : "resultdetails.results_details_id"};
 var queryUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query";
 var colUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/columns";
-var patientID = "patients.sample_id"; // patients.mrn
-var sample2patient = "samples.sample_id"; // samples.mrn
+var patientUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/patient";
+var sampleUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/sample";
+var testUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/experiment";
+var resultUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/result";
+var searchableUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/searchable";
+var uneditableUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/uneditable";
+var patientID = "patients.patient_id";
+var sample2patient = "samples.patient_id";
 var sampleID = "samples.sample_id";
-var test2sample = "experiments.sample_id"; // experiments.sample_id
-var testID = "experiments.sample_id"; // experiments.experiment_id
-var result2test = "results.sample_id"; // results.experiment_id
-var resultID = "results.sample_id"; // results.results_id
-var result2resultd = "resultdetails.sample_id"; // resultdetails.results_id
+var test2sample = "experiments.sample_id";
+var testID = "experiments.experiment_id";
+var result2test = "results.experiment_id";
+var resultID = "results.results_id";
+var result2resultd = "resultdetails.results_id";
 
 app.config(['$interpolateProvider', function($interpolateProvider) {
 	$interpolateProvider.startSymbol('{a');
@@ -107,14 +113,22 @@ function getNumberAsArray(num) {
 	return new Array(num);
 }
 
-app.controller("resultCtrl", function($scope, $http, $location) {
+app.controller("resultCtrl", function($scope, $http, $location, $window) {
 	var url = $location.absUrl();
 	$scope.ids = ids;
 	$scope.edited = {"patients" : [], "samples" : [], "experiments" : [], "results" : []};
 	$scope.editRecord = false;
+	$scope.hidePatient = true;
+	$scope.hideSample = true;
+	$scope.hideTest = true;
+	$scope.hideMore = true;
 
 	$scope.sameTable = function(ft, t) {
 		return (ft == t.toLowerCase().split(' ').join(''))
+	}
+	$scope.notId = function(sql) {
+		if (sql)
+			return ((!sql.includes("patient_id")) && (!sql.includes("sample_id")) && (!sql.includes("experiment_id")) && (!sql.includes("results_id")) && (!sql.includes("results_details_id")))
 	}
 	
 	var str = url.split('/');
@@ -128,6 +142,19 @@ app.controller("resultCtrl", function($scope, $http, $location) {
 		$scope.editRecord = false;
 	}
 	
+	$http.get(searchableUrl)
+	.then(function(data) {
+		$scope.searchable = data.data;
+	}, function(data) {
+		window.alert(data.statusText);
+	});
+
+	$http.get(uneditableUrl)
+	.then(function(data) {
+		$scope.uneditable = data.data;
+	}, function(data) {
+		window.alert(data.statusText);
+	});
 
 	$http.get(colUrl)
 	.then(function(data) {
@@ -162,17 +189,56 @@ app.controller("resultCtrl", function($scope, $http, $location) {
 			sqlToScope = [];
 			tableToScope = [];
 		}
+		function hideId() {
+			for (let i = 0; i < fieldsToScope.length; i++) {
+				if (sqlToScope[i].includes("patient_id") ||
+					sqlToScope[i].includes("sample_id") ||
+					sqlToScope[i].includes("experiment_id") ||
+					sqlToScope[i].includes("results_id") ||
+					sqlToScope[i].includes("results_details_id")) {
+					fieldsToScope.splice(i, 1);
+					sqlToScope.splice(i, 1);
+					tableToScope.splice(i, 1);
+					i--;
+				}
+			}
+		}
+		$scope.rows = [];
+		$scope.pTables = [];
+		$scope.cols = [];
+
+		getTableFields("resultdetails");
+		// results fields/tables added to scope
+		$scope.pTables = $scope.pTables.concat(tableToScope);
+		$scope.cols = $scope.cols.concat(sqlToScope);
+
+		resetTables();
+		getTableFields("patients");
+		hideId()
+		$scope.patients = angular.copy(fieldsToScope);
+		$scope.sql = angular.copy(sqlToScope);
+
+		resetTables();
+		getTableFields("samples");
+		hideId();
+		$scope.samples = angular.copy(fieldsToScope);
+		$scope.sqlSample = angular.copy(sqlToScope);
 		
+		resetTables();
+		getTableFields("experiments");
+		hideId();
+		$scope.tests = angular.copy(fieldsToScope);
+		$scope.sqlTest = angular.copy(sqlToScope);
+
+		resetTables();
 		getTableFields("results");
+		hideId();
 		$scope.results = angular.copy(fieldsToScope);
 		$scope.sqlResult = angular.copy(sqlToScope);
 		
 		$scope.id = angular.copy(id);
 		var query_condition = ["AND", resultID, operators[0], angular.copy(id)]; // results.results_id = id
 		selected_conditions = [angular.copy(query_condition)];
-		$scope.rows = [];
-		$scope.pTables = [];
-		$scope.cols = [];
 
 		// POST result info
 		$http({
@@ -189,8 +255,6 @@ app.controller("resultCtrl", function($scope, $http, $location) {
 
 			resetTables();
 			getTableFields("experiments");
-			$scope.tests = angular.copy(fieldsToScope);
-			$scope.sqlTest = angular.copy(sqlToScope);
 
 			query_condition = ["AND", testID, operators[0], angular.copy(id)];
 			selected_conditions = [angular.copy(query_condition)];
@@ -211,8 +275,6 @@ app.controller("resultCtrl", function($scope, $http, $location) {
 
 				resetTables();
 				getTableFields("samples");
-				$scope.samples = angular.copy(fieldsToScope);
-				$scope.sqlSample = angular.copy(sqlToScope);
 
 				// sample added / find patient
 				query_condition = ["AND", sampleID, operators[0], angular.copy(id)]; // samples.sample_id = experiments.sample_id
@@ -230,15 +292,13 @@ app.controller("resultCtrl", function($scope, $http, $location) {
 					$scope.sample = angular.copy(queryResults);
 					$scope.sampleRow = getNumberAsArray(Math.ceil($scope.samples.length/2));
 
-					id = $scope.sample[sample2patient]; // samples.mrn
+					id = $scope.sample[sample2patient]; // samples.patient_id
 
 					resetTables();
 					getTableFields("patients");
-					$scope.patients = angular.copy(fieldsToScope);
-					$scope.sql = angular.copy(sqlToScope);
 
 					// Tests added / find results
-					query_condition = ["AND", patientID, operators[0], angular.copy(id)]; // patients.mrn = samples.mrn
+					query_condition = ["AND", patientID, operators[0], angular.copy(id)]; // patients.patient_id = samples.patient_id
 					selected_conditions = [angular.copy(query_condition)];
 					queryResults = [];
 
@@ -291,23 +351,78 @@ app.controller("resultCtrl", function($scope, $http, $location) {
 								if (confirm("Confirm record change?")) {
 									// update database
 
-									$scope.editRecord = false;
+									$http({
+										method : "POST",
+										url : patientUrl,
+										data : JSON.stringify(angular.copy($scope.edited.patients)),
+										headers : {'Content-Type': 'application/json'}
+									}).then(function(putResponse) {
+										$http({
+											method : "POST",
+											url : sampleUrl,
+											data : JSON.stringify(angular.copy($scope.edited.samples)),
+											headers : {'Content-Type': 'application/json'}
+										}).then(function(putResponse) {
+											$http({
+												method : "POST",
+												url : testUrl,
+												data : JSON.stringify(angular.copy($scope.edited.experiments)),
+												headers : {'Content-Type': 'application/json'}
+											}).then(function(putResponse) {
+												$http({
+													method : "POST",
+													url : resultUrl,
+													data : JSON.stringify(angular.copy($scope.edited.results)),
+													headers : {'Content-Type': 'application/json'}
+												}).then(function(putResponse) {
+													$window.open(url, '_self');
+												}, function(putResponse) {
+													window.alert(putResponse.statusText);
+												});
+											}, function(putResponse) {
+												window.alert(putResponse.statusText);
+											});
+										}, function(putResponse) {
+											window.alert(putResponse.statusText);
+										});
+									}, function(putResponse) {
+										window.alert(putResponse.statusText);
+									});
+								}
+							}
+
+							$scope.deleteRecord = function() {
+								if (confirm("Confirm deleting record?")) {
+									// update database
+									var deleted = [{"results" : $scope.result[resultID]}];
+									
+									for (let i = 0; i < $scope.rows.length; i++) {
+										var pushed = {[$scope.pTables[i]] : $scope.rows[i][ids[pTables[i]]]};
+										deleted.push(pushed);
+									}
+									var returnUrl = "http://" + $window.location.host + "/results";
+									$http.put(deleteUrl, JSON.stringify(deleted))
+									.then(function(putResponse) {
+										$window.open(returnUrl, '_self');
+									}, function(putResponse) {
+										window.alert(putResponse.statusText);
+									});
 								}
 							}
 							
 						}, function(data4) {
-							window.alert(data.statusText);
+							window.alert(data4.statusText);
 						})
 					}, function(data3) {
-						window.alert(data.statusText);
+						window.alert(data3.statusText);
 					});
 
 				}, function(data2) {
-					window.alert(data.statusText);
+					window.alert(data2.statusText);
 				});
 
 			}, function(data1) {
-				window.alert(data.statusText);
+				window.alert(data1.statusText);
 			});	
 
 		}, function(data) {
