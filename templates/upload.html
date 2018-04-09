@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Upload</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="/static/css/style.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+  	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script type="text/javascript" src="/static/js/upload.js"></script>
+</head>
+
+<body>
+<div class="nav" id="app1" ng-app="navApp" ng-controller="navCtrl">
+	<h1>LIMS Results Database</h1>
+	<input id="submit" value="Search" type="submit" ng-click="search()"/>
+	<input id="search" placeholder="Search..." ng-model="searchValue" />
+	
+	<ul class="homeLink">
+		<li><a href="http://172.27.164.207:8003/main">Overview</a></li>
+		<li><a href="http://172.27.164.207:8003/query">Query Reports</a></li>
+		<li><a href="http://172.27.164.207:8003/patients">Patients</a></li>
+		<li><a href="http://172.27.164.207:8003/samples">Samples</a></li>
+		<li><a href="http://172.27.164.207:8003/experiments">Tests</a></li>
+		<li><a href="http://172.27.164.207:8003/results">Results</a></li>
+		<li><a href="http://172.27.164.207:8003/resultdetails">Result Details</a></li>
+		<li><a class="current" href="http://172.27.164.207:8003/upload">Upload</a></li>
+	</ul>
+</div>
+
+<div class="upload" id="app2" ng-app="uploadApp" ng-controller="uploadCtrl">
+	
+	<div class="uploadContainer">
+		Upload file: 
+		<input type="file" file-reader="fileContent" />
+		<button ng-click="upload()">Upload</button>
+	</div>
+</div>
+
+<div class="footer" id="app3" ng-app="footerApp" ng-controller="footerCtrl">
+
+</div>
+
+</body>
+</html>
