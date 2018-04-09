@@ -24,77 +24,105 @@
 			<li><a class="current" href="http://172.27.164.207:8003/experiments">Tests</a></li>
 			<li><a href="http://172.27.164.207:8003/results">Results</a></li>
 			<li><a href="http://172.27.164.207:8003/resultdetails">Result Details</a></li>
+			<li><a href="http://172.27.164.207:8003/upload">Upload</a></li>
 		</ul>
 	</div>
 
 	<div class="patientWindow" id="app2" ng-app="testApp" ng-controller="testCtrl">
 		<h1 style="width: 30vw;position: relative;top: 0;">Test Info</h1>
 		<button class="btn-edit" ng-click="edit()" ng-show="!editRecord">Edit</button>
+		<button class="btn-edit" ng-click="deleteRecord()" ng-show="!editRecord">Delete</button>
 		<button class="btn-edit" ng-click="cancel()" ng-show="editRecord">Cancel</button>
 		<button class="btn-edit" ng-click="confirm()" ng-show="editRecord">Confirm</button>
 
-		<table class="detailView">
-			<h3>Patient Info</h3>
-			<tr ng-repeat="p in patientRow track by $index">
-				<th>{a patients[$index*2] a}</th>
-				<td>
-					<span ng-show="!editRecord">{a patient[sql[$index*2]] a}</span>
-					<input ng-show="editRecord" ng-model="edited.patients[sql[$index*2]]" />
-				</td>
-				<th>{a patients[$index*2+1] a}</th>
-				<td>
-					<span ng-show="!editRecord">{a patient[sql[$index*2+1]] a}</span>
-					<input ng-show="editRecord" ng-model="edited.patients[sql[$index*2+1]]" />
-				</td>
-			</tr>
-		</table>
-
-		<table class="detailView">
-			<h3>Sample Info</h3>
-			<tr ng-repeat="p in sampleRow track by $index">
-				<th>{a samples[$index*2] a}</th>
-				<td>
-					<span ng-show="!editRecord">{a sample[sqlSample[$index*2]] a}</span>
-					<input ng-show="editRecord" ng-model="edited.samples[sqlSample[$index*2]]" />
-				</td>
-				<th>{a samples[$index*2+1] a}</th>
-				<td>
-					<span ng-show="!editRecord">{a sample[sqlSample[$index*2+1]] a}</span>
-					<input ng-show="editRecord" ng-model="edited.samples[sqlSample[$index*2+1]]" />
-				</td>
-			</tr>
-		</table>
-
-		<table class="detailView">
-			<h3>Test Info</h3>
-			<tr ng-repeat="p in testRow track by $index">
-				<th>{a tests[$index*2] a}</th>
-				<td>
-					<span ng-show="!editRecord">{a test[sqlTest[$index*2]] a}</span>
-					<input ng-show="editRecord" ng-model="edited.experiments[sqlTest[$index*2]]" />
-				</td>
-				<th>{a tests[$index*2+1] a}</th>
-				<td>
-					<span ng-show="!editRecord">{a test[sqlTest[$index*2+1]] a}</span>
-					<input ng-show="editRecord" ng-model="edited.experiments[sqlTest[$index*2+1]]" />
-				</td>
-			</tr>
-		</table>
-
-		<div ng-repeat="t in tables track by $index" ng-init="table=$index">
-			<h3>{a t a}</h3>
-			<table class="table_preview">
-				<tr class="preview_header" class="{a t a}">
-					<th ng-repeat="x in fields track by $index" class="{a tFields[$index] a}" ng-if="sameTable(tFields[$index], tables[table])">{a x a}</th>
-				</tr>
-				<tr class="preview_content" ng-repeat="row in rows track by $index">
-					<td ng-repeat="col in cols track by $index" ng-if="sameTable(pTables[$index], tables[table])">
-						<a ng-href="http://172.27.164.207:8003/{a pTables[$index] + '/' + row[ids[pTables[$index]]] a}">{a row[col] a}</a>
+		<div>
+			<div class="toggleInfo" ng-click="hidePatient=!hidePatient" ng-class="{hide : hidePatient}">
+				<h3>Patient Info</h3>
+			</div>
+			<table class="detailView" ng-class="{hide : hidePatient}">
+				<tr ng-repeat="p in patientRow track by $index">
+					<th ng-if="notId(sql[$index*2])">{a patients[$index*2] a}</th>
+					<td ng-if="notId(sql[$index*2])">
+						<span ng-show="!editRecord" ng-if="searchable.indexOf(sql[$index*2])==-1">{a patient[sql[$index*2]] a}</span>
+						<a ng-href="http://172.27.164.207:8003/patients/{a patient[ids['patients']] a}" ng-show="!editRecord" ng-if="searchable.indexOf(sql[$index*2])!=-1">{a patient[sql[$index*2]] a}</a>
+						<input ng-show="editRecord" ng-disabled="uneditable.indexOf(sql[$index*2])!=-1" ng-model="edited.patients[sql[$index*2]]" />
+					</td>
+					<th ng-if="notId(sql[$index*2+1])">{a patients[$index*2+1] a}</th>
+					<td ng-if="notId(sql[$index*2+1])">
+						<span ng-show="!editRecord" ng-if="searchable.indexOf(sql[$index*2+1])==-1">{a patient[sql[$index*2+1]] a}</span>
+						<a ng-href="http://172.27.164.207:8003/patients/{a patient[ids['patients']] a}" ng-show="!editRecord" ng-if="searchable.indexOf(sql[$index*2+1])!=-1">{a patient[sql[$index*2+1]] a}</a>
+						<input ng-show="editRecord" ng-disabled="uneditable.indexOf(sql[$index*2+1])!=-1" ng-model="edited.patients[sql[$index*2+1]]" />
 					</td>
 				</tr>
-
-				<div class="loading" data-loading></div>
 			</table>
+		</div>
+
+
+		<div>
+			<div class="toggleInfo" ng-click="hideSample=!hideSample" ng-class="{hide : hideSample}">
+				<h3>Sample Info</h3>
+			</div>
+			<table class="detailView" ng-class="{hide : hideSample}">
+				<tr ng-repeat="p in sampleRow track by $index">
+					<th ng-if="notId(sqlSample[$index*2])">{a samples[$index*2] a}</th>
+					<td ng-if="notId(sqlSample[$index*2])">
+						<span ng-show="!editRecord" ng-if="searchable.indexOf(sqlSample[$index*2])==-1">{a sample[sqlSample[$index*2]] a}</span>
+						<a ng-href="http://172.27.164.207:8003/samples/{a sample[ids['samples']] a}" ng-show="!editRecord" ng-if="searchable.indexOf(sqlSample[$index*2])!=-1">{a sample[sqlSample[$index*2]] a}</a>
+						<input ng-show="editRecord" ng-disabled="uneditable.indexOf(sqlSample[$index*2])!=-1" ng-model="edited.samples[sqlSample[$index*2]]" />
+					</td>
+					<th ng-if="notId(sqlSample[$index*2+1])">{a samples[$index*2+1] a}</th>
+					<td ng-if="notId(sqlSample[$index*2+1])">
+						<span ng-show="!editRecord" ng-if="searchable.indexOf(sqlSample[$index*2+1])==-1">{a sample[sqlSample[$index*2+1]] a}</span>
+						<a ng-href="http://172.27.164.207:8003/samples/{a sample[ids['samples']] a}" ng-show="!editRecord" ng-if="searchable.indexOf(sqlSample[$index*2+1])!=-1">{a sample[sqlSample[$index*2+1]] a}</a>
+						<input ng-show="editRecord" ng-disabled="uneditable.indexOf(sqlSample[$index*2+1])!=-1" ng-model="edited.samples[sqlSample[$index*2+1]]" />
+					</td>
+				</tr>
+			</table>
+		</div>
+
+
+		<div>
+			<div class="toggleInfo" ng-click="hideTest=!hideTest" ng-class="{hide : hideTest}">
+				<h3>Test Info</h3>
+			</div>
+			<table class="detailView" ng-class="{hide : hideTest}">
+				<tr ng-repeat="p in testRow track by $index">
+					<th ng-if="notId(sqlTest[$index*2])">{a tests[$index*2] a}</th>
+					<td ng-if="notId(sqlTest[$index*2])">
+						<span ng-show="!editRecord" ng-if="searchable.indexOf(sqlTest[$index*2])==-1">{a test[sqlTest[$index*2]] a}</span>
+						<a ng-href="http://172.27.164.207:8003/experiments/{a test[ids['experiments']] a}" ng-show="!editRecord" ng-if="searchable.indexOf(sqlTest[$index*2])!=-1">{a test[sqlTest[$index*2]] a}</a>
+						<input ng-show="editRecord" ng-disabled="uneditable.indexOf(sqlTest[$index*2])!=-1" ng-model="edited.experiments[sqlTest[$index*2]]" />
+					</td>
+					<th ng-if="notId(sqlTest[$index*2+1])">{a tests[$index*2+1] a}</th>
+					<td ng-if="notId(sqlTest[$index*2+1])">
+						<span ng-show="!editRecord" ng-if="searchable.indexOf(sqlTest[$index*2+1])==-1">{a test[sqlTest[$index*2+1]] a}</span>
+						<a ng-href="http://172.27.164.207:8003/experiments/{a test[ids['experiments']] a}" ng-show="!editRecord" ng-if="searchable.indexOf(sqlTest[$index*2+1])!=-1">{a test[sqlTest[$index*2+1]] a}</a>
+						<input ng-show="editRecord" ng-disabled="uneditable.indexOf(sqlTest[$index*2+1])!=-1" ng-model="edited.experiments[sqlTest[$index*2+1]]" />
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="toggleInfo" ng-click="hideMore=!hideMore" ng-class="{hide : hideMore}">
+			<h3>More</h3>
+		</div>
+		<div class="table-container" ng-repeat="t in tables track by $index" ng-init="table=$index" ng-show="!hideMore">
+			<div>
+				<h3>{a t a}</h3>
+				<table class="table_preview">
+					<thead><tr class="preview_header" class="{a t a}">
+						<th ng-repeat="x in fields track by $index" class="{a tFields[$index] a}" ng-if="sameTable(tFields[$index], tables[table])&&notId(sqlAll[$index])">{a x a}</th>
+					</tr></thead>
+				
+					<tbody><tr class="preview_content" ng-repeat="row in rows track by $index">
+						<td ng-repeat="col in cols track by $index" ng-if="sameTable(pTables[$index], tables[table])&&notId(cols[$index])">
+							<span ng-if="searchable.indexOf(col)==-1">{a row[col] a}</span>
+							<a ng-href="http://172.27.164.207:8003/{a pTables[$index] + '/' + row[ids[pTables[$index]]] a}" ng-if="searchable.indexOf(col)!=-1">{a row[col] a}</a>
+						</td>
+					</tr></tbody>
+					<div class="loading" data-loading></div>
+				</table>
+			</div>
 		</div>
 	</div>
 
