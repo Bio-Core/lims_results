@@ -23,17 +23,18 @@
 		<li><a href="http://172.27.164.207:8003/experiments">Tests</a></li>
 		<li><a href="http://172.27.164.207:8003/results">Results</a></li>
 		<li><a href="http://172.27.164.207:8003/resultdetails">Result Details</a></li>
+		<li><a href="http://172.27.164.207:8003/upload">Upload</a></li>
 	</ul>
 </div>
 
 <div id="app2" class="appContainer" ng-app="queryApp" ng-controller="queryCtrl" ng-init="load()">
 	<button id="btn-all" style="position: relative;" ng-click="all()">All Fields</button>
-	<button id="btn-output" style="position: relative;" ng-click="query()">Query</button>
 	<button id="btn-clear" style="position: relative;" ng-click="clear()">Clear</button>
 	<button id="btn-csv" style="position: relative;" ng-click="csv()">Download as .csv</button>
 	<span>Common Queries: </span>
 	<select ng-model="presetQuery"><option ng-repeat="q in commonQueryName">{a q a}</option></select>
 	<button id="btn-preset" style="position: relative;" ng-click="preset()">Prefill</button>
+	<button id="btn-output" style="position: relative;" ng-click="query()">Query</button>
 	<!-- <button id="btn-save" style="position: relative;" ng-click="save($http)">Save Query</button> -->
 
 	<section class="query-container">
