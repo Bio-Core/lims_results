@@ -4,6 +4,7 @@ var app3 = angular.module("footerApp", []);
 var selected_fields = [], selected_tables = [], selected_conditions = [];
 var tables = [];
 var tFields = [], fields = [], tableScope = [], type = [];
+var sqlToScope = [], tableToScope = [];
 var operators = [
 	"Equal to",
 	"Not equal to",
@@ -17,13 +18,14 @@ var operators = [
 	"Not ends with",
 	"Contains",
 	"Not contains"];
-var id = {"patients" : "patients.mrn",
+var id = {"patients" : "patients.patient_id",
 	"samples" : "samples.sample_id",
-	"experiments" : "experiments.sample_id",
-	"results" : "results.sample_id",
-	"resultdetails" : "resultdetails.sample_id"};
+	"experiments" : "experiments.experiment_id",
+	"results" : "results.results_id",
+	"resultdetails" : "resultdetails.results_details_id"};
 var queryUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query";
 var colUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/columns";
+var searchableUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/searchable";
 var tableOrder = ["Patients","Samples","Experiments","Results","Result Details"];
 
 app.config(['$interpolateProvider', function($interpolateProvider) {
@@ -96,16 +98,32 @@ function sqlToDisplay(input) {
 app.controller("mainCtrl", function($scope, $http) {
 	$scope.previewSize = 25;
 	$scope.id = angular.copy(id);
+	$scope.hide = [true, true, true, true, true];
 
 	$scope.sameTable = function(ft, t) {
 		return (ft == t.toLowerCase().split(' ').join(''))
 	}
+	$scope.notId = function(sql) {
+		return (!sql.includes("patient_id") && 
+				!sql.includes("sample_id") && 
+				!sql.includes("experiment_id") && 
+				!sql.includes("results_id") && 
+				!sql.includes("results_details_id"))
+	}
+
+	$http.get(searchableUrl)
+	.then(function(data) {
+		$scope.searchable = data.data;
+	}, function(data) {
+		window.alert(data.statusText);
+	});
 
 	$http.get(colUrl)
 	.then(function(data) {
 		var input = data.data;
 		for (let i = 0; i < input.length; i++) {
 			var str = input[i][0].split(".");
+
 			tFields.push(str[0]);
 			tableScope.push(capwords(str[0]));
 			fields.push(sqlToDisplay(str[1]));
@@ -116,9 +134,28 @@ app.controller("mainCtrl", function($scope, $http) {
 		var response = [tables, tFields, fields];
 		$scope.tFields = angular.copy(tFields);
 		$scope.tables = tableOrder;
-		$scope.cols = angular.copy(fields);
+		$scope.fields = angular.copy(fields);
 		$scope.sql = angular.copy(tables);
 
+		$scope.pTables = [];
+		$scope.cols = [];
+
+		function getTableFields(table) {
+			for (let i = 0; i < tables.length; i++) {
+				if (tFields[i] == table) {
+					selected_fields.push(tables[i]);
+					sqlToScope.push(tables[i]);
+					tableToScope.push(tFields[i]);
+				}
+			}
+		}
+		function resetTables() {
+			selected_fields = [];
+			sqlToScope = [];
+			tableToScope = [];
+		}
+
+		/*
 		var d = new Date();
 		var dd = (d.getDate() < 10 ? '0'+d.getDate() : d.getDate());
 		var mm = (d.getMonth() < 9 ? '0'+(d.getMonth()+1) : (d.getMonth()+1));
@@ -129,22 +166,105 @@ app.controller("mainCtrl", function($scope, $http) {
 
 		var init_condition1 = ["AND", "samples.date_collected", operators[4], lastMonth];
 		var init_condition2 = ["AND", "samples.date_collected", operators[5], today];
-		var init_condition3 = ["AND", "samples.sample_id", operators[1], "a"];
-		selected_conditions = [angular.copy(init_condition3)];
+		*/
+
+		selected_conditions = [["AND", "patients.patient_id", operators[1], "a"]];
+
+		$scope.results = {"Patients" : [], "Samples" : [], "Experiments" : [], "Results" : [], "Result Details" : []};
+		getTableFields("patients");
+		$scope.pTables = $scope.pTables.concat(tableToScope);
+		$scope.cols = $scope.cols.concat(sqlToScope);
 
 		$http({
 			method : "POST",
 			url : queryUrl, 
-			data : JSON.stringify({selected_fields:tables,selected_tables:tFields.filter(onlyUnique),selected_conditions:selected_conditions}),
+			data : JSON.stringify({selected_fields:selected_fields,selected_tables:["patients"],selected_conditions:selected_conditions}),
 			headers : {'Content-Type': 'application/json'}
-		}).then(function(data) {
-			var ans = data.data;
-			$scope.results = angular.copy(ans);
+		}).then(function(data1) {
+			var ans = data1.data;
+			$scope.results["Patients"] = angular.copy(ans);
 
-		}, function(data) {
-			window.alert(data.statusText);
+		}, function(data1) {
+			window.alert(data1.statusText);
 		});
+
+		resetTables();
+		getTableFields("samples");
+		$scope.pTables = $scope.pTables.concat(tableToScope);
+		$scope.cols = $scope.cols.concat(sqlToScope);
+		selected_conditions = [["AND", "samples.sample_id", operators[1], "a"]];
+
+		$http({
+			method : "POST",
+			url : queryUrl,
+			data : JSON.stringify({selected_fields:selected_fields,selected_tables:["samples"],selected_conditions:selected_conditions}),
+			headers : {'Content-Type': 'application/json'}
+		}).then(function(data2) {
+			var ans = data2.data;
+			$scope.results["Samples"] = angular.copy(ans);
+
+		}, function(data2) {
+			window.alert(data2.statusText);
+		});
+
+		resetTables();
+		getTableFields("experiments");
+		$scope.pTables = $scope.pTables.concat(tableToScope);
+		$scope.cols = $scope.cols.concat(sqlToScope);
+		selected_conditions = [["AND", "experiments.experiment_id", operators[1], "a"]];
+
+		$http({
+			method : "POST",
+			url : queryUrl,
+			data : JSON.stringify({selected_fields:selected_fields,selected_tables:["experiments"],selected_conditions:selected_conditions}),
+			headers : {'Content-Type': 'application/json'}
+		}).then(function(data3) {
+			var ans = data3.data;
+			$scope.results["Experiments"] = angular.copy(ans);
+
 		
+		}, function(data3) {
+			window.alert(data3.statusText);
+		});
+
+		resetTables();
+		getTableFields("results");
+		$scope.pTables = $scope.pTables.concat(tableToScope);
+		$scope.cols = $scope.cols.concat(sqlToScope);
+		selected_conditions = [["AND", "results.results_id", operators[1], "a"]];
+
+		$http({
+			method : "POST",
+			url : queryUrl,
+			data : JSON.stringify({selected_fields:selected_fields,selected_tables:["results"],selected_conditions:selected_conditions}),
+			headers : {'Content-Type': 'application/json'}
+		}).then(function(data4) {
+			var ans = data4.data;
+			$scope.results["Results"] = angular.copy(ans);
+
+		}, function(data4) {
+			window.alert(data4.statusText);
+		});
+
+		resetTables();
+		getTableFields("resultdetails");
+		$scope.pTables = $scope.pTables.concat(tableToScope);
+		$scope.cols = $scope.cols.concat(sqlToScope);
+		selected_conditions = [["AND", "resultdetails.results_details_id", operators[1], "a"]];
+
+		$http({
+			method : "POST",
+			url : queryUrl,
+			data : JSON.stringify({selected_fields:selected_fields,selected_tables:["resultdetails"],selected_conditions:selected_conditions}),
+			headers : {'Content-Type': 'application/json'}
+		}).then(function(data5) {
+			var ans = data5.data;
+			$scope.results["Result Details"] = angular.copy(ans);
+
+		}, function(data5) {
+			window.alert(data5.statusText);
+		});
+
 	}, function(data) {
 		window.alert("GET error");
 	});
