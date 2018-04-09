@@ -19,12 +19,12 @@ var operators = [
 	"Not ends with",
 	"Contains",
 	"Not contains"];
-var ids = {"patients" : "patients.mrn",
+var ids = {"patients" : "patients.patient_id",
 	"samples" : "samples.sample_id",
-	"experiments" : "experiments.sample_id",
-	"results" : "results.uid",
-	"resultdetails" : "resultdetails.uid"};
-var operator = operators[0];
+	"experiments" : "experiments.experiment_id",
+	"results" : "results.results_id",
+	"resultdetails" : "resultdetails.results_details_id"};
+var operator = operators[0];  // search condition  0: equal   10: contain
 var queryUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query";
 var colUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/columns";
 var pageSizes = [25, 50, 100, 500];
@@ -118,6 +118,20 @@ app.controller("searchCtrl", function($scope, $http, $location) {
 	$scope.sameTable = function(ft, t) {
 		return (ft == t.toLowerCase().split(' ').join(''))
 	}
+	$scope.notId = function(sql) {
+		return (!sql.includes("patient_id") && 
+				!sql.includes("sample_id") && 
+				!sql.includes("experiment_id") && 
+				!sql.includes("results_id") && 
+				!sql.includes("results_details_id"))
+	}
+
+	$http.get(searchableUrl)
+	.then(function(data) {
+		$scope.searchable = data.data;
+	}, function(data) {
+		window.alert(data.statusText);
+	});
 
 	$http.get(colUrl)
 	.then(function(data) {
@@ -161,7 +175,7 @@ app.controller("searchCtrl", function($scope, $http, $location) {
 		// patient conditions
 		var c = [];
 		for (let i = 0; i < tables.length; i++) {
-			if (tFields[i] == "patients") {
+			if (tFields[i] == "patients" && searchable.indexOf(tables[i]) != -1) {
 				c.push(["OR", tables[i], operator, id]);
 			}
 		}
@@ -188,7 +202,7 @@ app.controller("searchCtrl", function($scope, $http, $location) {
 			// sample conditions
 			var c = [];
 			for (let i = 0; i < tables.length; i++) {
-				if (tFields[i] == "samples") {
+				if (tFields[i] == "samples" && searchable.indexOf(tables[i]) != -1) {
 					c.push(["OR", tables[i], operator, id]);
 				}
 			}
@@ -214,7 +228,7 @@ app.controller("searchCtrl", function($scope, $http, $location) {
 				// test conditions
 				var c = [];
 				for (let i = 0; i < tables.length; i++) {
-					if (tFields[i] == "experiments") {
+					if (tFields[i] == "experiments" && searchable.indexOf(tables[i]) != -1) {
 						c.push(["OR", tables[i], operator, id]);
 					}
 				}
@@ -240,7 +254,7 @@ app.controller("searchCtrl", function($scope, $http, $location) {
 					// result conditions
 					var c = [];
 					for (let i = 0; i < tables.length; i++) {
-						if (tFields[i] == "results") {
+						if (tFields[i] == "results" && searchable.indexOf(tables[i]) != -1) {
 							c.push(["OR", tables[i], operator, id]);
 						}
 					}
@@ -266,7 +280,7 @@ app.controller("searchCtrl", function($scope, $http, $location) {
 						// Results conditions
 						var c = [];
 						for (let i = 0; i < tables.length; i++) {
-							if (tFields[i] == "resultdetails") {
+							if (tFields[i] == "resultdetails" && searchable.indexOf(tables[i]) != -1) {
 								c.push(["OR", tables[i], operator, id]);
 							}
 						}
@@ -284,18 +298,18 @@ app.controller("searchCtrl", function($scope, $http, $location) {
 							$scope.rows = $scope.rows.concat(queryResults);
 							
 						}, function(data4) {
-							window.alert(data.statusText);
+							window.alert(data4.statusText);
 						})
 					}, function(data3) {
-						window.alert(data.statusText);
+						window.alert(data3.statusText);
 					});
 
 				}, function(data2) {
-					window.alert(data.statusText);
+					window.alert(data2.statusText);
 				});
 
 			}, function(data1) {
-				window.alert(data.statusText);
+				window.alert(data1.statusText);
 			});	
 
 		}, function(data) {
