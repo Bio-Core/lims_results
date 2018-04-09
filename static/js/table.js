@@ -17,13 +17,19 @@ var operators = [
 	"Not ends with",
 	"Contains",
 	"Not contains"];
-var id = {"patients" : "patients.mrn",
+var id = {"patients" : "patients.patient_id",
 	"samples" : "samples.sample_id",
-	"experiments" : "experiments.sample_id",
-	"results" : "results.uid",
-	"resultdetails" : "resultdetails.uid"};
+	"experiments" : "experiments.experiment_id",
+	"results" : "results.results_id",
+	"resultdetails" : "resultdetails.results_details_id"};
 var queryUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query";
 var colUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/columns";
+var searchable = [
+	"experiments.study_id","experiments.chip_cartridge_barcode","experiments.pcr","experiments.project_name","experiments.project_id",
+	"patients.first_name","patients.last_name","patients.mrn","patients.on_hcn","patients.se_num",
+	"resultdetails.pcr",
+	"results.mlpa_pcr","results.uid","results.verification_pcr",
+	"samples.se_num","samples.surgical_num","samples.non_uhn_id","samples.study_id","samples.sample_name","samples.container_name","samples.container_id","samples.copath_num","samples.other_identifier","samples.dna_sample_barcode"];
 
 app.config(['$interpolateProvider', function($interpolateProvider) {
 	$interpolateProvider.startSymbol('{a');
@@ -103,21 +109,32 @@ app.controller("tableCtrl", function($scope, $http, $location) {
 	$scope.pages = [25, 50, 100, 500];
 	$scope.fields = [];
 	$scope.cols = [];
+	$scope.searchable = searchable;
 
 	$http.get(colUrl)
 	.then(function(data) {
 		var input = data.data;
 		for (let i = 0; i < input.length; i++) {
 			var str = input[i][0].split(".");
+			
 			tFields.push(str[0]);
 			tableScope.push(capwords(str[0]));
 			fields.push(sqlToDisplay(str[1]));
 			type.push(input[i][1]);
 			tables.push(input[i][0]);
+
 			if (tFields[i] == angular.copy($scope.title)) {
 				$scope.fields.push(fields[i]);
 				$scope.cols.push(tables[i]);
 			}
+		}
+
+		$scope.notId = function(sql) {
+			return (!sql.includes("patient_id") && 
+					!sql.includes("sample_id") && 
+					!sql.includes("experiment_id") && 
+					!sql.includes("results_id") && 
+					!sql.includes("results_details_id"))
 		}
 
 		selected_conditions = ["AND", id[$scope.title], operators[10], ""];
