@@ -142,11 +142,11 @@
 					<tr ng-repeat="p in cols track by $index" ng-if="$index%2==0">
 						<th ng-if="notId(cols[$index])&&sameTable(pTables[$index], t)">{a fields[sqlAll.indexOf(cols[$index])] a}</th>
 						<td ng-if="notId(cols[$index])&&sameTable(pTables[$index], t)">
-							<input ng-model="more[t][cols[$index]]" />
+							<input type="{a inputType(cols[$index]) a}" step="any" ng-model="more[t][cols[$index]]" />
 						</td>
 						<th ng-if="notId(cols[$index+1])&&sameTable(pTables[$index+1], t)">{a fields[sqlAll.indexOf(cols[$index+1])] a}</th>
 						<td ng-if="notId(cols[$index+1])&&sameTable(pTables[$index+1], t)">
-							<input ng-model="more[t][cols[$index+1]]" />
+							<input type="{a inputType(cols[$index+1]) a}" step="any" ng-model="more[t][cols[$index+1]]" />
 						</td>
 					</tr>
 				</table>
