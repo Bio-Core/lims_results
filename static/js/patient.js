@@ -187,6 +187,21 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 			} 
 		}
 
+		function stdDate(obj) {
+			var keys = Object.keys(obj);
+			for (let i = 0; i < keys.length; i++) {
+				if (type[tables.indexOf(keys[i])].includes("time")) {
+					if (obj[keys[i]] != "" && obj[keys[i]] != null) {
+						var d = new Date(obj[keys[i]]);
+						obj[keys[i]] = d.toISOString();
+					} else {
+						var d = new Date("1000-01-01");
+						obj[keys[i]] = d.toISOString();
+					}
+				}
+			}
+		}
+
 		function getTableFields(table) {
 			for (let i = 0; i < tables.length; i++) {
 				if (tFields[i] == table) {
@@ -301,7 +316,7 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 			$scope.confirm = function() {
 				if (confirm("Confirm record change?")) {
 					// update database
-					
+					stdDate($scope.edited.patients);
 					$http({
 						method : "POST",
 						url : patientUrl,
@@ -345,20 +360,25 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 
 			$scope.confirmAdd = function() {
 				if (confirm("Confirm adding record?")) {
-
-					$http({
-						method : "POST",
-						url : patientUrl,
-						data : JSON.stringify($scope.added),
-						headers : {'Content-Type': 'application/json'}
-					}).then(function(response) {
-						var newKey = response.data;
-						var returnUrl = "http://" + $window.location.host + "/patients/" + newKey;
-						$window.open(returnUrl, '_self');
-					}, function(response) {
-						window.alert(response.statusText);
-					});
+					if (!empty("Patients")) {
+						stdDate($scope.added);
+						$http({
+							method : "POST",
+							url : patientUrl,
+							data : JSON.stringify($scope.added),
+							headers : {'Content-Type': 'application/json'}
+						}).then(function(response) {
+							var newKey = response.data;
+							var returnUrl = "http://" + $window.location.host + "/patients/" + newKey;
+							$window.open(returnUrl, '_self');
+						}, function(response) {
+							window.alert(response.statusText);
+						});
+					} else {
+						$scope.addRecord = false;
+					}
 				}
+					
 			}
 
 			$scope.addM = function() {
@@ -385,7 +405,8 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 			$scope.confirmMore = function() {
 				if (confirm("Confirm adding record?")) {
 					if (!empty("Samples")) {
-						$scope.more["Samples"]["samples.patient_id"] = $scope.patient[patientID];
+						stdDate($scope.more["Samples"]);
+						$scope.more["Samples"][patient2sample] = $scope.patient[patientID];
 						$http({
 							method : "POST",
 							url : sampleUrl,
@@ -394,7 +415,8 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 						}).then(function(response) {
 							var newKey = response.data;
 							if (!empty("Experiments")) {
-								$scope.more["Experiments"]["experiments.sample_id"] = newKey;
+								stdDate($scope.more["Experiments"]);
+								$scope.more["Experiments"][sample2test] = newKey;
 								$http({
 									method : "POST",
 									url : testUrl,
@@ -403,7 +425,8 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 								}).then(function(response) {
 									var newKey = response.data; 
 									if (!empty("Results")) {
-										$scope.more["Results"]["results.experiment_id"] = newKey;
+										stdDate($scope.more["Results"]);
+										$scope.more["Results"][test2result] = newKey;
 										$http({
 											method : "POST",
 											url : resultUrl,
@@ -412,7 +435,8 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 										}).then(function(response) {
 											var newKey = response.data;
 											if (!empty("Result Details")) {
-												$scope.more["Result Details"]["resultdetails.results_id"] = newKey;
+												stdDate($scope.more["Result Details"]);
+												$scope.more["Result Details"][result2resultd] = newKey;
 												$http({
 													method : "POST",
 													url : resultdUrl,
