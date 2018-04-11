@@ -29,6 +29,9 @@ var queryUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query";
 var colUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/columns";
 var patientUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/patient";
 var sampleUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/sample";
+var testUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/experiment";
+var resultUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/result";
+var resultdUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/resultdetails";
 var searchableUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/searchable";
 var uneditableUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/uneditable";
 var patientID = "patients.patient_id";
@@ -133,6 +136,11 @@ app.controller("sampleCtrl", function($scope, $http, $location, $window) {
 
 	$scope.cancel = function() {
 		$scope.editRecord = false;
+		$scope.addRecord = false;
+	}
+
+	$scope.cancelMore = function() {
+		$scope.addMore = false;
 	}
 
 	$http.get(searchableUrl)
@@ -165,6 +173,17 @@ app.controller("sampleCtrl", function($scope, $http, $location, $window) {
 		$scope.fields = angular.copy(fields);
 		$scope.tFields = angular.copy(tFields);
 		$scope.sqlAll = angular.copy(tables);
+		$scope.more = {"Experiments" : {},"Results" : {},"Result Details" : {}};
+
+		$scope.inputType = function(sql) {
+			if (type[tables.indexOf(sql)].includes("string") || type[tables.indexOf(sql)].includes("bool")) {
+				return "text";
+			} else if (type[tables.indexOf(sql)].includes("time")) {
+				return "text";
+			} else {
+				return "number";
+			} 
+		}
 
 		function getTableFields(table) {
 			for (let i = 0; i < tables.length; i++) {
@@ -198,24 +217,36 @@ app.controller("sampleCtrl", function($scope, $http, $location, $window) {
 			}
 		}
 
+		function empty(str) {
+			var ans = true;
+			var keys = Object.keys($scope.more[str]);
+			for (let i = 0; i < keys.length; i++) {
+				if ($scope.more[str][keys[i]] != "" && $scope.more[str][keys[i]] != null) ans = false;
+			}
+			return ans; 
+		}
+
 		$scope.rows = [];
 		$scope.pTables = [];
 		$scope.cols = [];
 		$scope.sql = []
 
 		getTableFields("experiments");
+		hideId();
 		// test fields/tables added to scope
 		$scope.pTables = $scope.pTables.concat(tableToScope);
 		$scope.cols = $scope.cols.concat(sqlToScope);
 
 		resetTables();
 		getTableFields("results");
+		hideId();
 		// results fields/tables added to scope
 		$scope.pTables = $scope.pTables.concat(tableToScope);
 		$scope.cols = $scope.cols.concat(sqlToScope);
 
 		resetTables();
 		getTableFields("resultdetails");
+		hideId();
 		// results fields/tables added to scope
 		$scope.pTables = $scope.pTables.concat(tableToScope);
 		$scope.cols = $scope.cols.concat(sqlToScope);
@@ -258,6 +289,145 @@ app.controller("sampleCtrl", function($scope, $http, $location, $window) {
 			selected_conditions = [angular.copy(query_condition)];
 			queryResults = [];
 
+			$scope.edit = function() {
+				// Verify user privilege
+
+				$scope.edited.samples = angular.copy($scope.sample);
+				$scope.editRecord = true;
+			}
+
+			$scope.confirm = function() {
+				if (confirm("Confirm record change?")) {
+					// update database
+					
+					$http({
+						method : "POST",
+						url : sampleUrl,
+						data : $scope.edited.samples,
+						headers : {'Content-Type': 'application/json'}
+					}).then(function(putResponse) {
+						$window.open(url, '_self');
+					}, function(putResponse) {
+						window.alert(putResponse.statusText);
+					});
+				}
+			}
+
+			$scope.deleteRecord = function() {
+				if (confirm("Confirm deleting record?")) {
+					// update database
+					var deleted = [{"samples" : $scope.sample[sampleID]}];
+
+					for (let i = 0; i < $scope.rows.length; i++) {
+						var pushed = {[$scope.pTables[i]] : $scope.rows[i][ids[$scope.pTables[i]]]};
+						deleted.push(pushed);
+					}
+					var returnUrl = "http://" + $window.location.host + "/samples";
+					$http.put(deleteUrl, JSON.stringify(deleted))
+					.then(function(putResponse) {
+						$window.open(returnUrl, '_self');
+					}, function(putResponse) {
+						window.alert(putResponse.statusText);
+					});
+				}
+			}
+
+			$scope.add = function() {
+				$scope.added = angular.copy($scope.sample);
+				for (let i = 0; i < $scope.sqlSample.length; i++) {
+					$scope.added[$scope.sqlSample[i]] = "";
+				}
+				delete $scope.added[sampleID];
+				$scope.addRecord = true;
+			}
+
+			$scope.confirmAdd = function() {
+				if (confirm("Confirm adding record?")) {
+					$scope.more["Samples"]["samples.patient_id"] = $scope.patient[patientID];
+					$http({
+						method : "POST",
+						url : sampleUrl,
+						data : JSON.stringify($scope.added),
+						headers : {'Content-Type': 'application/json'}
+					}).then(function(response) {
+						var newKey = response.data;
+						var returnUrl = "http://" + $window.location.host + "/samples/" + newKey;
+						$window.open(returnUrl, '_self');
+					}, function(response) {
+						window.alert(response.statusText);
+					});
+				}
+			}
+
+			$scope.addM = function() {
+				$scope.more = {"Experiments" : {},"Results" : {},"Result Details" : {}};
+				for (let i = 0; i < $scope.cols.length; i++) {
+					if ($scope.cols[i].includes("experiments.")) {
+						$scope.more["Experiments"][$scope.cols[i]] = null;
+					}
+					if ($scope.cols[i].includes("results.")) {
+						$scope.more["Results"][$scope.cols[i]] = null;
+					}
+					if ($scope.cols[i].includes("resultdetails.")) {
+						$scope.more["Result Details"][$scope.cols[i]] = null;
+					}
+				}
+				
+				$scope.addMore = true;
+			}
+
+			$scope.confirmMore = function() {
+				if (confirm("Confirm adding record?")) {
+					
+					if (!empty("Experiments")) {
+						$scope.more["Experiments"][sample2test] = $scope.sample[sampleID];
+						$http({
+							method : "POST",
+							url : testUrl,
+							data : JSON.stringify(angular.copy($scope.more["Experiments"])),
+							headers : {'Content-Type': 'application/json'}
+						}).then(function(response) {
+							var newKey = response.data; 
+							if (!empty("Results")) {
+								$scope.more["Results"][test2result] = newKey;
+								$http({
+									method : "POST",
+									url : resultUrl,
+									data : JSON.stringify(angular.copy($scope.more["Results"])),
+									headers : {'Content-Type': 'application/json'}
+								}).then(function(response) {
+									var newKey = response.data;
+									if (!empty("Result Details")) {
+										$scope.more["Result Details"][result2resultd] = newKey;
+										$http({
+											method : "POST",
+											url : resultdUrl,
+											data : JSON.stringify(angular.copy($scope.more["Result Details"])),
+											headers : {'Content-Type': 'application/json'}
+										}).then(function(response) {
+											$window.open(url, '_self');
+											
+										}, function(response) {
+											window.alert(response.statusText);
+										});
+									} else {
+										$window.open(url, '_self');
+									}
+								}, function(response) {
+									window.alert(response.statusText);
+								});
+							} else {
+								$window.open(url, '_self');
+							}
+						}, function(response) {
+							window.alert(response.statusText);
+						});
+					} else {
+						$scope.addMore = false;
+					}
+				}
+			}
+
 			// POST patient info
 			$http({
 				method : "POST",
@@ -294,120 +464,64 @@ app.controller("sampleCtrl", function($scope, $http, $location, $window) {
 						tests = tests.concat(queryResults[b][testID]); // experiments.experiment_id
 					}
 
-					resetTables();
-					getTableFields("results");
-					selected_conditions = [];
-
-					// Tests added / find results
-					for (let b = 0; b < tests.length; b++) {
-						query_condition = ["OR", test2result, operators[0], angular.copy(tests[b])]; // results.experiment_id = experiments.experiment_id
-						selected_conditions.push(angular.copy(query_condition));
-					}
-					selected_conditions[0][0] = "AND";
-					queryResults = [];
-					// POST result info for tests[b]
-					$http({
-						method : "POST",
-						url : queryUrl, 
-						data : JSON.stringify({selected_fields:selected_fields,selected_tables:angular.copy(["results"]),selected_conditions:selected_conditions}),
-						headers : {'Content-Type': 'application/json'}
-					}).then(function(data3) {
-						queryResults = data3.data;
-						$scope.rows = $scope.rows.concat(queryResults);
-
-						for (let c = 0; c < queryResults.length; c++) {
-							results = results.concat(queryResults[c][resultID]); // results.results_id
-						}
+					if (tests.length != 0) {
 
 						resetTables();
-						getTableFields("resultdetails");
+						getTableFields("results");
 						selected_conditions = [];
 
-						// Results added / find details
-						for (let c = 0; c < results.length; c++) {
-							query_condition = ["OR", result2resultd, operators[0], angular.copy(results[c])]; // resultdetails.result_id = results.results_id
+						// Tests added / find results
+						for (let b = 0; b < tests.length; b++) {
+							query_condition = ["OR", test2result, operators[0], angular.copy(tests[b])]; // results.experiment_id = experiments.experiment_id
 							selected_conditions.push(angular.copy(query_condition));
 						}
 						selected_conditions[0][0] = "AND";
 						queryResults = [];
-						// POST details for results[c]
+						// POST result info for tests[b]
 						$http({
 							method : "POST",
 							url : queryUrl, 
-							data : JSON.stringify({selected_fields:selected_fields,selected_tables:angular.copy(["resultdetails"]),selected_conditions:selected_conditions}),
+							data : JSON.stringify({selected_fields:selected_fields,selected_tables:angular.copy(["results"]),selected_conditions:selected_conditions}),
 							headers : {'Content-Type': 'application/json'}
-						}).then(function(data4) {
-							queryResults = data4.data;
+						}).then(function(data3) {
+							queryResults = data3.data;
 							$scope.rows = $scope.rows.concat(queryResults);
 
-							$scope.edit = function() {
-								// Verify user privilege
-
-								$scope.edited.patients = angular.copy($scope.patient);
-								$scope.edited.samples = angular.copy($scope.sample);
-								$scope.editRecord = true;
+							for (let c = 0; c < queryResults.length; c++) {
+								results = results.concat(queryResults[c][resultID]); // results.results_id
 							}
 
-							$scope.confirm = function() {
-								if (confirm("Confirm record change?")) {
-									// update database
-									for (let i = 0; i < $scope.edited.patients.length; i++) {
-										if (type[tables.indexOf(Object.keys($scope.edited.patients)[i])].includes("float") || 
-											type[tables.indexOf(Object.keys($scope.edited.patients)[i])].includes("int"))
-											$scope.edited.patients[Object.keys($scope.edited.patients)[i]] = Number($scope.edited.patients[Object.keys($scope.edited.patients)[i]]);
-									}
-									for (let i = 0; i < $scope.edited.samples.length; i++) {
-										if (type[tables.indexOf(Object.keys($scope.edited.samples)[i])].includes("float") || 
-											type[tables.indexOf(Object.keys($scope.edited.samples)[i])].includes("int"))
-											$scope.edited.samples[Object.keys($scope.edited.patients)[i]] = Number($scope.edited.samples[Object.keys($scope.edited.samples)[i]]);
-									}
-									$http({
-										method : "POST",
-										url : patientUrl,
-										data : JSON.stringify($scope.edited.patients),
-										headers : {'Content-Type': 'application/json'}
-									}).then(function(putResponse) {
-										$http({
-											method : "POST",
-											url : sampleUrl,
-											data : $scope.edited.samples,
-											headers : {'Content-Type': 'application/json'}
-										}).then(function(putResponse) {
-											$window.open(url, '_self');
-										}, function(putResponse) {
-											window.alert(putResponse.statusText);
-										});
-									}, function(putResponse) {
-										window.alert(putResponse.statusText);
-									});
+							if (results.length != 0) {
+
+								resetTables();
+								getTableFields("resultdetails");
+								selected_conditions = [];
+
+								// Results added / find details
+								for (let c = 0; c < results.length; c++) {
+									query_condition = ["OR", result2resultd, operators[0], angular.copy(results[c])]; // resultdetails.result_id = results.results_id
+									selected_conditions.push(angular.copy(query_condition));
 								}
+								selected_conditions[0][0] = "AND";
+								queryResults = [];
+								// POST details for results[c]
+								$http({
+									method : "POST",
+									url : queryUrl, 
+									data : JSON.stringify({selected_fields:selected_fields,selected_tables:angular.copy(["resultdetails"]),selected_conditions:selected_conditions}),
+									headers : {'Content-Type': 'application/json'}
+								}).then(function(data4) {
+									queryResults = data4.data;
+									$scope.rows = $scope.rows.concat(queryResults);
+									
+								}, function(data4) {
+									window.alert(data4.statusText);
+								})
 							}
-
-							$scope.deleteRecord = function() {
-								if (confirm("Confirm deleting record?")) {
-									// update database
-									var deleted = [{"samples" : $scope.sample[sampleID]}];
-
-									for (let i = 0; i < $scope.rows.length; i++) {
-										var pushed = {[$scope.pTables[i]] : $scope.rows[i][ids[pTables[i]]]};
-										deleted.push(pushed);
-									}
-									var returnUrl = "http://" + $window.location.host + "/samples";
-									$http.put(deleteUrl, JSON.stringify(deleted))
-									.then(function(putResponse) {
-										$window.open(returnUrl, '_self');
-									}, function(putResponse) {
-										window.alert(putResponse.statusText);
-									});
-								}
-							}
-							
-						}, function(data4) {
-							window.alert(data4.statusText);
-						})
-					}, function(data3) {
-						window.alert(data3.statusText);
-					});
+						}, function(data3) {
+							window.alert(data3.statusText);
+						});
+					}
 
 				}, function(data2) {
 					window.alert(data2.statusText);
