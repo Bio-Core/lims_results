@@ -31,7 +31,7 @@
 	<div class="patientWindow" id="app2" ng-app="patientApp" ng-controller="patientCtrl">
 		<h1 style="width: 30vw;position: relative;top: 0;">Patient Info</h1>
 		<button class="btn-edit" ng-click="edit()" ng-show="!editRecord&&!addRecord">Edit</button>
-		<button class="btn-edit" ng-click="deleteRecord()" ng-show="!editRecord&&!addRecord">Delete</button>
+		<!-- <button class="btn-edit" ng-click="deleteRecord()" ng-show="!editRecord&&!addRecord">Delete</button> -->
 		<button class="btn-edit" ng-click="add()" ng-show="!editRecord&&!addRecord">Add</button>
 		<button class="btn-edit" ng-click="cancel()" ng-show="editRecord||addRecord">Cancel</button>
 		<button class="btn-edit" ng-click="confirm()" ng-show="editRecord&&!addRecord">Confirm</button>
