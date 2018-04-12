@@ -205,11 +205,12 @@ th.hovered.after:before {
 	display: none;
 }
 
-.previewWindow,
-.patientWindow {
+.previewWindow {
 	min-height: 100px;
 	width: 100%;
 	display: block;
+	background-color: beige;
+	padding-bottom: 1em;
 }
 
 .previewWindow.hide {
@@ -565,10 +566,12 @@ td.ui-datepicker-today {
 }
 
 .table_preview.previewAll {
-	width: auto;
+	width: 90%;
 	height: 500px;
 	max-height: none;
 	margin-top: 0;
+	margin-left: 5%;
+	background-color: white;
 }
 
 .table_one a,
@@ -695,6 +698,7 @@ td.ui-datepicker-today {
 	box-sizing: border-box;
 	cursor: pointer;
 	margin-top: 1em;
+	margin-bottom: -5px;
 }
 
 .toggleInfo:after {
