@@ -234,11 +234,11 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 			}
 		}
 
-		function empty(str) {
+		function empty(obj) {
 			var ans = true;
-			var keys = Object.keys($scope.more[str]);
+			var keys = Object.keys(obj);
 			for (let i = 0; i < keys.length; i++) {
-				if ($scope.more[str][keys[i]] != "" && $scope.more[str][keys[i]] != null) ans = false;
+				if (obj[keys[i]] != "" && obj[keys[i]] != null) ans = false;
 			}
 			return ans; 
 		}
@@ -329,7 +329,7 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 					});
 				}
 			}
-
+			/*
 			$scope.deleteRecord = function() {
 				if (confirm("Confirm deleting record?")) {
 					// update database
@@ -348,11 +348,11 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 					});
 				}
 			}
-
+			*/
 			$scope.add = function() {
 				$scope.added = angular.copy($scope.patient);
 				for (let i = 0; i < $scope.sql.length; i++) {
-					$scope.added[$scope.sql[i]] = "";
+					$scope.added[$scope.sql[i]] = null;
 				}
 				delete $scope.added[patientID];
 				$scope.addRecord = true;
@@ -360,8 +360,9 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 
 			$scope.confirmAdd = function() {
 				if (confirm("Confirm adding record?")) {
-					if (!empty("Patients")) {
+					if (!empty($scope.added)) {
 						stdDate($scope.added);
+
 						$http({
 							method : "POST",
 							url : patientUrl,
@@ -404,7 +405,7 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 
 			$scope.confirmMore = function() {
 				if (confirm("Confirm adding record?")) {
-					if (!empty("Samples")) {
+					if (!empty($scope.more["Samples"])) {
 						stdDate($scope.more["Samples"]);
 						$scope.more["Samples"][patient2sample] = $scope.patient[patientID];
 						$http({
@@ -414,7 +415,7 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 							headers : {'Content-Type': 'application/json'}
 						}).then(function(response) {
 							var newKey = response.data;
-							if (!empty("Experiments")) {
+							if (!empty($scope.more["Experiments"])) {
 								stdDate($scope.more["Experiments"]);
 								$scope.more["Experiments"][sample2test] = newKey;
 								$http({
@@ -424,7 +425,7 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 									headers : {'Content-Type': 'application/json'}
 								}).then(function(response) {
 									var newKey = response.data; 
-									if (!empty("Results")) {
+									if (!empty($scope.more["Results"])) {
 										stdDate($scope.more["Results"]);
 										$scope.more["Results"][test2result] = newKey;
 										$http({
@@ -434,7 +435,7 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 											headers : {'Content-Type': 'application/json'}
 										}).then(function(response) {
 											var newKey = response.data;
-											if (!empty("Result Details")) {
+											if (!empty($scope.more["Result Details"])) {
 												stdDate($scope.more["Result Details"]);
 												$scope.more["Result Details"][result2resultd] = newKey;
 												$http({
