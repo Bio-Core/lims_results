@@ -185,6 +185,21 @@ app.controller("sampleCtrl", function($scope, $http, $location, $window) {
 			} 
 		}
 
+		function stdDate(obj) {
+			var keys = Object.keys(obj);
+			for (let i = 0; i < keys.length; i++) {
+				if (type[tables.indexOf(keys[i])].includes("time")) {
+					if (obj[keys[i]] != "" && obj[keys[i]] != null) {
+						var d = new Date(obj[keys[i]]);
+						obj[keys[i]] = d.toISOString();
+					} else {
+						var d = new Date("1000-01-01");
+						obj[keys[i]] = d.toISOString();
+					}
+				}
+			}
+		}
+
 		function getTableFields(table) {
 			for (let i = 0; i < tables.length; i++) {
 				if (tFields[i] == table) {
@@ -217,11 +232,11 @@ app.controller("sampleCtrl", function($scope, $http, $location, $window) {
 			}
 		}
 
-		function empty(str) {
+		function empty(obj) {
 			var ans = true;
-			var keys = Object.keys($scope.more[str]);
+			var keys = Object.keys(obj);
 			for (let i = 0; i < keys.length; i++) {
-				if ($scope.more[str][keys[i]] != "" && $scope.more[str][keys[i]] != null) ans = false;
+				if (obj[keys[i]] != "" && obj[keys[i]] != null) ans = false;
 			}
 			return ans; 
 		}
@@ -299,7 +314,7 @@ app.controller("sampleCtrl", function($scope, $http, $location, $window) {
 			$scope.confirm = function() {
 				if (confirm("Confirm record change?")) {
 					// update database
-					
+					stdDate($scope.edited.samples);
 					$http({
 						method : "POST",
 						url : sampleUrl,
@@ -312,7 +327,7 @@ app.controller("sampleCtrl", function($scope, $http, $location, $window) {
 					});
 				}
 			}
-
+			/*
 			$scope.deleteRecord = function() {
 				if (confirm("Confirm deleting record?")) {
 					// update database
@@ -331,11 +346,11 @@ app.controller("sampleCtrl", function($scope, $http, $location, $window) {
 					});
 				}
 			}
-
+			*/
 			$scope.add = function() {
 				$scope.added = angular.copy($scope.sample);
 				for (let i = 0; i < $scope.sqlSample.length; i++) {
-					$scope.added[$scope.sqlSample[i]] = "";
+					$scope.added[$scope.sqlSample[i]] = null;
 				}
 				delete $scope.added[sampleID];
 				$scope.addRecord = true;
@@ -343,20 +358,26 @@ app.controller("sampleCtrl", function($scope, $http, $location, $window) {
 
 			$scope.confirmAdd = function() {
 				if (confirm("Confirm adding record?")) {
-					$scope.more["Samples"]["samples.patient_id"] = $scope.patient[patientID];
-					$http({
-						method : "POST",
-						url : sampleUrl,
-						data : JSON.stringify($scope.added),
-						headers : {'Content-Type': 'application/json'}
-					}).then(function(response) {
-						var newKey = response.data;
-						var returnUrl = "http://" + $window.location.host + "/samples/" + newKey;
-						$window.open(returnUrl, '_self');
-					}, function(response) {
-						window.alert(response.statusText);
-					});
+					if (!empty($scope.added)) {
+						stdDate($scope.added);
+						$scope.added[sample2patient] = $scope.patient[patientID];
+						$http({
+							method : "POST",
+							url : sampleUrl,
+							data : JSON.stringify($scope.added),
+							headers : {'Content-Type': 'application/json'}
+						}).then(function(response) {
+							var newKey = response.data;
+							var returnUrl = "http://" + $window.location.host + "/samples/" + newKey;
+							$window.open(returnUrl, '_self');
+						}, function(response) {
+							window.alert(response.statusText);
+						});
+					} else {
+						$scope.addRecord = false;
+					}
 				}
+					
 			}
 
 			$scope.addM = function() {
