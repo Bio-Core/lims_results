@@ -31,7 +31,7 @@
 	<div class="patientWindow" id="app2" ng-app="resultdetailApp" ng-controller="resultdetailCtrl">
 		<h1 style="width: 30vw;position: relative;top: 0;">Result Detail Info</h1>
 		<button class="btn-edit" ng-click="edit()" ng-show="!editRecord&&!addRecord">Edit</button>
-		<button class="btn-edit" ng-click="deleteRecord()" ng-show="!editRecord&&!addRecord">Delete</button>
+		<!-- <button class="btn-edit" ng-click="deleteRecord()" ng-show="!editRecord&&!addRecord">Delete</button> -->
 		<button class="btn-edit" ng-click="add()" ng-show="!editRecord&&!addRecord">Add</button>
 		<button class="btn-edit" ng-click="cancel()" ng-show="editRecord||addRecord">Cancel</button>
 		<button class="btn-edit" ng-click="confirm()" ng-show="editRecord&&!addRecord">Confirm</button>
@@ -141,16 +141,16 @@
 				<tr ng-repeat="p in resultdetailRow track by $index">
 					<th ng-if="notId(sqlResultd[$index*2])">{a resultdetails[$index*2] a}</th>
 					<td ng-if="notId(sqlResultd[$index*2])">
-						<span ng-show="!editRecord" ng-if="searchable.indexOf(sqlResultd[$index*2])==-1">{a resultdetail[sqlResultd[$index*2]] a}</span>
-						<a ng-href="http://172.27.164.207:8003/results/{a resultd[ids['resultdetails']] a}" ng-show="!editRecord" ng-if="searchable.indexOf(sqlResultd[$index*2])!=-1">{a resultdetail[sqlResultd[$index*2]] a}</a>
-						<input type="{a inputType(sqlResultd[$index*2]) a}" step="any" ng-show="editRecord" ng-disabled="uneditable.indexOf(sqlResultd[$index*2])!=-1" ng-model="edited.resultdetails[sqlResultd[$index*2]]" />
+						<span ng-show="!editRecord&&!addRecord" ng-if="searchable.indexOf(sqlResultd[$index*2])==-1">{a resultdetail[sqlResultd[$index*2]] a}</span>
+						<a ng-href="http://172.27.164.207:8003/results/{a resultd[ids['resultdetails']] a}" ng-show="!editRecord&&!addRecord" ng-if="searchable.indexOf(sqlResultd[$index*2])!=-1">{a resultdetail[sqlResultd[$index*2]] a}</a>
+						<input type="{a inputType(sqlResultd[$index*2]) a}" step="any" ng-show="editRecord&&!addRecord" ng-disabled="uneditable.indexOf(sqlResultd[$index*2])!=-1" ng-model="edited.resultdetails[sqlResultd[$index*2]]" />
 						<input type="{a inputType(sqlResultd[$index*2]) a}" step="any" ng-show="!editRecord&&addRecord" ng-model="added[sqlResultd[$index*2]]" />
 					</td>
 					<th ng-if="notId(sqlResultd[$index*2+1])">{a resultdetails[$index*2+1] a}</th>
 					<td ng-if="notId(sqlResultd[$index*2+1])">
-						<span ng-show="!editRecord" ng-if="searchable.indexOf(sqlResultd[$index*2+1])==-1">{a resultdetail[sqlResultd[$index*2+1]] a}</span>
-						<a ng-href="http://172.27.164.207:8003/results/{a resultd[ids['resultdetails']] a}" ng-show="!editRecord" ng-if="searchable.indexOf(sqlResultd[$index*2+1])!=-1">{a resultdetail[sqlResultd[$index*2+1]] a}</a>
-						<input type="{a inputType(sqlResultd[$index*2+1]) a}" step="any" ng-show="editRecord" ng-disabled="uneditable.indexOf(sqlResultd[$index*2+1])!=-1" ng-model="edited.resultdetails[sqlResultd[$index*2+1]]" />
+						<span ng-show="!editRecord&&!addRecord" ng-if="searchable.indexOf(sqlResultd[$index*2+1])==-1">{a resultdetail[sqlResultd[$index*2+1]] a}</span>
+						<a ng-href="http://172.27.164.207:8003/results/{a resultd[ids['resultdetails']] a}" ng-show="!editRecord&&!addRecord" ng-if="searchable.indexOf(sqlResultd[$index*2+1])!=-1">{a resultdetail[sqlResultd[$index*2+1]] a}</a>
+						<input type="{a inputType(sqlResultd[$index*2+1]) a}" step="any" ng-show="editRecord&&!addRecord" ng-disabled="uneditable.indexOf(sqlResultd[$index*2+1])!=-1" ng-model="edited.resultdetails[sqlResultd[$index*2+1]]" />
 						<input type="{a inputType(sqlResultd[$index*2+1]) a}" step="any" ng-show="!editRecord&&addRecord" ng-model="added[sqlResultd[$index*2+1]]" />
 					</td>
 				</tr>
