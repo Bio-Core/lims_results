@@ -22,9 +22,9 @@ var operators = [
 	"Not contains"];
 var ids = {"patients" : "patients.patient_id",
 	"samples" : "samples.sample_id",
-	"experiments" : "experiments.experiment_id",  // experiments.experiment_id
-	"results" : "results.results_id",  // results.results_id
-	"resultdetails" : "resultdetails.results_details_id"};  // resultdetails.results_details_id
+	"experiments" : "experiments.experiment_id",
+	"results" : "results.results_id",
+	"resultdetails" : "resultdetails.results_details_id"};
 var queryUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query";
 var colUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/columns";
 var patientUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/patient";
@@ -400,7 +400,7 @@ app.controller("sampleCtrl", function($scope, $http, $location, $window) {
 			$scope.confirmMore = function() {
 				if (confirm("Confirm adding record?")) {
 					
-					if (!empty("Experiments")) {
+					if (!empty($scope.more["Experiments"])) {
 						$scope.more["Experiments"][sample2test] = $scope.sample[sampleID];
 						$http({
 							method : "POST",
@@ -409,7 +409,7 @@ app.controller("sampleCtrl", function($scope, $http, $location, $window) {
 							headers : {'Content-Type': 'application/json'}
 						}).then(function(response) {
 							var newKey = response.data; 
-							if (!empty("Results")) {
+							if (!empty($scope.more["Results"])) {
 								$scope.more["Results"][test2result] = newKey;
 								$http({
 									method : "POST",
@@ -418,7 +418,7 @@ app.controller("sampleCtrl", function($scope, $http, $location, $window) {
 									headers : {'Content-Type': 'application/json'}
 								}).then(function(response) {
 									var newKey = response.data;
-									if (!empty("Result Details")) {
+									if (!empty($scope.more["Result Details"])) {
 										$scope.more["Result Details"][result2resultd] = newKey;
 										$http({
 											method : "POST",
@@ -479,7 +479,7 @@ app.controller("sampleCtrl", function($scope, $http, $location, $window) {
 					headers : {'Content-Type': 'application/json'}
 				}).then(function(data2) {
 					queryResults = data2.data;
-					$scope.rows = $scope.rows.concat(queryResults);
+					$scope.rows["Experiments"] = queryResults;
 
 					for (let b = 0; b < queryResults.length; b++) {
 						tests = tests.concat(queryResults[b][testID]); // experiments.experiment_id
@@ -506,7 +506,7 @@ app.controller("sampleCtrl", function($scope, $http, $location, $window) {
 							headers : {'Content-Type': 'application/json'}
 						}).then(function(data3) {
 							queryResults = data3.data;
-							$scope.rows = $scope.rows.concat(queryResults);
+							$scope.rows["Results"] = queryResults;
 
 							for (let c = 0; c < queryResults.length; c++) {
 								results = results.concat(queryResults[c][resultID]); // results.results_id
@@ -533,7 +533,7 @@ app.controller("sampleCtrl", function($scope, $http, $location, $window) {
 									headers : {'Content-Type': 'application/json'}
 								}).then(function(data4) {
 									queryResults = data4.data;
-									$scope.rows = $scope.rows.concat(queryResults);
+									$scope.rows["Result Details"] = queryResults;
 									
 								}, function(data4) {
 									window.alert(data4.statusText);
