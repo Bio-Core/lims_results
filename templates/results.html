@@ -24,7 +24,7 @@
 			<li><a href="http://172.27.164.207:8003/experiments">Tests</a></li>
 			<li><a class="current" href="http://172.27.164.207:8003/results">Results</a></li>
 			<li><a href="http://172.27.164.207:8003/resultdetails">Result Details</a></li>
-			<li><a href="http://172.27.164.207:8003/upload">Upload</a></li>
+			<!-- <li><a href="http://172.27.164.207:8003/upload">Upload</a></li> -->
 		</ul>
 	</div>
 
@@ -47,15 +47,11 @@
 					<td ng-if="notId(sql[$index*2])">
 						<span ng-if="searchable.indexOf(sql[$index*2])==-1">{a patient[sql[$index*2]] a}</span>
 						<a ng-href="http://172.27.164.207:8003/patients/{a patient[ids['patients']] a}" ng-if="searchable.indexOf(sql[$index*2])!=-1">{a patient[sql[$index*2]] a}</a>
-						<!--
-						<input type="{a inputType(sql[$index*2]) a}" step="any" ng-show="editRecord" ng-disabled="uneditable.indexOf(sql[$index*2])!=-1" ng-model="edited.patients[sql[$index*2]]" /> -->
 					</td>
 					<th ng-if="notId(sql[$index*2+1])">{a patients[$index*2+1] a}</th>
 					<td ng-if="notId(sql[$index*2+1])">
 						<span ng-if="searchable.indexOf(sql[$index*2+1])==-1">{a patient[sql[$index*2+1]] a}</span>
 						<a ng-href="http://172.27.164.207:8003/patients/{a patient[ids['patients']] a}" ng-if="searchable.indexOf(sql[$index*2+1])!=-1">{a patient[sql[$index*2+1]] a}</a>
-						<!--
-						<input type="{a inputType(sql[$index*2+1]) a}" step="any" ng-show="editRecord" ng-disabled="uneditable.indexOf(sql[$index*2+1])!=-1" ng-model="edited.patients[sql[$index*2+1]]" /> -->
 					</td>
 				</tr>
 			</table>
@@ -71,15 +67,11 @@
 					<td ng-if="notId(sqlSample[$index*2])">
 						<span ng-if="searchable.indexOf(sqlSample[$index*2])==-1">{a sample[sqlSample[$index*2]] a}</span>
 						<a ng-href="http://172.27.164.207:8003/samples/{a sample[ids['samples']] a}" ng-if="searchable.indexOf(sqlSample[$index*2])!=-1">{a sample[sqlSample[$index*2]] a}</a>
-						<!--
-						<input type="{a inputType(sqlSample[$index*2]) a}" step="any" ng-show="editRecord" ng-disabled="uneditable.indexOf(sqlSample[$index*2])!=-1" ng-model="edited.samples[sqlSample[$index*2]]" /> -->
 					</td>
 					<th ng-if="notId(sqlSample[$index*2+1])">{a samples[$index*2+1] a}</th>
 					<td ng-if="notId(sqlSample[$index*2+1])">
 						<span ng-if="searchable.indexOf(sqlSample[$index*2+1])==-1">{a sample[sqlSample[$index*2+1]] a}</span>
 						<a ng-href="http://172.27.164.207:8003/samples/{a sample[ids['samples']] a}" ng-if="searchable.indexOf(sqlSample[$index*2+1])!=-1">{a sample[sqlSample[$index*2+1]] a}</a>
-						<!--
-						<input type="{a inputType(sqlSample[$index*2+1]) a}" step="any" ng-show="editRecord" ng-disabled="uneditable.indexOf(sqlSample[$index*2+1])!=-1" ng-model="edited.samples[sqlSample[$index*2+1]]" /> -->
 					</td>
 				</tr>
 			</table>
@@ -95,15 +87,11 @@
 					<td ng-if="notId(sqlTest[$index*2])">
 						<span ng-if="searchable.indexOf(sqlTest[$index*2])==-1">{a test[sqlTest[$index*2]] a}</span>
 						<a ng-href="http://172.27.164.207:8003/experiments/{a test[ids['experiments']] a}" ng-if="searchable.indexOf(sqlTest[$index*2])!=-1">{a test[sqlTest[$index*2]] a}</a>
-						<!--
-						<input type="{a inputType(sqlTest[$index*2]) a}" step="any" ng-show="editRecord" ng-disabled="uneditable.indexOf(sqlTest[$index*2])!=-1" ng-model="edited.experiments[sqlTest[$index*2]]" /> -->
 					</td>
 					<th ng-if="notId(sqlTest[$index*2+1])">{a tests[$index*2+1] a}</th>
 					<td ng-if="notId(sqlTest[$index*2+1])">
 						<span ng-if="searchable.indexOf(sqlTest[$index*2+1])==-1">{a test[sqlTest[$index*2+1]] a}</span>
 						<a ng-href="http://172.27.164.207:8003/experiments/{a test[ids['experiments']] a}" ng-if="searchable.indexOf(sqlTest[$index*2+1])!=-1">{a test[sqlTest[$index*2+1]] a}</a>
-						<!--
-						<input type="{a inputType(sqlTest[$index*2+1]) a}" step="any" ng-show="editRecord" ng-disabled="uneditable.indexOf(sqlTest[$index*2+1])!=-1" ng-model="edited.experiments[sqlTest[$index*2+1]]" /> -->
 					</td>
 				</tr>
 			</table>
@@ -119,15 +107,15 @@
 					<td ng-if="notId(sqlResult[$index*2])">
 						<span ng-show="!editRecord&&!addRecord" ng-if="searchable.indexOf(sqlResult[$index*2])==-1">{a result[sqlResult[$index*2]] a}</span>
 						<a ng-href="http://172.27.164.207:8003/results/{a result[ids['results']] a}" ng-show="!editRecord&&!addRecord" ng-if="searchable.indexOf(sqlResult[$index*2])!=-1">{a result[sqlResult[$index*2]] a}</a>
-						<input type="{a inputType(sqlResult[$index*2]) a}" step="any" ng-show="editRecord&&!addRecord" ng-disabled="uneditable.indexOf(sqlResult[$index*2])!=-1" ng-model="edited.results[sqlResult[$index*2]]" />
-						<input type="{a inputType(sqlResult[$index*2]) a}" step="any" ng-show="!editRecord&&addRecord" ng-model="added[sqlResult[$index*2]]" />
+						<input type="{a inputType(sqlResult[$index*2]) a}" step="any" ng-show="editRecord&&!addRecord" ng-disabled="uneditable.indexOf(sqlResult[$index*2])!=-1" ng-model="edited.results[sqlResult[$index*2]]" ng-required="searchable.indexOf(sqlResult[$index*2])!=-1" />
+						<input type="{a inputType(sqlResult[$index*2]) a}" step="any" ng-show="!editRecord&&addRecord" ng-model="added[sqlResult[$index*2]]" ng-required="searchable.indexOf(sqlResult[$index*2])!=-1" /><span style="color: red;" ng-show="editRecord||addRecord" ng-if="searchable.indexOf(sqlResult[$index*2])!=-1">*</span>
 					</td>
 					<th ng-if="notId(sqlResult[$index*2+1])">{a results[$index*2+1] a}</th>
 					<td ng-if="notId(sqlResult[$index*2+1])">
 						<span ng-show="!editRecord&&!addRecord" ng-if="searchable.indexOf(sqlResult[$index*2+1])==-1">{a result[sqlResult[$index*2+1]] a}</span>
 						<a ng-href="http://172.27.164.207:8003/results/{a result[ids['results']] a}" ng-show="!editRecord&&!addRecord" ng-if="searchable.indexOf(sqlResult[$index*2+1])!=-1">{a result[sqlResult[$index*2+1]] a}</a>
-						<input type="{a inputType(sqlResult[$index*2+1]) a}" step="any" ng-show="editRecord&&!addRecord" ng-disabled="uneditable.indexOf(sqlResult[$index*2+1])!=-1" ng-model="edited.results[sqlResult[$index*2+1]]" />
-						<input type="{a inputType(sqlResult[$index*2+1]) a}" step="any" ng-show="!editRecord&&addRecord" ng-model="added[sqlResult[$index*2+1]]" />
+						<input type="{a inputType(sqlResult[$index*2+1]) a}" step="any" ng-show="editRecord&&!addRecord" ng-disabled="uneditable.indexOf(sqlResult[$index*2+1])!=-1" ng-model="edited.results[sqlResult[$index*2+1]]" ng-required="searchable.indexOf(sqlResult[$index*2+1])!=-1" />
+						<input type="{a inputType(sqlResult[$index*2+1]) a}" step="any" ng-show="!editRecord&&addRecord" ng-model="added[sqlResult[$index*2+1]]" ng-required="searchable.indexOf(sqlResult[$index*2+1])!=-1" /><span style="color: red;" ng-show="editRecord||addRecord" ng-if="searchable.indexOf(sqlResult[$index*2+1])!=-1">*</span>
 					</td>
 				</tr>
 			</table>
@@ -166,11 +154,11 @@
 					<tr ng-repeat="p in cols track by $index" ng-if="$index%2==0">
 						<th ng-if="notId(cols[$index])&&sameTable(pTables[$index], t)">{a fields[sqlAll.indexOf(cols[$index])] a}</th>
 						<td ng-if="notId(cols[$index])&&sameTable(pTables[$index], t)">
-							<input type="{a inputType(cols[$index]) a}" step="any" ng-model="more[t][cols[$index]]" />
+							<input type="{a inputType(cols[$index]) a}" step="any" ng-model="more[t][cols[$index]]" /><span style="color: red;" ng-if="searchable.indexOf(cols[$index])!=-1">*</span>
 						</td>
 						<th ng-if="notId(cols[$index+1])&&sameTable(pTables[$index+1], t)">{a fields[sqlAll.indexOf(cols[$index+1])] a}</th>
 						<td ng-if="notId(cols[$index+1])&&sameTable(pTables[$index+1], t)">
-							<input type="{a inputType(cols[$index+1]) a}" step="any" ng-model="more[t][cols[$index+1]]" />
+							<input type="{a inputType(cols[$index+1]) a}" step="any" ng-model="more[t][cols[$index+1]]" /><span style="color: red;" ng-if="searchable.indexOf(cols[$index+1])!=-1">*</span>
 						</td>
 					</tr>
 				</table>
