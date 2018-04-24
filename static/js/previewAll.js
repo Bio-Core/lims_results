@@ -295,4 +295,5 @@ $(document).ready(function() {
 	//angular.bootstrap(document.getElementById("app1"), ['navApp']);
 	angular.bootstrap(document.getElementById("app2"), ['previewMain']);
 	angular.bootstrap(document.getElementById("app3"), ['footerApp']);
+
 })
