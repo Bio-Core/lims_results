@@ -1,6 +1,7 @@
 var app = angular.module("uploadApp", []);
 var app2 = angular.module("navApp", []);
 var app3 = angular.module("footerApp", []);
+var uploadUrl = "";
 
 
 app.config(['$interpolateProvider', function($interpolateProvider) {
@@ -76,7 +77,7 @@ function sqlToDisplay(input) {
 	return str;
 }
 
-app.controller("uploadCtrl", function($scope) {
+app.controller("uploadCtrl", function($scope, $http) {
 	$scope.upload = function() {
 		
 		var str = angular.copy($scope.fileContent);
@@ -92,6 +93,17 @@ app.controller("uploadCtrl", function($scope) {
 			}
 			contents.push(obj);
 		}
+
+		$http({
+			method : "POST",
+			url : uploadUrl,
+			data : JSON.stringify(contents),
+			headers : {'Content-Type': 'application/json'}
+		}).then(function(data) {
+			window.alert("Upload successful!");
+		}, function(data3) {
+			window.alert(data3.statusText);
+		});
 	}
 });
 
