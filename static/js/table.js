@@ -24,12 +24,7 @@ var id = {"patients" : "patients.patient_id",
 	"resultdetails" : "resultdetails.results_details_id"};
 var queryUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query";
 var colUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/columns";
-var searchable = [
-	"experiments.study_id","experiments.chip_cartridge_barcode","experiments.pcr","experiments.project_name","experiments.project_id",
-	"patients.first_name","patients.last_name","patients.mrn","patients.on_hcn","patients.se_num",
-	"resultdetails.pcr",
-	"results.mlpa_pcr","results.uid","results.verification_pcr",
-	"samples.se_num","samples.surgical_num","samples.non_uhn_id","samples.study_id","samples.sample_name","samples.container_name","samples.container_id","samples.copath_num","samples.other_identifier","samples.dna_sample_barcode"];
+var searchableUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/searchable";
 
 app.config(['$interpolateProvider', function($interpolateProvider) {
 	$interpolateProvider.startSymbol('{a');
@@ -109,7 +104,32 @@ app.controller("tableCtrl", function($scope, $http, $location) {
 	$scope.pages = [25, 50, 100, 500];
 	$scope.fields = [];
 	$scope.cols = [];
-	$scope.searchable = searchable;
+
+	$scope.setCurrentPage = function(currentPage) {
+	    $scope.currentPage = currentPage;
+	}
+	$scope.getNumberAsArray = function (num) {
+	    return new Array(num);
+	};
+	$scope.prev = function() {
+		if ($scope.currentPage > 0) $scope.currentPage--;
+	}
+	$scope.next = function() {	
+		if ($scope.currentPage < $scope.numberOfPages() - 1) $scope.currentPage++;
+	}
+	$scope.front = function() {
+		if ($scope.currentPage > 0) $scope.currentPage = 0;
+	}
+	$scope.end = function() {	
+		if ($scope.currentPage < $scope.numberOfPages() - 1) $scope.currentPage = $scope.numberOfPages() - 1;
+	}
+
+	$http.get(searchableUrl)
+	.then(function(data) {
+		$scope.searchable = data.data;
+	}, function(data) {
+		window.alert(data.statusText);
+	});
 
 	$http.get(colUrl)
 	.then(function(data) {
@@ -159,25 +179,6 @@ app.controller("tableCtrl", function($scope, $http, $location) {
 	}, function(data) {
 		window.alert("GET error");
 	});
-
-	$scope.setCurrentPage = function(currentPage) {
-	    $scope.currentPage = currentPage;
-	}
-	$scope.getNumberAsArray = function (num) {
-	    return new Array(num);
-	};
-	$scope.prev = function() {
-		if ($scope.currentPage > 0) $scope.currentPage--;
-	}
-	$scope.next = function() {	
-		if ($scope.currentPage < $scope.numberOfPages() - 1) $scope.currentPage++;
-	}
-	$scope.front = function() {
-		if ($scope.currentPage > 0) $scope.currentPage = 0;
-	}
-	$scope.end = function() {	
-		if ($scope.currentPage < $scope.numberOfPages() - 1) $scope.currentPage = $scope.numberOfPages() - 1;
-	}
 });
 
 app2.controller("navCtrl", function($scope, $window) {
