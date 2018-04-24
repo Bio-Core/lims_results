@@ -481,7 +481,7 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 				headers : {'Content-Type': 'application/json'}
 			}).then(function(data1) {
 				queryResults = data1.data;
-				$scope.rows = $scope.rows.concat(queryResults);
+				$scope.rows["Samples"] = queryResults;
 
 				for (let a = 0; a < queryResults.length; a++) {
 					samples = samples.concat(queryResults[a][sampleID]);
@@ -508,7 +508,7 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 						headers : {'Content-Type': 'application/json'}
 					}).then(function(data2) {
 						queryResults = data2.data;
-						$scope.rows = $scope.rows.concat(queryResults);
+						$scope.rows["Experiments"] = queryResults;
 
 						for (let b = 0; b < queryResults.length; b++) {
 							tests = tests.concat(queryResults[b][testID]); // experiments.experiment_id
@@ -535,7 +535,7 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 								headers : {'Content-Type': 'application/json'}
 							}).then(function(data3) {
 								queryResults = data3.data;
-								$scope.rows = $scope.rows.concat(queryResults);
+								$scope.rows["Results"] = queryResults;
 
 								for (let c = 0; c < queryResults.length; c++) {
 									results = results.concat(queryResults[c][resultID]); // results.results_id
@@ -562,7 +562,7 @@ app.controller("patientCtrl", function($scope, $http, $location, $window) {
 										headers : {'Content-Type': 'application/json'}
 									}).then(function(data4) {
 										queryResults = data4.data;
-										$scope.rows = $scope.rows.concat(queryResults);
+										$scope.rows["Result Details"] = queryResults;
 
 									}, function(data4) {
 										window.alert(data4.statusText);
