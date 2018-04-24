@@ -479,7 +479,7 @@ app.controller("testCtrl", function($scope, $http, $location, $window) {
 						headers : {'Content-Type': 'application/json'}
 					}).then(function(data3) {
 						queryResults = data3.data;
-						$scope.rows = $scope.rows.concat(queryResults);
+						$scope.rows["Results"] = queryResults;
 
 						for (let c = 0; c < queryResults.length; c++) {
 							results = results.concat(queryResults[c][resultID]); // results.results_id
@@ -506,7 +506,7 @@ app.controller("testCtrl", function($scope, $http, $location, $window) {
 								headers : {'Content-Type': 'application/json'}
 							}).then(function(data4) {
 								queryResults = data4.data;
-								$scope.rows = $scope.rows.concat(queryResults);
+								$scope.rows["Result Details"] = queryResults;
 								
 							}, function(data4) {
 								window.alert(data4.statusText);
