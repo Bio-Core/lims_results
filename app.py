@@ -3,7 +3,7 @@ from flask import Flask, render_template
 app = Flask(__name__)
 
 # IP of container-running host and container's internal flask app host (localhost)
-host_ip = 'clarity.uhnresearch.ca' #'192.168.2.10' #'142.1.33.237'
+host_ip = 'clarity.uhnresearch.ca' #'192.168.2.10' #'142.1.33.237' Not being used
 container_app_host = ''
 
 container_results_port = 8003
