@@ -38,33 +38,24 @@ var yy = d.getFullYear();
 var today = yy + "-" + mm + "-" + dd;
 var lastMonth = yy + "-" + mm1 + "-" + dd;
 
-var commonQuery = [
-	{"fields" : ["experiments.study_id","experiments.test_date","experiments.priority","patients.first_name","patients.last_name","resultdetails.pcr","resultdetails.result","results.mlpa_pcr","samples.sample_type","samples.surgical_num","samples.tumor_site","samples.study_id","samples.sample_name","samples.copath_num","samples.other_identifier"],
+var commonQuery = {
+	"Common Query 1" : {"fields" : ["experiments.study_id","experiments.test_date","experiments.priority","patients.first_name","patients.last_name","resultdetails.pcr","resultdetails.result","results.mlpa_pcr","samples.sample_type","samples.surgical_num","samples.tumor_site","samples.study_id","samples.sample_name","samples.copath_num","samples.other_identifier"],
 	"conditions" : [{conn:"AND", field:"samples.sample_id", operator:operators[1], content:"a"}]},
-	{"fields" : ["experiments.test_date","experiments.pcr","experiments.project_name","experiments.opened_date","experiments.project_id","patients.first_name","patients.last_name","patients.initials","patients.patient_type","patients.surgical_date","resultdetails.coverage","resultdetails.exon","resultdetails.gene","resultdetails.p_nomenclature","results.mean_depth_of_coveage","results.mlpa_pcr","results.verification_pcr","samples.material_received_num","samples.material_received_other","samples.volume_of_blood_marrow","samples.container_type","samples.container_name","samples.container_id","samples.other_identifier","samples.has_sample_files","samples.rna_quality","samples.rna_extraction_date"],
+	"Common Query 2" : {"fields" : ["experiments.test_date","experiments.pcr","experiments.project_name","experiments.opened_date","experiments.project_id","patients.first_name","patients.last_name","patients.initials","patients.patient_type","patients.surgical_date","resultdetails.coverage","resultdetails.exon","resultdetails.gene","resultdetails.p_nomenclature","results.mean_depth_of_coveage","results.mlpa_pcr","results.verification_pcr","samples.material_received_num","samples.material_received_other","samples.volume_of_blood_marrow","samples.container_type","samples.container_name","samples.container_id","samples.other_identifier","samples.has_sample_files","samples.rna_quality","samples.rna_extraction_date"],
 	"conditions" : [{conn:"AND", field:"samples.date_collected", operator:operators[4], content:lastMonth}, {conn:"AND", field:"samples.date_collected", operator:operators[5], content:today}]},
-	{"fields" : ["experiments.experiment_id","experiments.study_id","experiments.test_date","experiments.chip_cartridge_barcode","experiments.project_name","experiments.opened_date","experiments.has_project_files","patients.first_name","patients.last_name","patients.patient_type","patients.date_received","patients.referring_physican","patients.date_reported","resultdetails.VAF","resultdetails.coverage","resultdetails.gene","resultdetails.pcr","resultdetails.result","results.failed_regions","results.mutation","results.overall_hotspots_threshold","samples.facility","samples.test_requested","samples.se_num","samples.date_collected","samples.tumor_site","samples.historical_diagnosis","samples.tumor_percnt_of_total","samples.reviewed_by","samples.non_uhn_id","samples.dna_volume","samples.dna_location","samples.rna_volume","samples.plasma_location","samples.sample_size","samples.study_id","samples.sample_name","samples.container_well","samples.copath_num","samples.delta_ct_value","samples.rna_quality","samples.rna_extraction_date"],
+	"Common Query 3" : {"fields" : ["experiments.experiment_id","experiments.study_id","experiments.test_date","experiments.chip_cartridge_barcode","experiments.project_name","experiments.opened_date","experiments.has_project_files","patients.first_name","patients.last_name","patients.patient_type","patients.date_received","patients.referring_physican","patients.date_reported","resultdetails.VAF","resultdetails.coverage","resultdetails.gene","resultdetails.pcr","resultdetails.result","results.failed_regions","results.mutation","results.overall_hotspots_threshold","samples.facility","samples.test_requested","samples.se_num","samples.date_collected","samples.tumor_site","samples.historical_diagnosis","samples.tumor_percnt_of_total","samples.reviewed_by","samples.non_uhn_id","samples.dna_volume","samples.dna_location","samples.rna_volume","samples.plasma_location","samples.sample_size","samples.study_id","samples.sample_name","samples.container_well","samples.copath_num","samples.delta_ct_value","samples.rna_quality","samples.rna_extraction_date"],
 	"conditions" : [{conn:"AND", field:"samples.date_collected", operator:operators[4], content:lastMonth}, {conn:"AND", field:"samples.date_collected", operator:operators[5], content:today}]},
-	{"Common Query 4 Test" : ["experiments.experiment_id","experiments.study_id","experiments.panel_assay_screened","experiments.test_date","experiments.chip_cartridge_barcode","experiments.complete_date","experiments.pcr","experiments.project_name","experiments.priority","experiments.opened_date","experiments.project_id","experiments.has_project_files","experiments.procedure_order_datetime"],
+	"Common Query 4 Test" : {"fields" : ["experiments.experiment_id","experiments.study_id","experiments.panel_assay_screened","experiments.test_date","experiments.chip_cartridge_barcode","experiments.complete_date","experiments.pcr","experiments.project_name","experiments.priority","experiments.opened_date","experiments.project_id","experiments.has_project_files","experiments.procedure_order_datetime"],
 	"conditions" : [{conn:"AND", field:"", operator:operators[0], content:""}]},
-	{"fields" : ["patients.first_name","patients.last_name","patients.initials","patients.patient_type","patients.se_num","patients.date_received","patients.referring_physican","patients.date_reported","patients.surgical_date"],
+	"Common Query 5 Patient" : {"fields" : ["patients.first_name","patients.last_name","patients.initials","patients.patient_type","patients.se_num","patients.date_received","patients.referring_physican","patients.date_reported","patients.surgical_date"],
 	"conditions" : [{conn:"AND", field:"", operator:operators[0], content:""}]},
-	{"fields" : ["samples.facility","samples.test_requested","samples.se_num","samples.date_collected","samples.date_received","samples.sample_type","samples.material_received","samples.material_received_num","samples.material_received_other","samples.volume_of_blood_marrow","samples.surgical_num","samples.tumor_site","samples.historical_diagnosis","samples.tumor_percnt_of_total","samples.tumor_percnt_of_circled","samples.reviewed_by","samples.h_e_slide_location","samples.non_uhn_id","samples.name_of_requestor","samples.dna_concentration","samples.dna_volume","samples.dna_location","samples.rna_concentration","samples.rna_volume","samples.rna_location","samples.wbc_location","samples.plasma_location","samples.cf_plasma_location","samples.pb_bm_location","samples.rna_lysate_location","samples.sample_size","samples.study_id","samples.sample_name","samples.date_submitted","samples.container_type","samples.container_name","samples.container_id","samples.container_well","samples.copath_num","samples.other_identifier","samples.has_sample_files","samples.dna_sample_barcode","samples.dna_extraction_date","samples.dna_quality","samples.ffpe_qc_date","samples.delta_ct_value","samples.comments","samples.rnase_p_date","samples.dna_quality_by_rnase_p","samples.rna_quality","samples.rna_extraction_date"],
+	"Common Query 6 Sample" : {"fields" : ["samples.facility","samples.test_requested","samples.se_num","samples.date_collected","samples.date_received","samples.sample_type","samples.material_received","samples.material_received_num","samples.material_received_other","samples.volume_of_blood_marrow","samples.surgical_num","samples.tumor_site","samples.historical_diagnosis","samples.tumor_percnt_of_total","samples.tumor_percnt_of_circled","samples.reviewed_by","samples.h_e_slide_location","samples.non_uhn_id","samples.name_of_requestor","samples.dna_concentration","samples.dna_volume","samples.dna_location","samples.rna_concentration","samples.rna_volume","samples.rna_location","samples.wbc_location","samples.plasma_location","samples.cf_plasma_location","samples.pb_bm_location","samples.rna_lysate_location","samples.sample_size","samples.study_id","samples.sample_name","samples.date_submitted","samples.container_type","samples.container_name","samples.container_id","samples.container_well","samples.copath_num","samples.other_identifier","samples.has_sample_files","samples.dna_sample_barcode","samples.dna_extraction_date","samples.dna_quality","samples.ffpe_qc_date","samples.delta_ct_value","samples.comments","samples.rnase_p_date","samples.dna_quality_by_rnase_p","samples.rna_quality","samples.rna_extraction_date"],
 	"conditions" : [{conn:"AND", field:"", operator:operators[0], content:""}]},
-	{"fields" : ["results.failed_regions","results.mean_depth_of_coveage","results.mlpa_pcr","results.mutation","results.overall_hotspots_threshold","results.overall_quality_threshold","results.verification_pcr"],
+	"Common Query 7 Results" : {"fields" : ["results.failed_regions","results.mean_depth_of_coveage","results.mlpa_pcr","results.mutation","results.overall_hotspots_threshold","results.overall_quality_threshold","results.verification_pcr"],
 	"conditions" : [{conn:"AND", field:"", operator:operators[0], content:""}]},
-	{"fields" : ["resultdetails.VAF","resultdetails.c_nomenclature","resultdetails.coverage","resultdetails.exon","resultdetails.gene","resultdetails.p_nomenclature","resultdetails.pcr","resultdetails.quality_score","resultdetails.result","resultdetails.risk_score",],
+	"Common Query 8 Result Detail" : {"fields" : ["resultdetails.VAF","resultdetails.c_nomenclature","resultdetails.coverage","resultdetails.exon","resultdetails.gene","resultdetails.p_nomenclature","resultdetails.pcr","resultdetails.quality_score","resultdetails.result","resultdetails.risk_score",],
 	"conditions" : [{conn:"AND", field:"", operator:operators[0], content:""}]}
-];
-var commonQueryName = [
-	"Common Query 1",
-	"Common Query 2",
-	"Common Query 3",
-	"Common Query 4 Test",
-	"Common Query 5 Patient",
-	"Common Query 6 Sample",
-	"Common Query 7 Results",
-	"Common Query 8 Result Detail"];
+};
 var queryUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/query";
 var colUrl = "http://172.27.164.207:8000/Jtree/metadata/0.1.0/columns";
 
@@ -97,23 +88,6 @@ app.filter('orderObjectBy', function() {
 		}
 		return filtered;
 	};
-});
-
-app.directive('tableStyle', function() {
-	return function(scope, element, attrs) {
-		if (scope.$index == (scope.currentPage+1)*scope.pageSize) {
-			//window.alert("last row");
-			$('table').css('width', function() {
-				var ths = document.querySelectorAll('table th');
-				var sum = 0;
-				for (let i = 0; i < ths.length; i++) {
-					ths[i].style.width = ths[i].clientWidth + 'px';
-					sum += ths[i].clientWidth;
-				}
-				return sum;
-			});
-		}
-	}
 });
 
 app.directive("datepicker", function () {
@@ -220,19 +194,50 @@ app.controller("queryCtrl", function($scope, $http) {
 	//$scope.selected_conditions = [angular.copy(init_condition1), angular.copy(init_condition2)];
 	$scope.selected_conditions = [angular.copy(default_condition)];
 	$scope.commonQuery = commonQuery;
-	$scope.commonQueryName = commonQueryName;
+
+	$scope.commonQueryName = Object.keys(commonQuery);
 
 	$scope.hasDate = function(str) {
 		return (str.indexOf('date')!=-1 || str.indexOf('dob')!=-1);
 	}
-
 	$scope.sameTable = function(ft, t) {
 		return (ft == t.toLowerCase().split(' ').join(''))
+	}
+	$scope.setCurrentPage = function(currentPage) {
+	    $scope.currentPage = currentPage;
+	}
+	$scope.getNumberAsArray = function (num) {
+	    return new Array(num);
+	}
+	$scope.prev = function() {
+		if ($scope.currentPage > 0) $scope.currentPage--;
+	}
+	$scope.next = function() {	
+		if ($scope.currentPage < $scope.numberOfPages() - 1) $scope.currentPage++;
+	}
+	$scope.front = function() {
+		if ($scope.currentPage > 0) $scope.currentPage = 0;
+	}
+	$scope.end = function() {	
+		if ($scope.currentPage < $scope.numberOfPages() - 1) $scope.currentPage = $scope.numberOfPages() - 1;
+	}
+	$scope.sortBy = function(e, str) {
+		if (!e.target.classList.contains('grip')) {
+			if ($scope.orderByField == str) {
+				$scope.reverseSort = !$scope.reverseSort;
+			}
+			$scope.orderByField = str;
+		}
+			
+	}
+	$scope.down = function(e) {
+		thElm = e.currentTarget.parentElement;
+		startOffset = thElm.offsetWidth - e.pageX;
+
 	}
 
 	// ng-init=load()  ===   window.onload 
 	$scope.load = function() {
-		
 		// draggable table
 	    var e;
 	    (function (e) {
@@ -261,6 +266,7 @@ app.controller("queryCtrl", function($scope, $http) {
 		            $(this.container).on("mouseup touchend", function () {
 		                _this.cancelColumn();
 		            });
+
 		        };
 
 		        JsDragTable.prototype.selectColumn = function (header, event) {
@@ -348,10 +354,9 @@ app.controller("queryCtrl", function($scope, $http) {
 			                var cells = [];
 			                $(this.container).find("tr td:nth-child(" + sourceIndex + ")").each(function (cellIndex, cell) {
 			                    cells[cells.length] = cell;
-			                    $(cell).remove();
-			                    $(_this.selectedHeader).remove();
+			                    $(cell).detach();  // remove() -> detach() to keep angular binding
+			                    $(_this.selectedHeader).detach();  // remove() -> detach() to keep angular binding
 			                });
-
 			                if (targetIndex >= tableColumns) {
 			                    targetIndex = tableColumns - 1;
 			                    this.insertCells(cells, targetIndex, function (cell, element) {
@@ -365,6 +370,7 @@ app.controller("queryCtrl", function($scope, $http) {
 			                selected_fields.splice(targetIndex-1, 0, selected_fields.splice(sourceIndex-1, 1)[0]);
 			                $scope.selected_fields.splice(targetIndex-1, 0, $scope.selected_fields.splice(sourceIndex-1, 1)[0]);
 
+
 			                $(this.container).off("mousemove touchmove");
 			                $(".jsdragtable-contents").remove();
 			                $('#table_header th').removeClass('hovered after before');
@@ -373,21 +379,6 @@ app.controller("queryCtrl", function($scope, $http) {
 			                this.selectedHeader = null;
 			                this.rebind();
 
-			                $scope.sortBy = function(e, str) {
-								if (!e.target.classList.contains('grip')) {
-									//window.alert(e.currentTarget);
-									if ($scope.orderByField == str) {
-										$scope.reverseSort = !$scope.reverseSort;
-									}
-									$scope.orderByField = str;
-								}
-									
-							}
-							$scope.down = function(e) {
-								thElm = e.currentTarget.parentElement;
-								startOffset = thElm.offsetWidth - e.pageX;
-
-							}
 			            }
 
 		        	}
@@ -453,13 +444,13 @@ app.controller("queryCtrl", function($scope, $http) {
 				thElm.style.width = startOffset + e.pageX + 'px';
 				if (thElm.offsetWidth < MIN_WIDTH)
 					thElm.style.width = MIN_WIDTH_PX;
+				
 			}
-		});
+	    });
 
-		document.addEventListener('mouseup', function() {
-			thElm = undefined;
-			
-		});
+	    document.addEventListener('mouseup', function() {
+	        thElm = undefined;
+	    });
 
 	}
 
@@ -472,7 +463,7 @@ app.controller("queryCtrl", function($scope, $http) {
 				str[1] != "sample_id" && 
 				str[1] != "experiment_id" && 
 				str[1] != "results_id" && 
-				str[1] != "resultdetails_id") {
+				str[1] != "results_details_id") {
 				tFields.push(str[0]);
 				tableScope.push(capwords(str[0]));
 				fields.push(sqlToDisplay(str[1]));
@@ -581,7 +572,7 @@ app.controller("queryCtrl", function($scope, $http) {
 			}
 		}
 		$scope.preset = function() {
-			var prefill = commonQuery[commonQueryName.indexOf(angular.copy($scope.presetQuery))];
+			var prefill = commonQuery[$scope.presetQuery];
 
 			selected_fields = prefill.fields;
 
@@ -647,9 +638,9 @@ app.controller("queryCtrl", function($scope, $http) {
 				$('#table_results').css('width', 'auto');
 				if ($('#table_results').innerWidth() > $('.results').innerWidth()) {
 					
-					$('#table_results').css('width', $('#table_results').innerWidth()*2);
+					$('#table_results').css('width', $('#table_results').innerWidth()*1.5);
 				} else {
-					$('#table_results').css('width', $('#table_results').innerWidth());
+					$('#table_results').css('width', $('#table_results').innerWidth()*2);
 				}
 
 			}, function(data) {
@@ -662,39 +653,6 @@ app.controller("queryCtrl", function($scope, $http) {
 	}, function(data) {
 		window.alert("GET error");
 	});
-	$scope.setCurrentPage = function(currentPage) {
-	    $scope.currentPage = currentPage;
-	}
-	$scope.getNumberAsArray = function (num) {
-	    return new Array(num);
-	};
-	$scope.sortBy = function(e, str) {
-		if (!e.target.classList.contains('grip')) {
-			//window.alert(e.currentTarget);
-			if ($scope.orderByField == str) {
-				$scope.reverseSort = !$scope.reverseSort;
-			}
-			$scope.orderByField = str;
-		}
-			
-	}
-	$scope.down = function(e) {
-		thElm = e.currentTarget.parentElement;
-		startOffset = thElm.offsetWidth - e.pageX;
-
-	}
-	$scope.prev = function() {
-		if ($scope.currentPage > 0) $scope.currentPage--;
-	}
-	$scope.next = function() {	
-		if ($scope.currentPage < $scope.numberOfPages() - 1) $scope.currentPage++;
-	}
-	$scope.front = function() {
-		if ($scope.currentPage > 0) $scope.currentPage = 0;
-	}
-	$scope.end = function() {	
-		if ($scope.currentPage < $scope.numberOfPages() - 1) $scope.currentPage = $scope.numberOfPages() - 1;
-	}
 	
 });
 
