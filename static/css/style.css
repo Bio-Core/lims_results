@@ -1,11 +1,50 @@
-table, td, th {
-	border-collapse: collapse;
-	border-right: 1px solid #999;
-	position: relative;
+a {
+	user-select: none;
 }
 
-tr {
-	overflow: auto;
+a:before {
+	display: none;
+}
+
+a:visited {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+div {
+	display: inline-block;
+	position: relative;
+	width: 100%;
+}
+
+input {
+	position: relative;
+
+}
+
+label {
+	position: relative;
+	margin-left: 10px;
+}
+
+li {
+	width: fit-content;
+	list-style: none;
+}
+
+table {
+	table-layout: fixed;
+	width: auto;
+}
+
+table, td, th {
+	border-collapse: collapse;
+	border-right: 1px solid #eee;
+	position: relative;
 }
 
 td {
@@ -21,42 +60,235 @@ th {
 	user-select: none;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	padding-top: 6px;
 	min-width: 30px;
 }
 
-table {
-	table-layout: fixed;
-	width: auto;
+tr {
+	overflow: auto;
 }
 
-div {
+a.cols:before {
+	background-image: url('../imgs/button.png');
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-size: contain;
+	opacity: 0.5;
 	display: inline-block;
-	position: relative;
-	width: 100%;
+	margin-left: -17px;
+	margin-right: 5px;
+	content: "";
+	width: 12px;
+	height: 12px;
 }
 
-li {
-	width: fit-content;
-	list-style: none;
+a.selected:before {
+	background-image: url('../imgs/check-mark.png');
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-size: contain;
+	display: inline-block;
+	margin-left: -17px;
+	margin-right: 5px;
+	content: "";
+	width: 12px;
+	height: 12px;
+	opacity: 1;
 }
 
-a {
-	user-select: none;
+a.paginate.current {
+	color: #00bbff
 }
 
-label {
-	position: relative;
-	margin-left: 10px;
+a.paginate:visted {
+	text-decoration: none;
+	color: black;
 }
 
-input {
-	position: relative;
-
+a.paginate:hover {
+	text-decoration: underline;
+	color: red;
 }
 
-a:before {
+a.ui-datepicker-prev {
+	float: left;
+	margin: 0.5em;
+}
+
+a.ui-datepicker-prev:hover,
+a.ui-datepicker-next:hover {
+	color: #ffcc00;
+	text-decoration: none;
+}
+
+a.ui-datepicker-next {
+	float: right;
+	margin: 0.5em;
+}
+
+a.ui-state-default {
+	text-decoration: none;
+	color: black;
+}
+
+a.ui-state-default:hover {
+	text-decoration: none;
+	color: black;
+}
+
+.appContainer {
+	margin-top: 10px;
+}
+
+body.loading .loading {
+    overflow: hidden;   
+}
+
+body.loading .loading {
+    display: block;
+}
+
+.btn-edit {
+	float: right;
+	margin-left: 5px;
+}
+
+#btn-login {
+	margin-left: 200px;
+}
+
+.control-condition {
+	margin-top: 10px;
+}
+
+.control-condition:first-child #control-logic {
 	display: none;
+}
+
+.control-condition #control-logic {
+	width: 5em;
+	margin-left: 1em;
+}
+
+.control-condition:first-child label {
+	display: inline-block;
+}
+
+.control-condition label {
+	display: none;
+}
+
+#control-datepicker {
+	background-image: url('../imgs/datepicker.png');
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-size: contain;
+	display: inline-block;
+	height: 1em;
+	width: 1em;
+	content: "";
+	left: -8.5em;
+	top: 0.15em;
+}
+
+.controls {
+	display: inline-block;
+	float: right;
+	width: 74%;
+	height: 20%;
+	border: 1px solid #999;
+	box-shadow: 2px 2px 2px #aaa;
+	overflow: scroll;
+}
+
+div.jsdragtable-contents {
+	box-shadow: 2px 2px 2px grey;
+}
+
+div.paginateContainer {
+	width: auto;
+	float: right;
+	top: 5px;
+	z-index: 99;
+}
+
+div.results {
+	display: inline-block;
+	float: right;
+	width: 74%;
+	height: 77%;
+	border: 1px solid #999;
+	box-shadow: 2px 2px 2px #aaa;
+	margin-top: 9px;
+	overflow: scroll;
+}
+
+.detailView {
+	margin-top: 10px;
+	width: 100%;
+	border-right: none;
+}
+
+.detailView th {
+	float: right;
+	padding-right: 20px;
+	padding-top: 0;
+	line-height: 2em;
+	border-right: none;
+	font-size: 0.9em;
+}
+
+.detailView td {
+	width: 33%;
+	height: auto;
+	border-right: none;
+	border-left: 1px solid #999;
+	word-wrap: break-word;
+	left: 15px;
+}
+
+.detailView tr:nth-child(2n+1) {
+	background-color: #eee;
+}
+
+.detailView td span {
+	display: inline-block;
+
+}
+
+.detailView td input {
+	width: 90%;
+}
+
+.detailView	a {
+	color: black;
+	text-decoration: underline;
+}
+
+.detailView.hide {
+	display: none;
+}
+
+.fields {
+	display: inline-block;
+	float: left;
+	width: 25%;
+	height: 99%;
+	border: 1px solid #999;
+	box-shadow: 2px 2px 2px #aaa;
+	overflow: auto;
+}
+
+.fields ul {
+	margin-left: 5%
+}
+
+.footer {
+	height: 50px;
+	background-color: #444466;
+	padding: 10px;
+	margin-left: -10px;
+	margin-bottom: -10px;
+	margin-top: 2em;
 }
 
 .grip {
@@ -69,6 +301,114 @@ a:before {
 	cursor: col-resize;
 }
 
+.homeLink {
+	width: auto;
+	height: auto;
+	padding-top: 10px;
+	display: inline-block;
+	position: relative;
+}
+
+.homeLink li {
+	float: left;
+	margin-right: 20px;
+	padding: 5px 10px;
+}
+
+.homeLink a {
+	text-decoration: none;
+	color: white;
+}
+
+.homeLink a.current  {
+	color: red;
+}
+
+.jsdragtable-contents {
+	background-color: white;
+	width: auto;
+}
+
+.jsdragtable-contents thead tr {
+	background: linear-gradient(#fff, #ffdddd);
+}
+
+.loading {
+    position:   absolute;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url('http://i.stack.imgur.com/FhHRx.gif') 
+                50% 50% 
+                no-repeat;
+}
+
+#login label {
+	float: left;
+}
+
+#login {
+	width: 250px;
+}
+
+#login label, #login input {
+	margin-top: 10px;
+}
+
+.nav {
+	background-color: #444466;
+	padding: 10px;
+	margin-left: -10px;
+	margin-top: -10px;
+	color: white;
+	box-shadow: 4px 4px 4px #444;
+	z-index: 99;
+}
+
+.nav h1 {
+	float: left;
+	padding-right: 50px;
+	border-right: 1px solid grey;
+}
+
+.main-repeat {
+	margin-left: 10%;
+	width: 80%;
+}
+
+.paginateSize {
+	width: 50px;
+}
+
+.paginate {
+	margin-right: 3px;
+	text-decoration: none;
+	color: black;
+}
+
+.patientWindow {
+	width: 80%;
+	margin-left: 10%;
+}
+
+.preview_header {
+	width: auto;
+}
+
+.previewWindow {
+	width: 100%;
+	display: block;
+	background-color: beige;
+	padding-bottom: 1em;
+}
+
+.previewWindow.hide {
+	display: none;
+}
+
 .query-container {
 	width: 80%;
 	margin-left: 10%;
@@ -76,36 +416,14 @@ a:before {
 	margin-top: 1%;
 }
 
-.fields {
-	display: inline-block;
-	float: left;
-	width: 25%;
-	height: 99%;
-	border: 1px solid black;
-	overflow: auto;
-}
-
-.fields ul {
-	margin-left: 5%
-}
-
-.controls {
-	display: inline-block;
+#search {
 	float: right;
-	width: 74%;
-	height: 20%;
-	border: 1px solid black;
-	overflow: scroll;
+	margin-top: 25px;
 }
 
-div.results {
-	display: inline-block;
+#submit {
 	float: right;
-	width: 74%;
-	height: 78%;
-	border: 1px solid black;
-	margin-top: 9px;
-	overflow: scroll;
+	margin-top: 25px;
 }
 
 .tables {
@@ -125,6 +443,133 @@ div.results {
 	content: "";
 	width: 15px;
 	height: 15px;
+}
+
+.table_preview {
+	width: auto;
+	height: auto;
+	max-height: 150px;
+	overflow-y: auto;
+	overflow-x: auto;
+	display: block;
+	border: 1px solid #999;
+	box-shadow: 2px 2px 2px #aaa;
+}
+
+.table_preview.previewAll {
+	width: 90%;
+	height: 500px;
+	max-height: none;
+	margin-top: 0;
+	margin-left: 5%;
+	background-color: white;
+}
+
+.table_preview.searchAll {
+	width: 90%;
+	height: auto;
+	max-height: none;
+	margin-top: 0;
+	margin-left: 5%;
+	background-color: white;
+}
+
+.table_one a,
+.table_preview a {
+	text-decoration: underline;
+	color: black;
+}
+
+.table_one a:hover,
+.table_preview a:hover {
+	text-decoration: underline;
+}
+
+.tables.collapse:before {
+	background-image: url('../imgs/plus.png');
+}
+
+.tables.collapse ~ li {
+	display: none;
+}
+
+.table-toggle {
+	background-color: #444466;
+	color: white;
+	padding: 0 2em;
+	border-radius: 5px;
+	box-sizing: border-box;
+	cursor: pointer;
+	margin-top: 1em;
+	margin-bottom: -5px;
+}
+
+.table_one {
+	width: auto;
+	height: auto;
+	margin-top: 20px;
+	max-height: 85vh;
+	overflow: auto;
+	display: block;
+	border: 1px solid #999;
+	box-shadow: 2px 2px 2px #aaa;
+}
+
+.tableWindow {
+	height: 85vh;
+	width: 80%;
+	margin-left: 10%;
+}
+
+#table_results tr,
+.table_one tr,
+.table_preview tr {
+	border-bottom: 1px #ccc solid;
+}
+
+#table_results th,
+.table_one th,
+.table_preview th {
+	white-space: nowrap;
+	line-height: 1.8em;
+}
+
+#table_results th {
+	padding-top: 6px;
+}
+
+#table_results th.experiments,
+.table_one th.experiments,
+.table_preview th.experiments {
+	background: linear-gradient(#fff, #ddddff);
+}
+
+#table_results th.patients,
+.table_one th.patients,
+.table_preview th.patients {
+	background: linear-gradient(#fff, #ffddff);
+}
+
+#table_results th.samples,
+.table_one th.samples,
+.table_preview th.samples {
+	background: linear-gradient(#fff, #ddffff);
+}
+
+#table_results th.results,
+.table_one th.results,
+.table_preview th.results {
+	background: linear-gradient(#fff, #ddffdd);
+}
+
+#table_results th.resultdetails,
+.table_one th.resultdetails,
+.table_preview th.resultdetails {
+	background: linear-gradient(#fff, #ffffdd);
+}
+
+td.ui-datepicker-today {
+	background-color: #00b0ff;
 }
 
 th.after:before,
@@ -192,288 +637,34 @@ th.hovered.after:before {
 	right: 0;
 }
 
-.jsdragtable-contents {
-	background-color: white;
-	width: auto;
-}
-
-.tables.collapse:before {
-	background-image: url('../imgs/plus.png');
-}
-
-.tables.collapse ~ li {
-	display: none;
-}
-
-.previewWindow {
-	min-height: 100px;
-	width: 100%;
-	display: block;
-	background-color: beige;
-	padding-bottom: 1em;
-}
-
-.previewWindow.hide {
-	display: none;
-}
-
-.tableWindow {
-	height: 85vh;
-	width: 80%;
-	margin-left: 10%;
-}
-
-.table_one {
-	width: auto;
-	height: auto;
-	margin-top: 20px;
-	max-height: 85vh;
-	overflow: auto;
-	display: block;
-	border: 1px solid black;
-}
-
-.patientWindow {
-	width: 80%;
-	margin-left: 10%;
-}
-
-#search {
-	float: right;
-	margin-top: 25px;
-}
-
-.nav {
+.toggleInfo {
 	background-color: #444466;
-	padding: 10px;
-	margin-left: -10px;
-	margin-top: -10px;
 	color: white;
-	box-shadow: 4px 4px 4px #444;
-	z-index: 99;
-}
-
-.nav h1 {
-	float: left;
-	padding-right: 50px;
-	border-right: 1px solid grey;
-}
-
-.homeLink {
-	width: auto;
-	height: auto;
-	padding-top: 10px;
-	display: inline-block;
-	position: relative;
-}
-
-.homeLink li {
-	float: left;
-	margin-right: 20px;
-	padding: 5px 10px;
-}
-
-.homeLink a {
-	text-decoration: none;
-	color: white;
-}
-
-.homeLink a.current  {
-	color: red;
-}
-
-a.cols:before {
-	background-image: url('../imgs/button.png');
-	background-repeat: no-repeat;
-	background-position: left center;
-	background-size: contain;
-	opacity: 0.5;
-	display: inline-block;
-	margin-left: -17px;
-	margin-right: 5px;
-	content: "";
-	width: 12px;
-	height: 12px;
-}
-
-a:visited {
-	text-decoration: none;
-}
-
-a:hover {
-	text-decoration: underline;
+	padding-left: 2em;
+	border-radius: 5px;
+	box-sizing: border-box;
 	cursor: pointer;
+	margin-top: 1em;
 }
 
-a.selected:before {
-	background-image: url('../imgs/check-mark.png');
-	background-repeat: no-repeat;
-	background-position: left center;
-	background-size: contain;
-	display: inline-block;
-	margin-left: -17px;
-	margin-right: 5px;
-	content: "";
-	width: 12px;
-	height: 12px;
-	opacity: 1;
-}
-
-#username, #password {
+.toggleInfo:after {
+	content: "-";
 	float: right;
+	font-size: 50px;
+	line-height: 50px;
+	top: 0;
+	right: 1em;
+	position: absolute;
 }
 
-#login label {
-	float: left;
-}
-
-#login {
-	width: 250px;
-}
-
-#login label, #login input {
-	margin-top: 10px;
-}
-
-#btn-login {
-	margin-left: 200px;
-}
-
-.control-condition {
-	margin-top: 10px;
-}
-
-.control-condition:first-child #control-logic {
-	display: none;
-}
-
-.control-condition #control-logic {
-	width: 5em;
-	margin-left: 1em;
-}
-
-.control-condition:first-child label {
-	display: inline-block;
-}
-
-.control-condition label {
-	display: none;
-}
-
-#control-datepicker {
-	background-image: url('../imgs/datepicker.png');
-	background-repeat: no-repeat;
-	background-position: left center;
-	background-size: contain;
-	display: inline-block;
-	height: 1em;
-	width: 1em;
-	content: "";
-	left: -8.5em;
-	top: 0.15em;
-}
-
-#table_results tr:nth-child(2n+1),
-.table_one tr:nth-child(2n+1),
-.table_preview tr:nth-child(2n+1) {
-	background-color: #ddd;
-}
-
-#table_results th,
-.table_one th,
-.table_preview th {
-	white-space: nowrap;
-	line-height: 1.8em;
-}
-
-#table_results th.experiments,
-.table_one th.experiments,
-.table_preview th.experiments {
-	background: linear-gradient(#fff, #ddddff);
-}
-
-#table_results th.patients,
-.table_one th.patients,
-.table_preview th.patients {
-	background: linear-gradient(#fff, #ffddff);
-}
-
-#table_results th.samples,
-.table_one th.samples,
-.table_preview th.samples {
-	background: linear-gradient(#fff, #ddffff);
-}
-
-#table_results th.results,
-.table_one th.results,
-.table_preview th.results {
-	background: linear-gradient(#fff, #ddffdd);
-}
-
-#table_results th.resultdetails,
-.table_one th.resultdetails,
-.table_preview th.resultdetails {
-	background: linear-gradient(#fff, #ffffdd);
-}
-
-.jsdragtable-contents thead tr {
-	background: linear-gradient(#fff, #ffdddd);
-}
-
-div.jsdragtable-contents {
-	box-shadow: 2px 2px 2px grey;
-}
-
-.loading {
-    position:   absolute;
-    z-index:    1000;
-    top:        0;
-    left:       0;
-    height:     100%;
-    width:      100%;
-    background: rgba( 255, 255, 255, .8 ) 
-                url('http://i.stack.imgur.com/FhHRx.gif') 
-                50% 50% 
-                no-repeat;
-}
-
-body.loading .loading {
-    overflow: hidden;   
-}
-
-body.loading .loading {
-    display: block;
-}
-
-div.paginateContainer {
-	width: auto;
+.toggleInfo.hide:after {
+	content: "+";
 	float: right;
-	top: 5px;
-	z-index: 99;
-}
-
-.paginateSize {
-	width: 50px;
-}
-
-.paginate {
-	margin-right: 3px;
-	text-decoration: none;
-	color: black;
-}
-
-a.paginate.current {
-	color: #00bbff
-}
-
-a.paginate:visted {
-	text-decoration: none;
-	color: black;
-}
-
-a.paginate:hover {
-	text-decoration: underline;
-	color: red;
+	font-size: 40px;
+	line-height: 60px;
+	top: 0;
+	right: 1em;
+	position: absolute;
 }
 
 #ui-datepicker-div {
@@ -492,22 +683,6 @@ a.paginate:hover {
 	background-color: #aaa;
 	font-weight: bold;
 	border-radius: 2px;
-}
-
-a.ui-datepicker-prev {
-	float: left;
-	margin: 0.5em;
-}
-
-a.ui-datepicker-prev:hover,
-a.ui-datepicker-next:hover {
-	color: #ffcc00;
-	text-decoration: none;
-}
-
-a.ui-datepicker-next {
-	float: right;
-	margin: 0.5em;
 }
 
 .ui-datepicker-title {
@@ -538,124 +713,18 @@ a.ui-datepicker-next {
 	cursor: default !important;
 }
 
-a.ui-state-default {
-	text-decoration: none;
-	color: black;
-}
-
-a.ui-state-default:hover {
-	text-decoration: none;
-	color: black;
-}
-
-td.ui-datepicker-today {
-	background-color: #00b0ff;
-}
-
 .ui-datepicker-current-day {
 	background-color: #ffcc00 !important;
 }
 
-.table_preview {
-	width: auto;
-	height: auto;
-	max-height: 150px;
-	overflow: auto;
-	display: block;
-	border: 1px solid black;
-}
-
-.table_preview.previewAll {
-	width: 90%;
-	height: 500px;
-	max-height: none;
-	margin-top: 0;
-	margin-left: 5%;
-	background-color: white;
-}
-
-.table_one a,
-.table_preview a {
-	text-decoration: underline;
-	color: black;
-}
-
-.table_one a:hover,
-.table_preview a:hover {
-	text-decoration: underline;
-}
-
-.preview_header {
-	width: auto;
-}
-
-.main-repeat {
-	margin-left: 10%;
+.uploadContainer {
 	width: 80%;
+	margin-left: 10%;
+	margin-top: 1em;
 }
 
-.detailView {
-	margin-top: 10px;
-	width: 100%;
-	border-right: none;
-}
-
-.detailView th {
+#username, #password {
 	float: right;
-	padding-right: 20px;
-	padding-top: 0;
-	line-height: 2em;
-	border-right: none;
-	font-size: 0.9em;
-}
-
-.detailView td {
-	width: 33%;
-	height: auto;
-	border-right: none;
-	border-left: 1px solid #999;
-	word-wrap: break-word;
-	left: 15px;
-}
-
-.detailView tr:nth-child(2n+1) {
-	background-color: #eee;
-}
-
-.detailView td span {
-	display: inline-block;
-
-}
-
-.detailView td input {
-	width: 90%;
-}
-
-.detailView	a {
-	color: black;
-	text-decoration: underline;
-}
-
-.detailView.hide {
-	display: none;
-}
-
-.appContainer {
-	margin-top: 10px;
-}
-
-#submit {
-	float: right;
-	margin-top: 25px;
-}
-
-.footer {
-	height: 50px;
-	background-color: #444466;
-	padding: 10px;
-	margin-left: -10px;
-	margin-bottom: -10px;
-	margin-top: 2em;
 }
 
 .viewAll,
@@ -667,56 +736,4 @@ td.ui-datepicker-today {
 
 .viewAll:hover {
 	text-decoration: underline;
-}
-
-.btn-edit {
-	float: right;
-	margin-left: 5px;
-}
-
-.uploadContainer {
-	width: 80%;
-	margin-left: 10%;
-	margin-top: 1em;
-}
-
-.toggleInfo {
-	background-color: #444466;
-	color: white;
-	padding-left: 2em;
-	border-radius: 5px;
-	box-sizing: border-box;
-	cursor: pointer;
-	margin-top: 1em;
-}
-
-.table-toggle {
-	background-color: #444466;
-	color: white;
-	padding: 0 2em;
-	border-radius: 5px;
-	box-sizing: border-box;
-	cursor: pointer;
-	margin-top: 1em;
-	margin-bottom: -5px;
-}
-
-.toggleInfo:after {
-	content: "-";
-	float: right;
-	font-size: 50px;
-	line-height: 50px;
-	top: 0;
-	right: 1em;
-	position: absolute;
-}
-
-.toggleInfo.hide:after {
-	content: "+";
-	float: right;
-	font-size: 40px;
-	line-height: 60px;
-	top: 0;
-	right: 1em;
-	position: absolute;
 }
