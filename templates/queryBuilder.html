@@ -23,7 +23,7 @@
 		<li><a href="http://172.27.164.207:8003/experiments">Tests</a></li>
 		<li><a href="http://172.27.164.207:8003/results">Results</a></li>
 		<li><a href="http://172.27.164.207:8003/resultdetails">Result Details</a></li>
-		<li><a href="http://172.27.164.207:8003/upload">Upload</a></li>
+		<!-- <li><a href="http://172.27.164.207:8003/upload">Upload</a></li> -->
 	</ul>
 </div>
 
@@ -63,24 +63,24 @@
 				<input ng-model="datepicker" datepicker ng-show="hasDate(con.field)" ng-change="con.content=datepicker"/>
 				<button class="btn-add" ng-click="add()">Add</button>
 				<button class="btn-delete" ng-click="delete(ctrl)">Delete</button>
-				<div id="control-datepicker" ng-click="makeToday(ctrl)" ng-show="hasDate(con.field)"></div>
+				<div id="control-datepicker" ng-show="hasDate(con.field)"></div>
 			</article>
 
 		</section>
 
 		<div class="results">
 			<table id="table_results">
-				<tr id="table_header">
-					<th ng-repeat="h in selected_fields track by $index" ng-click="sortBy($event, h.tf);" class="{a h.table a}">{a h.field a}<span class="sortAsc" ng-show="!reverseSort && orderByField==h.tf"></span><span class="sortDesc" ng-show="reverseSort && orderByField==h.tf"></span><div class="grip" ng-mousedown="down($event)"></div></th>
-				</tr>
+				<thead><tr id="table_header">
+					<th ng-repeat="h in selected_fields" ng-click="sortBy($event, h.tf);" class="{a h.table a}">{a h.field a}<span class="sortAsc" ng-show="!reverseSort && orderByField==h.tf"></span><span class="sortDesc" ng-show="reverseSort && orderByField==h.tf"></span><div class="grip" ng-mousedown="down($event)"></div></th>
+				</tr></thead>
 			
-				<tr class="table_content" ng-repeat="result in results | orderObjectBy:orderByField:reverseSort" ng-if="$index>=currentPage*pageSize && $index<(currentPage+1)*pageSize" table-style>
+				<tbody><tr class="table_content" ng-repeat="result in results | orderObjectBy:orderByField:reverseSort" ng-if="$index>=currentPage*pageSize && $index<(currentPage+1)*pageSize">
 					<td ng-repeat="r in selected_fields">{a result[r.tf] a}</td>
-				</tr>
+				</tr></tbody>
 				<div class="loading" data-loading></div>
 			</table>
-			
 		</div>
+
 		<div class="paginateContainer">
 			<a href="" class="paginate" ng-show="currentPage!=0" ng-click="front()"><<</a>
 			<a href="" class="paginate" ng-show="currentPage!=0" ng-click="prev()"><</a>
