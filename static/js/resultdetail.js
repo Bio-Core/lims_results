@@ -144,14 +144,7 @@ app.controller("resultdetailCtrl", function($scope, $http, $location, $window) {
 		$scope.editRecord = false;
 		$scope.addRecord = false;
 	}
-	$scope.confirm = function() {
-		if (confirm("Confirm record change?")) {
-			// update database
-
-			$scope.editRecord = false;
-		}
-	}
-
+	
 	$http.get(searchableUrl)
 	.then(function(data) {
 		$scope.searchable = data.data;
