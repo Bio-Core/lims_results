@@ -8,7 +8,7 @@ To access ``result-db-test`` vm, use ``ssh -p 5059 coop2@192.75.165.28`` to ``ss
 
 Using MacOS, frontend testing is done on Remote Desktop. I recommend Firefox since its refresh clears cache better than Chrome. However, some border lines fro headers are missing on Firefox. 
 
-To deploy the website frontend, execute ``python app.py`` from the root file, which can be found using ``cd flask/lims_results``. 
+To deploy the website frontend, execute ``python app.py`` from the root file, which can be found using ``cd web/lims_results``. 
 
 To access individule files, execute ``vi (filepath/)filename``. 
 
